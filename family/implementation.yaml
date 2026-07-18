@@ -1,0 +1,79 @@
+# E2E Test Implementation Descriptor
+#
+# 草案 — 不可注册，不进入 effective index。
+# 仅供 Gate A 结构参考和未来 Gate B 启动前置。
+
+schemaVersion: 1
+
+implementation:
+  id: e2e-test
+  version: 0.1.0
+  maturity: experimental
+
+implements:
+  # 目标 Family API — 标记为 unresolved/draft
+  api: artifact.e2e-test-family
+  apiVersion: 1
+  apiStatus: draft
+  # 以下声明在 Gate B 前不生效
+  # apiRef: artifact-chain-assistant/family-apis/e2e-test.api.yaml
+
+services:
+  help:
+    id: artifact.e2e-test.help
+    skill: e2e-test-help
+    required: true
+    kind: operation
+    intents: [diagnose]
+    sideEffects: [read-only]
+    status: available
+
+  default:
+    id: artifact.e2e-test.default
+    skill: e2e-test
+    required: true
+    kind: workflow
+    intents: [route]
+    sideEffects: [read-only]
+    status: fail-closed
+
+  author:
+    id: artifact.e2e-test.author
+    skill: e2e-test-author
+    required: true
+    kind: workflow
+    intents: [author]
+    sideEffects: [write-project-artifacts]
+    status: not-implemented
+
+  review:
+    id: artifact.e2e-test.review
+    skill: e2e-test-review
+    required: true
+    kind: workflow
+    intents: [review]
+    sideEffects: [read-only, write-run-evidence]
+    status: not-implemented
+
+  repair:
+    id: artifact.e2e-test.repair
+    skill: e2e-test-repair
+    required: true
+    kind: workflow
+    intents: [repair]
+    sideEffects: [write-project-artifacts]
+    status: not-implemented
+
+binding:
+  mixSafe: false
+  atomic: true
+
+discovery:
+  helpSkillRequired: true
+  helpRegistryVisible: false
+  providerCatalogEmitted: false
+
+conformance:
+  # Gate A：均未通过，不声明具体 artifact contract 版本
+  deterministicConformance: not-run
+  behaviorQualification: not-run

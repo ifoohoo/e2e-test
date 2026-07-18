@@ -1,0 +1,28 @@
+{
+  "name": "e2e-test",
+  "description": "Experimental E2E specification skill family for Claude Code; Gate A exposes read-only help only",
+  "owner": {
+    "name": "mzdbxqh"
+  },
+  "plugins": [
+    {
+      "name": "e2e-test",
+      "source": "./adapters/claude",
+      "description": "Framework-neutral E2E specification skill family; Gate A help is available and all workflow services fail closed",
+      "version": "0.1.0",
+      "author": {
+        "name": "mzdbxqh"
+      },
+      "repository": "https://github.com/mzdbxqh/e2e-test",
+      "license": "Apache-2.0",
+      "keywords": [
+        "e2e",
+        "testing",
+        "skill-family",
+        "artifact-graph",
+        "agent-method"
+      ],
+      "category": "productivity"
+    }
+  ]
+}

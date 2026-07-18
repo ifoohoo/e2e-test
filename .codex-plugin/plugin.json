@@ -1,0 +1,21 @@
+{
+  "name": "e2e-test",
+  "version": "0.1.0",
+  "description": "E2E 测试专业技能族 — 框架中立的 E2E 规格编制、审阅、修复和证明调和。当前处于 Gate A（独立仓库骨架），仅 help 入口可用；default/author/review/repair 为 fail-closed placeholder。",
+  "author": {
+    "name": "mzdbxqh",
+    "url": "https://github.com/mzdbxqh"
+  },
+  "license": "Apache-2.0",
+  "keywords": ["e2e", "testing", "skill-family", "artifact-graph", "agent-method"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "E2E Test Skill Family",
+    "shortDescription": "Framework-neutral E2E specification skill family (Gate A: help only)",
+    "developerName": "mzdbxqh",
+    "category": "testing",
+    "defaultPrompt": "Run e2e-test-help to see current Gate A status and capabilities",
+    "capabilities": ["e2e-specification", "test-authoring", "test-review", "test-repair", "diagnostic"],
+    "longDescription": "This skill family targets E2E specification authoring, review, repair and proof reconciliation. Current Gate A status: independent repository skeleton only. The help service provides read-only diagnostic output. All other services return deterministic fail-closed responses (GATE_B_REQUIRED / NOT_IMPLEMENTED). No provider catalog is emitted. No registry binding exists. Artifact Contract and Family API are draft-only."
+  }
+}
