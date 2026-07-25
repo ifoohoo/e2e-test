@@ -1,8 +1,0 @@
-node_modules/
-*.tgz
-dist/
-runs/
-.claude/
-.DS_Store
-Thumbs.db
-*.log

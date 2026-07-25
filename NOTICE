@@ -1,14 +1,25 @@
-e2e-test
-Copyright 2026 mzdbxqh
+# Notice
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+e2e-test is an open-source skill family released under the Apache License,
+Version 2.0.
 
-    http://www.apache.org/licenses/LICENSE-2.0
+## Maintenance
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+e2e-test is maintained by 广州市风荷科技有限公司 (Guangzhou Fenghe Technology
+Co., Ltd.), together with the e2e-test contributors. Copyright in the project
+is held by the e2e-test contributors and 广州市风荷科技有限公司 as stated in
+the LICENSE file. The transfer of the public GitHub repository to the
+`ifoohoo` organization is an administrative change of the hosting location and
+maintenance identity; it does not by itself constitute a copyright assignment
+or transfer.
+
+## Third-Party Dependencies
+
+This project is built on Node.js and the npm ecosystem. See `package.json`
+for the full list of dependencies.
+
+## Acknowledgments
+
+The E2E specification skill family aligns with the E2E Test Skill Family API
+and Artifact Contract defined by artifact-chain-assistant. No code from other
+projects is copied or redistributed. Only design inspiration is acknowledged.

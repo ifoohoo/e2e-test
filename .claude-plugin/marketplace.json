@@ -1,19 +1,19 @@
 {
   "name": "e2e-test",
-  "description": "Experimental E2E specification skill family for Claude Code; Gate A exposes read-only help only",
+  "description": "Experimental E2E specification skill family for Claude Code; Gate B: five services implemented, provider defaults to NOT_ENABLED",
   "owner": {
-    "name": "mzdbxqh"
+    "name": "ifoohoo"
   },
   "plugins": [
     {
       "name": "e2e-test",
       "source": "./adapters/claude",
-      "description": "Framework-neutral E2E specification skill family; Gate A help is available and all workflow services fail closed",
-      "version": "0.1.0",
+      "description": "Framework-neutral E2E specification skill family; Gate B: help/author/review/repair implemented, default NOT_ENABLED",
+      "version": "0.2.0-alpha.1",
       "author": {
-        "name": "mzdbxqh"
+        "name": "ifoohoo"
       },
-      "repository": "https://github.com/mzdbxqh/e2e-test",
+      "repository": "https://github.com/ifoohoo/e2e-test",
       "license": "Apache-2.0",
       "keywords": [
         "e2e",

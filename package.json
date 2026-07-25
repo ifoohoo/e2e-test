@@ -1,19 +1,40 @@
 {
   "name": "e2e-test",
-  "version": "0.1.0",
+  "version": "0.2.0-alpha.1",
   "description": "E2E 测试专业技能族 — 框架中立、experimental 的 E2E 规格技能族",
   "type": "module",
   "license": "Apache-2.0",
+  "author": "广州市风荷科技有限公司",
+  "contributors": [
+    "mzdbxqh"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ifoohoo/e2e-test.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ifoohoo/e2e-test/issues"
+  },
+  "homepage": "https://github.com/ifoohoo/e2e-test#readme",
   "private": false,
   "packageManager": "pnpm@10.17.1",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
-    "test": "node --test test/*.test.mjs",
+    "test": "node --test test/*.test.mjs && node scripts/verify-truthfulness.mjs",
     "build": "node scripts/build-adapters.mjs",
     "build:check": "node scripts/build-adapters.mjs --check",
     "check-skills": "node scripts/check-skills.mjs",
     "gate-status": "node scripts/gate-status.mjs",
-    "public:release:verify": "node scripts/verify-public-release.mjs"
+    "public:release:verify": "node scripts/verify-public-release.mjs && node scripts/verify-truthfulness.mjs && node scripts/verify-truthfulness.mjs --pack",
+    "conformance": "node scripts/conformance-runner.mjs",
+    "bundle-digest": "node scripts/bundle-digest.mjs",
+    "behavior-qualification": "node scripts/behavior-qualification-runner.mjs --json",
+    "method-forward:prepare": "node scripts/method-forward-qualification-prepare.mjs",
+    "method-forward:trial": "node scripts/method-forward-trial-runner.mjs",
+    "method-forward:review": "node scripts/method-forward-reviewer.mjs",
+    "method-forward:aggregate": "node scripts/method-forward-qualification-aggregate.mjs"
   },
   "keywords": [
     "e2e",
@@ -23,16 +44,42 @@
     "agent-method"
   ],
   "files": [
+    "authority-api/",
+    "assets/",
     "skills/",
+    "stages/",
+    "workers/",
     "family/",
     "references/",
     "scripts/",
+    "schemas/",
     "adapters/",
+    "fixtures/",
+    "conformance/",
     "INSTALL.md",
     "README.md",
     "README.zh-CN.md",
     "CHANGELOG.md",
     "LICENSE",
     "NOTICE"
-  ]
+  ],
+  "dependencies": {
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1"
+  },
+  "peerDependencies": {
+    "agent-method-registry": ">=0.2.0 <0.3.0",
+    "artifact-graph": ">=0.6.1"
+  },
+  "peerDependenciesMeta": {
+    "agent-method-registry": {
+      "optional": true
+    },
+    "artifact-graph": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "artifact-graph": "0.6.1"
+  }
 }

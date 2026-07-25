@@ -4,17 +4,42 @@ Experimental E2E test skill family — framework-neutral E2E specification autho
 
 ## Status
 
-**Gate A (Skeleton)** — This is an experimental skill family under development.
+**Experimental candidate** — five services have a verified operational skeleton. Operational, method-forward, and release-artifact qualifications are separate evidence domains and do not imply one another.
 
 - `e2e-test-help`: Read-only diagnostic entry point. Available.
-- `e2e-test`, `e2e-test-author`, `e2e-test-review`, `e2e-test-repair`: Fail-closed contract placeholders. Not implemented.
-- No provider catalog. Not enabled by default.
+- `e2e-test`, `e2e-test-author`, `e2e-test-review`, `e2e-test-repair`: fail-closed when not enabled. Author and repair default to preview and require explicit user confirmation plus a one-time handle before commit.
+- Method-forward qualification remains `FORWARD_TRIALS_PENDING_CODEX` until genuine trials on both hosts complete; release-artifact certification is `null`.
+- Finding capability is authoritative only in `assets/finding-capability-manifest.json`; E2E-F-002, E2E-F-006, and E2E-F-010 remain planned, so the family does not claim stable maturity.
+- Default **NOT_ENABLED**: requires explicit project binding to activate.
+- Registry 0.2 and E2E Test are not yet published.
 - Does not replace `artifact-chain-assistant` generic `e2e`.
+
+<!-- release-skill:capability:external-write-boundary -->
+> **Current boundary:** v0.2.0-alpha.1 is a pre-release (alpha) experimental
+> skill family. Gate B operational qualification is `CANDIDATE_QUALIFIED`,
+> **not `RELEASE_ATTESTED`**; method-forward qualification remains
+> `FORWARD_TRIALS_PENDING_CODEX` (real dual-host trials incomplete);
+> release-artifact certification is `null`. The family defaults to
+> `NOT_ENABLED` and fails closed without explicit project binding. This is
+> the first release attempt after migration to the ifoohoo organization and
+> has not completed real production verification. Behavioral evidence: Claude
+> side verified with real Claude Code 2.1.206; Codex side verified with a
+> protocol-level fake host (Codex quota exhausted — not real Codex). Do not
+> treat this as a production-verified release. Treat any first project
+> binding as a monitored canary.
+
+<!-- release-skill:capability:safe-first-command -->
+> **Start here:** the safe read-only entry is the `e2e-test-help` diagnostic
+> skill. It shows current Gate B status and capabilities without writing
+> files or triggering external actions. Run `e2e-test-help` first to
+> understand the current state after installation. The remaining services
+> (`e2e-test-author`, `e2e-test-review`, `e2e-test-repair`) default to
+> `NOT_ENABLED` and require explicit project binding before use.
 
 ## Installation
 
 ```bash
-# npm (future)
+# npm (requires agent-method-registry >=0.2.0 and artifact-graph >=0.6.1 as optional peer deps)
 npm install e2e-test
 
 # Codex plugin
@@ -27,18 +52,38 @@ npm install e2e-test
 ## Quick Start
 
 ```bash
-# Check Gate A status
+# Check Gate B status
 node scripts/gate-status.mjs --json
 ```
+
+## Minimal Example
+
+After installation, run the read-only diagnostic to inspect current Gate B status and capabilities. This does not write files or trigger external actions.
+
+```bash
+# Run the e2e-test-help diagnostic (read-only, safe first step)
+e2e-test-help
+```
+
+`e2e-test-help` is the only always-available entry point. The remaining services (`e2e-test-author`, `e2e-test-review`, `e2e-test-repair`) default to `NOT_ENABLED` and require explicit project binding before they become active — see [INSTALL.md](INSTALL.md) for binding instructions.
+
+## Troubleshooting
+
+Common failure modes and their meaning:
+
+- **NOT_ENABLED (fail-closed)**: If a service fails with `NOT_ENABLED`, this is expected behavior — `e2e-test-author`, `e2e-test-review`, and `e2e-test-repair` require explicit project binding. Complete binding per INSTALL.md, then retry.
+- **Gate B candidate state**: `e2e-test-help` reports current qualification status. If it shows `CANDIDATE_QUALIFIED` (not `RELEASE_ATTESTED`) or method-forward qualification as `FORWARD_TRIALS_PENDING_CODEX`, these are known states of the current Gate B candidate phase — not errors.
+- **If a service execution fails**: first inspect the `e2e-test-help` diagnostic output and the conformance / behavior-qualification evidence state. Do not manually modify gate, attestation, or evidence files.
+- **GATE_FAILED / PARTIAL**: gate result codes indicating manual investigation is required. Do not auto-override or tamper with evidence artifacts.
 
 ## Architecture
 
 This family implements the E2E Test Skill Family API defined by `artifact-chain-assistant`:
 
-- Conforms to Artifact Contract `artifact.e2e-test@1` (draft)
-- Implements Family API `artifact.e2e-test-family@1` (draft)
+- Conforms to Artifact Contract `artifact.e2e-test@1`
+- Implements Family API `artifact.e2e-test-family@1`
 - Atomic binding: default (no mixSafe)
-- Maturity: experimental
+- Lifecycle: independent / experimental; catalog channel is separate from maturity
 
 ## License
 

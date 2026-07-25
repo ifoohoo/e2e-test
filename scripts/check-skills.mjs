@@ -13,6 +13,7 @@ import { join } from 'node:path';
 
 const pluginRoot = join(import.meta.dirname, '..');
 const skillsDir = join(pluginRoot, 'skills');
+const stagesDir = join(pluginRoot, 'stages');
 
 const requiredSkills = [
   'e2e-test-help',
@@ -23,6 +24,11 @@ const requiredSkills = [
 ];
 
 const errors = [];
+
+const requiredStages = [
+  'inspect', 'assess', 'design', 'compose',
+  'review-core', 'repair-core', 'reconcile', 'validate',
+];
 
 for (const skillName of requiredSkills) {
   const skillMd = join(skillsDir, skillName, 'SKILL.md');
@@ -66,6 +72,17 @@ for (const skillName of requiredSkills) {
   }
 }
 
+for (const stageName of requiredStages) {
+  const skillMd = join(stagesDir, stageName, 'SKILL.md');
+  try { statSync(skillMd); } catch {
+    errors.push(`Missing: stages/${stageName}/SKILL.md`);
+    continue;
+  }
+  const content = readFileSync(skillMd, 'utf8');
+  if (!content.startsWith('---\n') || !content.includes('\n---\n')) errors.push(`${stageName}: internal SKILL.md frontmatter invalid`);
+  if (!content.includes('不是用户入口')) errors.push(`${stageName}: must declare internal-only discovery boundary`);
+}
+
 if (errors.length > 0) {
   console.error('Skill check failed:');
   for (const err of errors) {
@@ -73,5 +90,5 @@ if (errors.length > 0) {
   }
   process.exit(1);
 } else {
-  console.log(`All ${requiredSkills.length} skills validated successfully.`);
+  console.log(`All ${requiredSkills.length} user skills and ${requiredStages.length} internal stage skills validated successfully.`);
 }

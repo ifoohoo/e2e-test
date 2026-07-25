@@ -1,79 +1,60 @@
-# E2E Test Implementation Descriptor
+# E2E Test Implementation Descriptor (v2)
 #
-# 草案 — 不可注册，不进入 effective index。
-# 仅供 Gate A 结构参考和未来 Gate B 启动前置。
+# Registry v2 正式结构。
+# 默认 NOT_ENABLED；安装后不自动进入任何项目的 source set。
 
-schemaVersion: 1
+documentKind: v2-implementation
+schemaVersion: 2
 
-implementation:
-  id: e2e-test
-  version: 0.1.0
-  maturity: experimental
+familyImplementationId: io.github.mzdbxqh.e2e-test
+version: 0.2.0-alpha.1
+pluginId: e2e-test
 
 implements:
-  # 目标 Family API — 标记为 unresolved/draft
-  api: artifact.e2e-test-family
-  apiVersion: 1
-  apiStatus: draft
-  # 以下声明在 Gate B 前不生效
-  # apiRef: artifact-chain-assistant/family-apis/e2e-test.api.yaml
+  apiId: artifact.e2e-test-family
+  apiMajor: 1
+  apiRevisionDigest: sha256:66cdd1098a93eb8d128c57010a9405dd1de55bee1e702ced44a93c202cc4b463
 
 services:
-  help:
-    id: artifact.e2e-test.help
-    skill: e2e-test-help
-    required: true
-    kind: operation
-    intents: [diagnose]
-    sideEffects: [read-only]
-    status: available
+  artifact.e2e-test.default:
+    serviceImplementationId: io.github.mzdbxqh.e2e-test.default
+    skill: skills/e2e-test
+  artifact.e2e-test.help:
+    serviceImplementationId: io.github.mzdbxqh.e2e-test.help
+    skill: skills/e2e-test-help
+  artifact.e2e-test.author:
+    serviceImplementationId: io.github.mzdbxqh.e2e-test.author
+    skill: skills/e2e-test-author
+  artifact.e2e-test.review:
+    serviceImplementationId: io.github.mzdbxqh.e2e-test.review
+    skill: skills/e2e-test-review
+  artifact.e2e-test.repair:
+    serviceImplementationId: io.github.mzdbxqh.e2e-test.repair
+    skill: skills/e2e-test-repair
 
-  default:
-    id: artifact.e2e-test.default
-    skill: e2e-test
-    required: true
-    kind: workflow
-    intents: [route]
-    sideEffects: [read-only]
-    status: fail-closed
+bundle:
+  roots:
+    - authority-api
+    - assets
+    - skills
+    - references
+    - scripts
+    - schemas
+    - stages
+    - workers
+  treeDigest: sha256:62221248d82a453a7267a0ea84f345578cf87fbdb648c56ebd68088bd52cbc29
 
-  author:
-    id: artifact.e2e-test.author
-    skill: e2e-test-author
-    required: true
-    kind: workflow
-    intents: [author]
-    sideEffects: [write-project-artifacts]
-    status: not-implemented
+hostSupport:
+  codex:
+    available: true
+  claude-code:
+    available: true
 
-  review:
-    id: artifact.e2e-test.review
-    skill: e2e-test-review
-    required: true
-    kind: workflow
-    intents: [review]
-    sideEffects: [read-only, write-run-evidence]
-    status: not-implemented
-
-  repair:
-    id: artifact.e2e-test.repair
-    skill: e2e-test-repair
-    required: true
-    kind: workflow
-    intents: [repair]
-    sideEffects: [write-project-artifacts]
-    status: not-implemented
-
-binding:
-  mixSafe: false
-  atomic: true
-
-discovery:
-  helpSkillRequired: true
-  helpRegistryVisible: false
-  providerCatalogEmitted: false
+lifecycle:
+  ownership: independent
+  maturity: experimental
+  channel: stable
 
 conformance:
-  # Gate A：均未通过，不声明具体 artifact contract 版本
-  deterministicConformance: not-run
-  behaviorQualification: not-run
+  deterministicAttestation: sha256:dccb2c200f5f0185ccf51badb43719d0be9e8f2625d1171d09f213a1a27ac703
+  behaviorQualification: conformance/behavior-qualification.json
