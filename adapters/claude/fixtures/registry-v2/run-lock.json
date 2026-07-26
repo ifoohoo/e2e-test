@@ -1,0 +1,34 @@
+{
+  "_comment": "Template run-lock — canonicalRoot/digests are injected at runtime by registry-conformance.mjs",
+  "documentKind": "v2-run-lock",
+  "schemaVersion": 2,
+  "serviceId": "artifact.e2e-test.author",
+  "apiId": "artifact.e2e-test-family",
+  "apiMajor": 1,
+  "apiRevisionDigest": "sha256:66cdd1098a93eb8d128c57010a9405dd1de55bee1e702ced44a93c202cc4b463",
+  "familyImplementationId": "io.github.mzdbxqh.e2e-test",
+  "serviceImplementationId": "io.github.mzdbxqh.e2e-test.author",
+  "implementationVersion": "0.2.0-alpha.2",
+  "provider": {
+    "scope": "plugin",
+    "pluginId": "e2e-test",
+    "canonicalRoot": "",
+    "skillPath": "skills/e2e-test-author",
+    "packageDigest": "",
+    "provenance": "local"
+  },
+  "bundleRoots": ["skills", "references", "scripts", "schemas", "stages"],
+  "bundleDigest": "",
+  "artifactContractRevisionDigest": "sha256:374b99424519e42b40b621774fb602d62dfa23f48f792095f717bbabbe9e3f2a",
+  "sourceDigest": "",
+  "bindingDigest": "",
+  "indexDigest": "",
+  "queryDigest": "",
+  "projectFactsEvidenceDigest": "",
+  "conformanceAttestationDigest": "",
+  "sideEffectSummary": {
+    "ceiling": "write-authorized-artifacts",
+    "budget": "write-authorized-artifacts",
+    "authorized": true
+  }
+}

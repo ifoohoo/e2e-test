@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "e2e-test/artifact-package-manifest/v1",
+  "title": "E2E artifact package manifest",
+  "description": "E2E family-owned content-addressed composition root for a minimal interoperable artifact and its authoritative eight-dimension matrix sidecar.",
+  "type": "object",
+  "required": ["schemaVersion", "packageId", "familyApi", "subject", "members", "stageChainDigest", "packageDigest"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "packageId": { "type": "string", "minLength": 1 },
+    "familyApi": {
+      "type": "object",
+      "required": ["id", "major", "revisionDigest"],
+      "properties": {
+        "id": { "const": "artifact.e2e-test-family" },
+        "major": { "type": "integer", "minimum": 1 },
+        "revisionDigest": { "$ref": "#/definitions/digest" }
+      },
+      "additionalProperties": false
+    },
+    "subject": {
+      "type": "object",
+      "required": ["ref", "artifactId", "contract", "contractRevisionDigest", "mediaType", "contentDigest"],
+      "properties": {
+        "ref": { "$ref": "#/definitions/relativeRef" },
+        "artifactId": { "type": "string", "minLength": 1 },
+        "contract": { "const": "artifact.e2e-test@1" },
+        "contractRevisionDigest": { "$ref": "#/definitions/digest" },
+        "mediaType": { "type": "string", "minLength": 1 },
+        "contentDigest": { "$ref": "#/definitions/digest" }
+      },
+      "additionalProperties": false
+    },
+    "members": {
+      "type": "array",
+      "minItems": 1,
+      "contains": { "type": "object", "properties": { "role": { "const": "eight-dimensional-matrix" } }, "required": ["role"] },
+      "items": {
+        "type": "object",
+        "required": ["role", "ref", "memberId", "protocol", "version", "mediaType", "contentDigest"],
+        "properties": {
+          "role": { "type": "string", "minLength": 1 },
+          "ref": { "$ref": "#/definitions/relativeRef" },
+          "memberId": { "type": "string", "minLength": 1 },
+          "protocol": { "type": "string", "minLength": 1 },
+          "version": { "type": "string", "minLength": 1 },
+          "mediaType": { "type": "string", "minLength": 1 },
+          "contentDigest": { "$ref": "#/definitions/digest" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "stageChainDigest": { "$ref": "#/definitions/digest" },
+    "packageDigest": { "$ref": "#/definitions/digest" }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "relativeRef": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\).+$"
+    }
+  }
+}

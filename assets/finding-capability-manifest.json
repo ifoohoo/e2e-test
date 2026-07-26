@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "rule": "E2E-F-001",
+      "title": "来源 feature/AC/scenario 缺失或不可达",
+      "severity": "high",
+      "status": "deterministic",
+      "repairability": "safe-fix",
+      "handler": "scripts/lib/finding-handlers.mjs#detect:E2E-F-001",
+      "repairHandler": null,
+      "stableBlocker": false,
+      "notes": "确定性检查来源声明是否存在；跨项目可达性由调用方提供的图上下文补充。"
+    },
+    {
+      "rule": "E2E-F-002",
+      "title": "非 E2E 候选，应下沉到其他测试层",
+      "severity": "high",
+      "status": "planned",
+      "repairability": "safe-fix",
+      "handler": null,
+      "repairHandler": null,
+      "stableBlocker": true,
+      "notes": "尚无通过前向试验的独立语义审阅处理器。"
+    },
+    {
+      "rule": "E2E-F-003",
+      "title": "Actor、Goal、业务价值或系统边界不清",
+      "severity": "high",
+      "status": "deterministic",
+      "repairability": "safe-fix",
+      "handler": "scripts/lib/finding-handlers.mjs#detect:E2E-F-003",
+      "repairHandler": null,
+      "stableBlocker": false,
+      "notes": "根据八维矩阵和最小制品投影检查必需结构。"
+    },
+    {
+      "rule": "E2E-F-004",
+      "title": "关键路径或高风险异常/恢复路径缺失且无 waiver",
+      "severity": "high",
+      "status": "deterministic",
+      "repairability": "business-decision",
+      "handler": "scripts/lib/finding-handlers.mjs#detect:E2E-F-004",
+      "repairHandler": null,
+      "stableBlocker": false,
+      "notes": "确定性检查路径类别与结构化 waiver，覆盖取舍仍需业务决策。"
+    },
+    {
+      "rule": "E2E-F-005",
+      "title": "oracle 不可观察、依赖实现细节或没有时延语义",
+      "severity": "high",
+      "status": "deterministic",
+      "repairability": "safe-fix",
+      "handler": "scripts/lib/finding-handlers.mjs#detect:E2E-F-005",
+      "repairHandler": "scripts/lib/finding-handlers.mjs#repair:E2E-F-005",
+      "stableBlocker": false,
+      "notes": "当前确定性处理器是保守关键词启发式；专业语义质量仍由 review 工序补充。"
+    },
+    {
+      "rule": "E2E-F-006",
+      "title": "数据、身份、并行隔离或重复运行策略缺失",
+      "severity": "medium",
+      "status": "planned",
+      "repairability": "safe-fix",
+      "handler": null,
+      "repairHandler": null,
+      "stableBlocker": true,
+      "notes": "尚无通过前向试验的独立语义审阅处理器。"
+    },
+    {
+      "rule": "E2E-F-007",
+      "title": "清理、失败中断清理或补偿策略缺失",
+      "severity": "medium",
+      "status": "deterministic",
+      "repairability": "safe-fix",
+      "handler": "scripts/lib/finding-handlers.mjs#detect:E2E-F-007",
+      "repairHandler": "scripts/lib/finding-handlers.mjs#repair:E2E-F-007",
+      "stableBlocker": false,
+      "notes": "检查正常清理、失败清理和补偿三类结构。"
+    },
+    {
+      "rule": "E2E-F-008",
+      "title": "runner/实现绑定缺失、重复、被 ignore 或不在 inventory",
+      "severity": "high",
+      "status": "deterministic",
+      "repairability": "business-decision",
+      "handler": "scripts/lib/finding-handlers.mjs#detect:E2E-F-008",
+      "repairHandler": null,
+      "stableBlocker": false,
+      "notes": "由 proof 五态状态机和真实 runner inventory 推导。"
+    },
+    {
+      "rule": "E2E-F-009",
+      "title": "证据合同不足，无法证明执行结论",
+      "severity": "high",
+      "status": "deterministic",
+      "repairability": "safe-fix",
+      "handler": "scripts/lib/finding-handlers.mjs#detect:E2E-F-009",
+      "repairHandler": null,
+      "stableBlocker": false,
+      "notes": "由执行证据存在性和可重算报告摘要推导。"
+    },
+    {
+      "rule": "E2E-F-010",
+      "title": "高脆弱性、高成本或不稳定等待未被控制",
+      "severity": "medium",
+      "status": "planned",
+      "repairability": "safe-fix",
+      "handler": null,
+      "repairHandler": null,
+      "stableBlocker": true,
+      "notes": "尚无通过前向试验的独立语义审阅处理器。"
+    },
+    {
+      "rule": "E2E-F-011",
+      "title": "Markdown 与 matrix/runtime schema 不一致",
+      "severity": "medium",
+      "status": "deterministic",
+      "repairability": "safe-fix",
+      "handler": "scripts/lib/finding-handlers.mjs#detect:E2E-F-011",
+      "repairHandler": null,
+      "stableBlocker": false,
+      "notes": "通过矩阵—最小制品 round-trip 一致性检查发现静默丢失。"
+    },
+    {
+      "rule": "E2E-F-012",
+      "title": "proof、traceability 或 version lock 陈旧",
+      "severity": "medium",
+      "status": "deterministic",
+      "repairability": "out-of-scope",
+      "handler": "scripts/lib/finding-handlers.mjs#detect:E2E-F-012",
+      "repairHandler": null,
+      "stableBlocker": false,
+      "notes": "本技能族只诊断 freshness；刷新外部 version lock 或重跑真实测试不属于安全自动修复。"
+    }
+  ],
+  "digest": "sha256:4e2aa4d389e227d83da04caee2f27ecd459d73a9645e256997169044d8f49d00"
+}

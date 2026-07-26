@@ -1,0 +1,566 @@
+{
+  "schemaVersion": 1,
+  "qualificationKind": "operationalQualification",
+  "qualificationStatus": "QUALIFIED",
+  "hosts": {
+    "codex": {
+      "hostId": "codex",
+      "cliVersion": "codex-cli 0.145.0",
+      "status": "QUALIFIED",
+      "adapterLoadMode": "skill-md-explicit",
+      "skillReadsVerified": true,
+      "businessCommandsVerified": true,
+      "scenarioCommandVerified": true,
+      "unexpectedToolsDetected": false,
+      "packageUnmodified": true,
+      "inputsUnmodified": true,
+      "unauthorizedWriteDetected": false,
+      "absolutePathDetected": false,
+      "scenarioDigest": "sha256:dda5f7bf8ec26f62ad159587774e3b2af99c08c9a775a5a34e8c8c4fce59697a",
+      "toolEventsDigest": "sha256:13766e254d7073143f0380bb97ade00dcb55d8e9959da14f370f04e6b3dcc5f6"
+    },
+    "claude": {
+      "hostId": "claude-code",
+      "cliVersion": "2.1.220 (Claude Code)",
+      "status": "QUALIFIED",
+      "adapterLoadMode": "plugin-dir",
+      "skillReadsVerified": true,
+      "businessCommandsVerified": true,
+      "scenarioCommandVerified": true,
+      "unexpectedToolsDetected": false,
+      "packageUnmodified": true,
+      "inputsUnmodified": true,
+      "unauthorizedWriteDetected": false,
+      "absolutePathDetected": false,
+      "scenarioDigest": "sha256:83ec71d955d0983d039f17541ebebaa6dcb653f09c12ca14cd928d821fbb7df2",
+      "toolEventsDigest": "sha256:9faa1a1fe23f5b50e981d13f6afdca317dfff2c85f9715df3b3dfb30856a2d34"
+    }
+  },
+  "trials": [
+    {
+      "hostId": "codex",
+      "id": "help",
+      "status": "PASS",
+      "exitCode": 0,
+      "code": "HELP_READY",
+      "runLockReverified": false,
+      "finding": null,
+      "filesystemDelta": {
+        "added": [],
+        "removed": [],
+        "modified": []
+      },
+      "inputDigestStable": null
+    },
+    {
+      "hostId": "codex",
+      "id": "author-no-binding",
+      "status": "PASS",
+      "exitCode": 1,
+      "code": "NOT_ENABLED",
+      "runLockReverified": false,
+      "finding": null,
+      "filesystemDelta": {
+        "added": [],
+        "removed": [],
+        "modified": []
+      },
+      "inputDigestStable": null
+    },
+    {
+      "hostId": "codex",
+      "id": "review-no-binding",
+      "status": "PASS",
+      "exitCode": 1,
+      "code": "NOT_ENABLED",
+      "runLockReverified": false,
+      "finding": null,
+      "filesystemDelta": {
+        "added": [],
+        "removed": [],
+        "modified": []
+      },
+      "inputDigestStable": null
+    },
+    {
+      "hostId": "codex",
+      "id": "repair-no-binding",
+      "status": "PASS",
+      "exitCode": 1,
+      "code": "NOT_ENABLED",
+      "runLockReverified": false,
+      "finding": null,
+      "filesystemDelta": {
+        "added": [],
+        "removed": [],
+        "modified": []
+      },
+      "inputDigestStable": null
+    },
+    {
+      "hostId": "codex",
+      "id": "author",
+      "status": "PASS",
+      "exitCode": 0,
+      "code": "AUTHOR_COMPLETE",
+      "runLockReverified": true,
+      "finding": null,
+      "filesystemDelta": {
+        "added": [
+          "artifacts/e2e/authored.json",
+          "artifacts/e2e/authored.matrix.json",
+          "artifacts/e2e/authored.package.json"
+        ],
+        "removed": [],
+        "modified": []
+      },
+      "inputDigestStable": null
+    },
+    {
+      "hostId": "codex",
+      "id": "review",
+      "status": "PASS",
+      "exitCode": 0,
+      "code": "REVIEW_COMPLETE",
+      "runLockReverified": true,
+      "finding": {
+        "rule": "E2E-F-005",
+        "present": true
+      },
+      "filesystemDelta": {
+        "added": [
+          "reviews/oracle-review.json"
+        ],
+        "removed": [],
+        "modified": []
+      },
+      "inputDigestStable": true
+    },
+    {
+      "hostId": "codex",
+      "id": "repair",
+      "status": "PASS",
+      "exitCode": 0,
+      "code": "REPAIR_COMPLETE",
+      "runLockReverified": true,
+      "finding": {
+        "rule": "E2E-F-005",
+        "present": false
+      },
+      "filesystemDelta": {
+        "added": [
+          "artifacts/e2e/repaired.json"
+        ],
+        "removed": [],
+        "modified": []
+      },
+      "inputDigestStable": null
+    },
+    {
+      "hostId": "codex",
+      "id": "re-review",
+      "status": "PASS",
+      "exitCode": 0,
+      "code": "REVIEW_COMPLETE",
+      "runLockReverified": true,
+      "finding": {
+        "rule": "E2E-F-005",
+        "present": false
+      },
+      "filesystemDelta": {
+        "added": [],
+        "removed": [],
+        "modified": []
+      },
+      "inputDigestStable": null
+    },
+    {
+      "hostId": "codex",
+      "id": "business-decision",
+      "status": "PASS",
+      "exitCode": 0,
+      "code": "REPAIR_NEEDS_INPUT",
+      "runLockReverified": true,
+      "finding": null,
+      "filesystemDelta": {
+        "added": [],
+        "removed": [],
+        "modified": []
+      },
+      "inputDigestStable": null
+    },
+    {
+      "hostId": "codex",
+      "id": "bundle-drift",
+      "status": "PASS",
+      "exitCode": 1,
+      "code": "BUNDLE_DIGEST_MISMATCH",
+      "runLockReverified": false,
+      "finding": null,
+      "filesystemDelta": {
+        "added": [],
+        "removed": [],
+        "modified": []
+      },
+      "inputDigestStable": null
+    },
+    {
+      "hostId": "codex",
+      "id": "host-swap",
+      "status": "PASS",
+      "exitCode": 1,
+      "code": "HOST_MISMATCH",
+      "runLockReverified": false,
+      "finding": null,
+      "filesystemDelta": {
+        "added": [],
+        "removed": [],
+        "modified": []
+      },
+      "inputDigestStable": null
+    },
+    {
+      "hostId": "codex",
+      "id": "caller-lock",
+      "status": "PASS",
+      "exitCode": 1,
+      "code": "CALLER_LOCK_REJECTED",
+      "runLockReverified": false,
+      "finding": null,
+      "filesystemDelta": {
+        "added": [],
+        "removed": [],
+        "modified": []
+      },
+      "inputDigestStable": null
+    },
+    {
+      "hostId": "codex",
+      "id": "default-write-reject",
+      "status": "PASS",
+      "exitCode": 1,
+      "code": "METHOD_QUERY_REJECTED",
+      "runLockReverified": false,
+      "finding": null,
+      "filesystemDelta": {
+        "added": [],
+        "removed": [],
+        "modified": []
+      },
+      "inputDigestStable": null
+    },
+    {
+      "hostId": "claude-code",
+      "id": "help",
+      "status": "PASS",
+      "exitCode": 0,
+      "code": "HELP_READY",
+      "runLockReverified": false,
+      "finding": null,
+      "filesystemDelta": {
+        "added": [],
+        "removed": [],
+        "modified": []
+      },
+      "inputDigestStable": null
+    },
+    {
+      "hostId": "claude-code",
+      "id": "author-no-binding",
+      "status": "PASS",
+      "exitCode": 1,
+      "code": "NOT_ENABLED",
+      "runLockReverified": false,
+      "finding": null,
+      "filesystemDelta": {
+        "added": [],
+        "removed": [],
+        "modified": []
+      },
+      "inputDigestStable": null
+    },
+    {
+      "hostId": "claude-code",
+      "id": "review-no-binding",
+      "status": "PASS",
+      "exitCode": 1,
+      "code": "NOT_ENABLED",
+      "runLockReverified": false,
+      "finding": null,
+      "filesystemDelta": {
+        "added": [],
+        "removed": [],
+        "modified": []
+      },
+      "inputDigestStable": null
+    },
+    {
+      "hostId": "claude-code",
+      "id": "repair-no-binding",
+      "status": "PASS",
+      "exitCode": 1,
+      "code": "NOT_ENABLED",
+      "runLockReverified": false,
+      "finding": null,
+      "filesystemDelta": {
+        "added": [],
+        "removed": [],
+        "modified": []
+      },
+      "inputDigestStable": null
+    },
+    {
+      "hostId": "claude-code",
+      "id": "author",
+      "status": "PASS",
+      "exitCode": 0,
+      "code": "AUTHOR_COMPLETE",
+      "runLockReverified": true,
+      "finding": null,
+      "filesystemDelta": {
+        "added": [
+          "artifacts/e2e/authored.json",
+          "artifacts/e2e/authored.matrix.json",
+          "artifacts/e2e/authored.package.json"
+        ],
+        "removed": [],
+        "modified": []
+      },
+      "inputDigestStable": null
+    },
+    {
+      "hostId": "claude-code",
+      "id": "review",
+      "status": "PASS",
+      "exitCode": 0,
+      "code": "REVIEW_COMPLETE",
+      "runLockReverified": true,
+      "finding": {
+        "rule": "E2E-F-005",
+        "present": true
+      },
+      "filesystemDelta": {
+        "added": [
+          "reviews/oracle-review.json"
+        ],
+        "removed": [],
+        "modified": []
+      },
+      "inputDigestStable": true
+    },
+    {
+      "hostId": "claude-code",
+      "id": "repair",
+      "status": "PASS",
+      "exitCode": 0,
+      "code": "REPAIR_COMPLETE",
+      "runLockReverified": true,
+      "finding": {
+        "rule": "E2E-F-005",
+        "present": false
+      },
+      "filesystemDelta": {
+        "added": [
+          "artifacts/e2e/repaired.json"
+        ],
+        "removed": [],
+        "modified": []
+      },
+      "inputDigestStable": null
+    },
+    {
+      "hostId": "claude-code",
+      "id": "re-review",
+      "status": "PASS",
+      "exitCode": 0,
+      "code": "REVIEW_COMPLETE",
+      "runLockReverified": true,
+      "finding": {
+        "rule": "E2E-F-005",
+        "present": false
+      },
+      "filesystemDelta": {
+        "added": [],
+        "removed": [],
+        "modified": []
+      },
+      "inputDigestStable": null
+    },
+    {
+      "hostId": "claude-code",
+      "id": "business-decision",
+      "status": "PASS",
+      "exitCode": 0,
+      "code": "REPAIR_NEEDS_INPUT",
+      "runLockReverified": true,
+      "finding": null,
+      "filesystemDelta": {
+        "added": [],
+        "removed": [],
+        "modified": []
+      },
+      "inputDigestStable": null
+    },
+    {
+      "hostId": "claude-code",
+      "id": "bundle-drift",
+      "status": "PASS",
+      "exitCode": 1,
+      "code": "BUNDLE_DIGEST_MISMATCH",
+      "runLockReverified": false,
+      "finding": null,
+      "filesystemDelta": {
+        "added": [],
+        "removed": [],
+        "modified": []
+      },
+      "inputDigestStable": null
+    },
+    {
+      "hostId": "claude-code",
+      "id": "host-swap",
+      "status": "PASS",
+      "exitCode": 1,
+      "code": "HOST_MISMATCH",
+      "runLockReverified": false,
+      "finding": null,
+      "filesystemDelta": {
+        "added": [],
+        "removed": [],
+        "modified": []
+      },
+      "inputDigestStable": null
+    },
+    {
+      "hostId": "claude-code",
+      "id": "caller-lock",
+      "status": "PASS",
+      "exitCode": 1,
+      "code": "CALLER_LOCK_REJECTED",
+      "runLockReverified": false,
+      "finding": null,
+      "filesystemDelta": {
+        "added": [],
+        "removed": [],
+        "modified": []
+      },
+      "inputDigestStable": null
+    },
+    {
+      "hostId": "claude-code",
+      "id": "default-write-reject",
+      "status": "PASS",
+      "exitCode": 1,
+      "code": "METHOD_QUERY_REJECTED",
+      "runLockReverified": false,
+      "finding": null,
+      "filesystemDelta": {
+        "added": [],
+        "removed": [],
+        "modified": []
+      },
+      "inputDigestStable": null
+    }
+  ],
+  "evidence": {
+    "packages": [
+      {
+        "name": "agent-method-registry",
+        "version": "0.2.1",
+        "tarballDigest": "sha256:71900bcc1cb309a2da1198a37dde0aec41ff8e5c8d4043a43849f13842dec90a"
+      },
+      {
+        "name": "artifact-graph",
+        "version": "0.8.0",
+        "tarballDigest": "sha256:6d94fde556b912b01bc89a5f318f1d9475e27dbb1a173344ebd433fb74d80000"
+      },
+      {
+        "name": "artifact-chain-assistant",
+        "version": "0.8.0",
+        "tarballDigest": "sha256:1d073e1453851efeef2f2e597db079f9f811c2b90e158ec9627c74d121577e42"
+      },
+      {
+        "name": "e2e-test",
+        "version": "0.2.0-alpha.2",
+        "tarballDigest": "sha256:fa11e6e0818c9a72ca829114d892d7b46d26b863a52b7ba6507c5040430859dd"
+      }
+    ],
+    "qualificationSubjects": {
+      "root": {
+        "algorithm": "e2e-test-qualification-subject-v1",
+        "digest": "sha256:ebbb87dd09248ed697d0cc3389789480ec1bd4a945a697ebec42bde5502bd862"
+      },
+      "codex": {
+        "algorithm": "e2e-test-qualification-subject-v1",
+        "digest": "sha256:ae0879998021c110c31642b2dceafa6596408feff7fbf56cc124482946d45441"
+      },
+      "claude": {
+        "algorithm": "e2e-test-qualification-subject-v1",
+        "digest": "sha256:30809b855da1b4b265131e477e9aa7991019af060aad1998fd3a9c0c2c23a333"
+      }
+    },
+    "familyApiRevision": "sha256:66cdd1098a93eb8d128c57010a9405dd1de55bee1e702ced44a93c202cc4b463",
+    "contractRevision": "sha256:374b99424519e42b40b621774fb602d62dfa23f48f792095f717bbabbe9e3f2a",
+    "bundleDigest": "sha256:05038d0597ec75b8ffba6672865255278b6ad87c44a531fac6f9658243901f7b",
+    "deterministicAttestation": "sha256:7cc24567dd1093c16e3ad924c69e67c74efa98d12460f75b9c34996c25260c62",
+    "scenarioIdentities": {
+      "codex": {
+        "familyApiRevision": "sha256:66cdd1098a93eb8d128c57010a9405dd1de55bee1e702ced44a93c202cc4b463",
+        "contractRevision": "sha256:374b99424519e42b40b621774fb602d62dfa23f48f792095f717bbabbe9e3f2a",
+        "implementationId": "io.github.mzdbxqh.e2e-test",
+        "implementationVersion": "0.2.0-alpha.2",
+        "qualificationInputTarballDigest": "sha256:fa11e6e0818c9a72ca829114d892d7b46d26b863a52b7ba6507c5040430859dd",
+        "qualificationSubjectDigest": "sha256:ae0879998021c110c31642b2dceafa6596408feff7fbf56cc124482946d45441",
+        "bundleDigest": "sha256:21542e007fce8cfe593fab983dd0a101d0892ce82127561e255f2664cab2f3db",
+        "deterministicAttestation": "sha256:dccb2c200f5f0185ccf51badb43719d0be9e8f2625d1171d09f213a1a27ac703",
+        "fixtureDigests": [
+          {
+            "name": "artifact.json",
+            "digest": "sha256:b5251e85e9885804e76fcfc244dcb7cc72b9e35cab5dce14809ad4f269082f96"
+          },
+          {
+            "name": "candidate-assessment.json",
+            "digest": "sha256:cedd7e1f1b197a5a531f8e0c8e609ac84e68775a13aa00255492c287a424b486"
+          },
+          {
+            "name": "inspection.json",
+            "digest": "sha256:b4db0d1fc5d9d96819dfa10a7bc33ab670e14247cab2aac7e534f8fa21fba8bb"
+          },
+          {
+            "name": "matrix.json",
+            "digest": "sha256:33139984719a5eca00d67b6b3cdaa107a6469f11f29afde0578955abdbbebea8"
+          }
+        ]
+      },
+      "claude": {
+        "familyApiRevision": "sha256:66cdd1098a93eb8d128c57010a9405dd1de55bee1e702ced44a93c202cc4b463",
+        "contractRevision": "sha256:374b99424519e42b40b621774fb602d62dfa23f48f792095f717bbabbe9e3f2a",
+        "implementationId": "io.github.mzdbxqh.e2e-test",
+        "implementationVersion": "0.2.0-alpha.2",
+        "qualificationInputTarballDigest": "sha256:fa11e6e0818c9a72ca829114d892d7b46d26b863a52b7ba6507c5040430859dd",
+        "qualificationSubjectDigest": "sha256:30809b855da1b4b265131e477e9aa7991019af060aad1998fd3a9c0c2c23a333",
+        "bundleDigest": "sha256:21542e007fce8cfe593fab983dd0a101d0892ce82127561e255f2664cab2f3db",
+        "deterministicAttestation": "sha256:dccb2c200f5f0185ccf51badb43719d0be9e8f2625d1171d09f213a1a27ac703",
+        "fixtureDigests": [
+          {
+            "name": "artifact.json",
+            "digest": "sha256:b5251e85e9885804e76fcfc244dcb7cc72b9e35cab5dce14809ad4f269082f96"
+          },
+          {
+            "name": "candidate-assessment.json",
+            "digest": "sha256:cedd7e1f1b197a5a531f8e0c8e609ac84e68775a13aa00255492c287a424b486"
+          },
+          {
+            "name": "inspection.json",
+            "digest": "sha256:b4db0d1fc5d9d96819dfa10a7bc33ab670e14247cab2aac7e534f8fa21fba8bb"
+          },
+          {
+            "name": "matrix.json",
+            "digest": "sha256:33139984719a5eca00d67b6b3cdaa107a6469f11f29afde0578955abdbbebea8"
+          }
+        ]
+      }
+    }
+  },
+  "digest": "sha256:3db07f77c48787b616ce846b68e03187048664848763c1d5e1a9db4315819b87"
+}

@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "e2e-test/forward-reviewer-packet/v1",
+  "title": "Forward Trial Blind Reviewer Packet",
+  "description": "单次试验的盲评输入清单，只绑定该包原始输入、该宿主实际作者链输出、评审规则和证据文件摘要。",
+  "type": "object",
+  "required": ["schemaVersion", "packetId", "packageId", "hostId", "trialDigest", "readExpectedAnswers", "readOtherTrials", "files", "rubricSchemaDigest", "boundRubricSchemaDigest", "instructionsDigest", "digest"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "packetId": { "type": "string", "pattern": "^review--(codex|claude-code)--fwd-[a-z0-9-]+$" },
+    "packageId": { "type": "string", "pattern": "^fwd-[a-z0-9-]+$" },
+    "hostId": { "enum": ["codex", "claude-code"] },
+    "trialDigest": { "$ref": "#/definitions/digest" },
+    "readExpectedAnswers": { "const": false },
+    "readOtherTrials": { "const": false },
+    "files": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["role", "path", "contentDigest"],
+        "additionalProperties": false,
+        "properties": {
+          "role": { "enum": ["raw-input", "author-output", "stage-result", "trial-result", "rubric-schema", "bound-rubric-schema", "instructions"] },
+          "path": { "type": "string", "pattern": "^[^/\\\\].*" },
+          "contentDigest": { "$ref": "#/definitions/digest" }
+        }
+      }
+    },
+    "rubricSchemaDigest": { "$ref": "#/definitions/digest" },
+    "boundRubricSchemaDigest": { "$ref": "#/definitions/digest" },
+    "instructionsDigest": { "$ref": "#/definitions/digest" },
+    "digest": { "$ref": "#/definitions/digest" }
+  },
+  "definitions": {
+    "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+  }
+}

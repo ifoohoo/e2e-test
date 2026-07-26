@@ -11,22 +11,22 @@ Experimental E2E test skill family — framework-neutral E2E specification autho
 - Method-forward qualification remains `FORWARD_TRIALS_PENDING_CODEX` until genuine trials on both hosts complete; release-artifact certification is `null`.
 - Finding capability is authoritative only in `assets/finding-capability-manifest.json`; E2E-F-002, E2E-F-006, and E2E-F-010 remain planned, so the family does not claim stable maturity.
 - Default **NOT_ENABLED**: requires explicit project binding to activate.
-- Registry 0.2 and E2E Test are not yet published.
+- v0.2.0-alpha.1 has completed public release and production verification. v0.2.0-alpha.2 is the second public alpha pre-release. Registry 0.2 formal public release and E2E Test Gate B formal public release (RELEASE_ATTESTED) remain separate subsequent milestones; alpha.2 does not equal RELEASE_ATTESTED.
 - Does not replace `artifact-chain-assistant` generic `e2e`.
 
 <!-- release-skill:capability:external-write-boundary -->
-> **Current boundary:** v0.2.0-alpha.1 is a pre-release (alpha) experimental
-> skill family. Gate B operational qualification is `CANDIDATE_QUALIFIED`,
-> **not `RELEASE_ATTESTED`**; method-forward qualification remains
-> `FORWARD_TRIALS_PENDING_CODEX` (real dual-host trials incomplete);
-> release-artifact certification is `null`. The family defaults to
-> `NOT_ENABLED` and fails closed without explicit project binding. This is
-> the first release attempt after migration to the ifoohoo organization and
-> has not completed real production verification. Behavioral evidence: Claude
+> **Current boundary:** v0.2.0-alpha.2 is the second public alpha pre-release
+> (alpha) experimental skill family. v0.2.0-alpha.1 has completed public
+> release and production verification. Gate B operational qualification is
+> `CANDIDATE_QUALIFIED`, **not `RELEASE_ATTESTED`**; method-forward
+> qualification remains `FORWARD_TRIALS_PENDING_CODEX` (real dual-host
+> trials incomplete); release-artifact certification is `null`. The family
+> defaults to `NOT_ENABLED` and fails closed without explicit project
+> binding. alpha.2 does not equal Gate B RELEASE_ATTESTED — do not treat
+> this pre-release as a formal public release. Behavioral evidence: Claude
 > side verified with real Claude Code 2.1.206; Codex side verified with a
-> protocol-level fake host (Codex quota exhausted — not real Codex). Do not
-> treat this as a production-verified release. Treat any first project
-> binding as a monitored canary.
+> protocol-level fake host (Codex quota exhausted — not real Codex). Treat
+> any first project binding as a monitored canary.
 
 <!-- release-skill:capability:safe-first-command -->
 > **Start here:** the safe read-only entry is the `e2e-test-help` diagnostic
@@ -38,16 +38,21 @@ Experimental E2E test skill family — framework-neutral E2E specification autho
 
 ## Installation
 
+npm installation is not supported — this plugin is distributed exclusively through the unified marketplace. Use the Claude Code or Codex marketplace commands below to install.
+
+Install from the unified marketplace `ifoohoo/artifact-skill-set`:
+
 ```bash
-# npm (requires agent-method-registry >=0.2.0 and artifact-graph >=0.6.1 as optional peer deps)
-npm install e2e-test
+# Claude Code — install from marketplace
+claude plugin marketplace add ifoohoo/artifact-skill-set
+claude plugin install e2e-test@artifact-skill-set
 
-# Codex plugin
-# Copy .codex-plugin/plugin.json to your project
-
-# Claude Code
-# See INSTALL.md for marketplace setup
+# Codex — install from marketplace
+codex plugin marketplace add ifoohoo/artifact-skill-set --ref main
+codex plugin add e2e-test@artifact-skill-set
 ```
+
+See [INSTALL.md](INSTALL.md) for detailed instructions.
 
 ## Quick Start
 

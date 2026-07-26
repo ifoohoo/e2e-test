@@ -1,0 +1,70 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "e2e-test/author-raw-input/v1",
+  "title": "E2E Author Raw Input Envelope",
+  "description": "author 首次 author 的原始输入合同：原始 feature/AC/scenario/项目事实或其稳定引用，加用户目标。不得包含期望的 inspection/assessment/matrix 内容；resume 中间结果走请求级 inputs 字段而非本信封。",
+  "type": "object",
+  "required": ["schemaVersion", "goal", "sources"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "goal": {
+      "type": "string",
+      "minLength": 1,
+      "description": "用户目标：本次 E2E author 要证明的业务行为。用于消歧与候选取舍；缺失即 RAW_INPUT_REQUIRED。"
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 32,
+      "items": { "$ref": "#/definitions/source" },
+      "description": "原始来源集合；为空即 RAW_INPUT_REQUIRED，ref 不可解析即 SOURCE_UNRESOLVABLE，多来源无法由 goal 消歧即 SOURCE_AMBIGUOUS。"
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "constraints": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "notes": { "type": "string", "minLength": 1 }
+      }
+    }
+  },
+  "definitions": {
+    "source": {
+      "type": "object",
+      "required": ["kind", "ref"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["prd-feature", "scenario-script", "acceptance-criteria", "project-fact", "user-intent"],
+          "description": "与 Family API author.accepts 的 prd-feature-input / scenario-script-input 协议对应；project-fact 指向项目事实（含 runner inventory 可选）。"
+        },
+        "ref": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^/\\\\~]",
+          "description": "相对 projectRoot 的路径或稳定逻辑 ID；禁止绝对路径与 ~。解析与包含校验由 resolveContainedPath 执行。"
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$",
+          "description": "可选摘要钉住：提供时解析后内容摘要必须匹配，不匹配即 SOURCE_UNRESOLVABLE（稳定引用失效）。"
+        },
+        "inline": {
+          "type": "object",
+          "required": ["content"],
+          "additionalProperties": false,
+          "properties": {
+            "title": { "type": "string", "minLength": 1 },
+            "content": { "type": "string", "minLength": 1 }
+          },
+          "description": "ref 为逻辑 ID 时的内联原始内容；仍视为原始输入，不得是 inspection/assessment/matrix 结构。"
+        }
+      }
+    }
+  }
+}

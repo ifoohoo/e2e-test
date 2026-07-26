@@ -1,0 +1,205 @@
+{
+  "schemaVersion": 1,
+  "api": {
+    "id": "artifact.e2e-test-family",
+    "major": 1,
+    "revisionDigest": "sha256:66cdd1098a93eb8d128c57010a9405dd1de55bee1e702ced44a93c202cc4b463",
+    "displayName": "E2E Test Skill Family",
+    "summary": "Standard skill family for authoring, reviewing, and repairing E2E test specification artifacts",
+    "artifactTypes": [
+      "e2e-test"
+    ]
+  },
+  "services": [
+    {
+      "id": "artifact.e2e-test.default",
+      "required": true,
+      "kind": "workflow",
+      "intents": [
+        "route"
+      ],
+      "accepts": [
+        "User request or intent to work with E2E test specifications"
+      ],
+      "produces": [
+        "Routed to appropriate E2E test service"
+      ],
+      "sideEffectCeiling": "read-only",
+      "mixSafe": false,
+      "discoverable": {
+        "default": true
+      }
+    },
+    {
+      "id": "artifact.e2e-test.help",
+      "required": true,
+      "kind": "operation",
+      "intents": [
+        "help"
+      ],
+      "accepts": [
+        "Help request for E2E test capabilities"
+      ],
+      "produces": [
+        "Capability overview and adoption guidance"
+      ],
+      "sideEffectCeiling": "read-only",
+      "mixSafe": false,
+      "discoverable": {
+        "help": true
+      }
+    },
+    {
+      "id": "artifact.e2e-test.author",
+      "required": true,
+      "kind": "workflow",
+      "intents": [
+        "author"
+      ],
+      "accepts": [
+        {
+          "protocol": "prd-feature-input",
+          "version": "1.0",
+          "input": "PRD feature artifact or user intent for E2E test authoring"
+        },
+        {
+          "protocol": "scenario-script-input",
+          "version": "1.0",
+          "input": "Scenario script artifact providing E2E test context"
+        },
+        {
+          "protocol": "e2e-raw-input-envelope",
+          "version": "1.0",
+          "input": "schemas/author-raw-input.json"
+        },
+        {
+          "protocol": "e2e-stage-resume",
+          "version": "1.0",
+          "input": "inputs.{inspection,assessment,matrix} resume with source and digest revalidation"
+        }
+      ],
+      "produces": [
+        "artifact.e2e-test@1",
+        {
+          "protocol": "preview-manifest-v1.0",
+          "version": "1.0",
+          "input": "schemas/preview-manifest.json"
+        }
+      ],
+      "sideEffectCeiling": "write-authorized-artifacts",
+      "mixSafe": false,
+      "modes": {
+        "supported": ["preview", "commit"],
+        "default": "preview"
+      }
+    },
+    {
+      "id": "artifact.e2e-test.review",
+      "required": true,
+      "kind": "operation",
+      "intents": [
+        "review"
+      ],
+      "accepts": [
+        "artifact.e2e-test@1"
+      ],
+      "produces": [
+        {
+          "protocol": "review-result-v1.0",
+          "version": "1.0",
+          "input": "Review Result Protocol v1.0 JSON object"
+        }
+      ],
+      "sideEffectCeiling": "write-review-result",
+      "mixSafe": false
+    },
+    {
+      "id": "artifact.e2e-test.repair",
+      "required": true,
+      "kind": "workflow",
+      "intents": [
+        "repair"
+      ],
+      "accepts": [
+        {
+          "protocol": "review-result-v1.0",
+          "version": "1.0",
+          "input": "Review Result Protocol v1.0 JSON with open findings"
+        },
+        "artifact.e2e-test@1"
+      ],
+      "produces": [
+        "artifact.e2e-test@1",
+        {
+          "protocol": "preview-manifest-v1.0",
+          "version": "1.0",
+          "input": "schemas/preview-manifest.json"
+        }
+      ],
+      "sideEffectCeiling": "write-authorized-artifacts",
+      "mixSafe": false,
+      "modes": {
+        "supported": ["preview", "commit"],
+        "default": "preview"
+      }
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "e2e-candidate-assessment",
+      "summary": "Risk-driven E2E candidate path identification from PRD and scenario artifacts"
+    },
+    {
+      "id": "e2e-matrix-design",
+      "summary": "Eight-dimensional E2E test case design model"
+    },
+    {
+      "id": "e2e-proof-reconciliation",
+      "summary": "Traceability from test specification through implementation to execution evidence"
+    },
+    {
+      "id": "e2e-finding-capability-manifest",
+      "summary": "Machine-readable E2E-F-001..012 capability states with stable blockers"
+    }
+  ],
+  "dataTransferObjects": [
+    {
+      "id": "e2e-test-matrix",
+      "schemaId": "e2e-test/matrix/v1",
+      "schema": "schemas/matrix.json",
+      "version": "1.0",
+      "digestRule": "stableDigest(canonicalize key-sorted JSON) -> sha256:<64hex>",
+      "services": [
+        { "service": "artifact.e2e-test.author", "position": "intermediate-output (run root)" },
+        { "service": "artifact.e2e-test.review", "position": "intermediate-input (cross-validation)" },
+        { "service": "artifact.e2e-test.repair", "position": "intermediate-input" }
+      ],
+      "artifactBinding": "E2E artifact package manifest binds the minimal artifact and authoritative matrix by relative references and content digests"
+    },
+    {
+      "id": "e2e-finding-capability-manifest",
+      "schemaId": "e2e-test/finding-capability-manifest/v1",
+      "schema": "schemas/finding-capability-manifest.json",
+      "version": "1.0",
+      "digestRule": "stableDigest(rules) -> sha256:<64hex>",
+      "services": []
+    },
+    {
+      "id": "e2e-artifact-package-manifest",
+      "schemaId": "e2e-test/artifact-package-manifest/v1",
+      "schema": "schemas/artifact-package-manifest.json",
+      "version": "1.0",
+      "digestRule": "stableDigest(manifest excluding packageDigest) -> sha256:<64hex>",
+      "services": [
+        { "service": "artifact.e2e-test.author", "position": "formal-output" },
+        { "service": "artifact.e2e-test.review", "position": "required-input" },
+        { "service": "artifact.e2e-test.repair", "position": "required-input-and-output" }
+      ]
+    }
+  ],
+  "qualificationKinds": [
+    "operationalQualification",
+    "methodForwardQualification",
+    "releaseArtifactCertification"
+  ]
+}

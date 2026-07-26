@@ -13,29 +13,41 @@
 
 ## 安装方式
 
-### 通过 npm 安装
+### 从统一市场安装（推荐）
+
+e2e-test 通过统一市场 `ifoohoo/artifact-skill-set` 分发。
+
+#### Claude Code
 
 ```bash
-npm install e2e-test
+claude plugin marketplace add ifoohoo/artifact-skill-set
+claude plugin install e2e-test@artifact-skill-set
 ```
 
-注意：Registry 0.2 和 E2E Test 尚未发布。
+#### Codex
 
-### 作为 Codex 插件安装
+```bash
+codex plugin marketplace add ifoohoo/artifact-skill-set --ref main
+codex plugin add e2e-test@artifact-skill-set
+```
 
-1. 将 `.codex-plugin/plugin.json` 复制到项目的 `.codex-plugin/` 目录。
-2. 下次启动 Codex 会话时会自动发现该插件。
+#### 手动安装（Claude Code）
 
-### 作为 Claude Code 市场插件安装
+1. 从 [ifoohoo/artifact-skill-set](https://github.com/ifoohoo/artifact-skill-set) 获取 `.claude-plugin/marketplace.json`。
+2. 将其复制到项目的 `.claude-plugin/` 目录。
+3. 重启 Claude Code 以完成插件发现。
 
-1. 将 `.claude-plugin/marketplace.json` 复制到项目的 `.claude-plugin/` 目录。
-2. 重启 Claude Code 以完成插件发现。
+#### 手动安装（Codex）
+
+1. 从 [ifoohoo/artifact-skill-set](https://github.com/ifoohoo/artifact-skill-set) 获取 `.codex-plugin/plugin.json`。
+2. 将其复制到项目的 `.codex-plugin/` 目录。
+3. 下次启动 Codex 会话时会自动发现该插件。
 
 ## 验证安装
 
 ```bash
 # 查看 Gate B 三种资格状态
-node node_modules/e2e-test/scripts/gate-status.mjs --json
+node scripts/gate-status.mjs --json
 ```
 
 ## 当前 Gate B 行为

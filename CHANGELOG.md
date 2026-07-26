@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.2.0-alpha.2 (2026-07-27)
+
+### 状态收敛与安装合同修复
+
+- **状态事实统一**：修正所有"尚未发布"陈述，明确区分 alpha 预发布与 Gate B 正式公共发布。
+- **平台能力矩阵**：按 Claude Code、Codex、CodeBuddy、Kimi 四个平台记录身份、adapter、市场列名、安装验证和行为资格。
+- **Registry v2 证据**：记录 v1 兼容与 v2 采用的可复算证据，fail-closed 策略明确。
+- **外部市场候选提案**：记录 release-skill 0.2.2 外部独立市场形态首例经验。
+- **安装合同修复**：统一市场为实际安装入口，移除 npm E404 误导命令。
+- **门禁增强**：根 .claude-plugin/plugin.json 加入 requiredPaths 和契约测试。
+- **已知限制**：Codex 真宿主 BLOCKED（额度未恢复），CodeBuddy NOT_VERIFIED，Kimi NOT_VERIFIED。CANDIDATE_QUALIFIED 保持不变，未提升为 RELEASE_ATTESTED。
+
 ## 0.2.0-alpha.1 (2026-07-19)
 
 ### Gate B Candidate: Registry 0.2.0 Method Query Adoption & Behavior Qualification

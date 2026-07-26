@@ -1,6 +1,6 @@
 {
   "name": "e2e-test",
-  "version": "0.2.0-alpha.1",
+  "version": "0.2.0-alpha.2",
   "description": "E2E 测试专业技能族 — 框架中立、experimental 的 E2E 规格技能族",
   "type": "module",
   "license": "Apache-2.0",
@@ -80,6 +80,7 @@
     }
   },
   "devDependencies": {
-    "artifact-graph": "0.6.1"
+    "artifact-graph": "0.6.1",
+    "js-yaml": "^5.2.2"
   }
 }

@@ -9,7 +9,7 @@
       "name": "e2e-test",
       "source": "./adapters/claude",
       "description": "Framework-neutral E2E specification skill family; Gate B: help/author/review/repair implemented, default NOT_ENABLED",
-      "version": "0.2.0-alpha.1",
+      "version": "0.2.0-alpha.2",
       "author": {
         "name": "ifoohoo"
       },

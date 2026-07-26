@@ -1,0 +1,24 @@
+{
+  "documentKind": "v2-inventory",
+  "schemaVersion": 2,
+  "snapshotDigest": "",
+  "snapshotFreshness": "fresh",
+  "entries": [
+    {
+      "pluginId": "e2e-test",
+      "canonicalRoot": "",
+      "version": "0.2.0-alpha.2",
+      "packageDigest": "",
+      "provenance": "local",
+      "host": "claude-code"
+    },
+    {
+      "pluginId": "e2e-test",
+      "canonicalRoot": "",
+      "version": "0.2.0-alpha.2",
+      "packageDigest": "",
+      "provenance": "local",
+      "host": "codex"
+    }
+  ]
+}

@@ -1,0 +1,172 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "e2e-test/stage-result/v1",
+  "title": "Family Stage Result Envelope",
+  "description": "每个 family stage 的标准化结果信封。inputDigest/outputDigest 是稳定摘要（canonicalize 键排序 JSON 后 sha256），是跨 stage 前序摘要复验与 resume 复验的唯一身份；timestamp 为编排层确定性注入（worker 取请求 stageTimestamp，缺省 1970-01-01T00:00:00.000Z）；timestamp、duration_ms、runId、resumedFrom、workerId 为非确定性元数据，不参与跨 stage 摘要复验。",
+  "type": "object",
+  "required": [
+    "stage",
+    "status",
+    "timestamp",
+    "runId",
+    "inputDigest",
+    "outputDigest",
+    "inputs",
+    "outputs",
+    "writeSet",
+    "nextStage"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "stage": {
+      "type": "string",
+      "enum": ["inspect", "assess", "design", "compose", "review-core", "repair-core", "reconcile", "validate"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["PASS", "FAIL", "NEEDS_INPUT", "BLOCKED"]
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "确定性注入时间戳：worker 必须使用请求中的 stageTimestamp；未提供时使用固定常量 1970-01-01T00:00:00.000Z。禁止使用墙钟时间。"
+    },
+    "runId": {
+      "type": "string",
+      "pattern": "^run-[0-9a-f]{16,64}$",
+      "description": "run root 隔离标识，由 worker 请求的稳定摘要派生（run- + stableDigest 前缀），同一输入可复算。"
+    },
+    "inputDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$",
+      "description": "stableDigest(inputs)：本 stage 全部输入的规范化摘要。"
+    },
+    "outputDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$",
+      "description": "stableDigest(outputs)：本 stage 全部输出的规范化摘要；outputs 为空对象时为 stableDigest({})。"
+    },
+    "inputs": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "本 stage 输入工件快照。stage 2-8 的 prior 必须是前序 stage result 的内容寻址引用，包含 stage/status/nextStage/inputDigest/outputDigest/resultDigest；不得递归嵌入完整前序信封。"
+    },
+    "outputs": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "本 stage 输出工件（中间工件 JSON 内容或渲染产物引用）。"
+    },
+    "writeSet": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "^[^/\\\\]"
+      },
+      "uniqueItems": true,
+      "description": "本 stage 计划/实际写入的相对路径集合（相对 run root 或提交后的目标项目）；只读 stage 为空数组。禁止绝对路径。"
+    },
+    "nextStage": {
+      "type": "string",
+      "enum": ["inspect", "assess", "design", "compose", "review-core", "repair-core", "reconcile", "validate", "none"],
+      "description": "后继工序：PASS 时为标准链的下一工序（validate 后为 none）；NEEDS_INPUT 时为本 stage 自身（resume 恢复点）；FAIL/BLOCKED 时为 none。"
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/finding"
+      }
+    },
+    "needs_input": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["field", "reason"],
+        "additionalProperties": false,
+        "properties": {
+          "field": { "type": "string", "minLength": 1 },
+          "reason": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "duration_ms": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "非确定性元数据，不参与摘要复验。"
+    },
+    "resumedFrom": {
+      "type": "object",
+      "required": ["stage", "inputDigest", "outputDigest"],
+      "additionalProperties": false,
+      "properties": {
+        "stage": {
+          "type": "string",
+          "enum": ["inspect", "assess", "design", "compose", "review-core", "repair-core", "reconcile", "validate"]
+        },
+        "inputDigest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "outputDigest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        }
+      },
+      "description": "resume 来源标记：当本 stage 输出复用了调用方显式提供的既有中间结果时，记录被复用结果的身份三元组，验证器必须重算并比对。"
+    },
+    "workerId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "产生本结果的 worker 标识，形如 e2e-test/worker/<stage>@1。"
+    }
+  },
+  "definitions": {
+    "finding": {
+      "type": "object",
+      "required": ["rule", "severity", "description"],
+      "additionalProperties": false,
+      "properties": {
+        "rule": {
+          "type": "string",
+          "pattern": "^E2E-F-\\d{3}$"
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["high", "medium", "low"]
+        },
+        "category": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "artifact_ref": {
+          "type": "string"
+        },
+        "case_ref": {
+          "type": "string"
+        },
+        "evidence": {
+          "type": "string"
+        },
+        "expected": {
+          "type": "string"
+        },
+        "actual": {
+          "type": "string"
+        },
+        "repairability": {
+          "type": "string",
+          "enum": ["safe-fix", "business-decision", "out-of-scope"]
+        },
+        "suggestion": {
+          "type": "string"
+        },
+        "rule_source": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

@@ -15,18 +15,19 @@
 - `releaseArtifactCertification`（发布制品认证）：尚未实施，显示为 `null`。
 - finding 能力以 `assets/finding-capability-manifest.json` 为准；E2E-F-002、E2E-F-006、E2E-F-010 仍为 planned，因此不能宣称技能族成熟稳定。
 - 默认 **NOT_ENABLED**（未启用）：需要项目显式 binding 才能启用。
-- Registry 0.2 和 E2E Test 尚未发布。
+- v0.2.0-alpha.1 已完成公开发布与生产验证。v0.2.0-alpha.2 是第二个公开 alpha 预发布。Registry 0.2 正式公共发布和 E2E Test Gate B 正式公共发布（RELEASE_ATTESTED）仍是后续独立事务；alpha.2 不等于 RELEASE_ATTESTED。
 - 不替代 `artifact-chain-assistant` 的通用 `e2e`。
 
 <!-- release-skill:capability:external-write-boundary -->
-> **当前发布边界：** v0.2.0-alpha.1 是预发布（alpha）实验性技能族。Gate B
-> 操作资格为 `CANDIDATE_QUALIFIED`（候选合格），**非 `RELEASE_ATTESTED`**
-> （发布认证）；方法前向资格仍为 `FORWARD_TRIALS_PENDING_CODEX`（真实双宿主
-> 试验尚未完成）；发布制品认证为 `null`。本技能族默认 `NOT_ENABLED`（未启用），
-> 未绑定时 fail-closed。本次为迁移到 ifoohoo 组织后的首次发布尝试，尚未完成真实
-> 生产验证。行为资格证据：claude 侧经真实 Claude Code 2.1.206 验证；codex 侧
-> 经协议级 fake 宿主验证（codex 额度耗尽，非真 codex）。请勿将本次发布视为生产
-> 验证版本。任何首次项目绑定应作为受监控的 canary 对待。
+> **当前发布边界：** v0.2.0-alpha.2 是第二个公开 alpha 预发布（alpha）实验性
+> 技能族。v0.2.0-alpha.1 已完成公开发布与生产验证。Gate B 操作资格为
+> `CANDIDATE_QUALIFIED`（候选合格），**非 `RELEASE_ATTESTED`**（发布认证）；
+> 方法前向资格仍为 `FORWARD_TRIALS_PENDING_CODEX`（真实双宿主试验尚未完成）；
+> 发布制品认证为 `null`。本技能族默认 `NOT_ENABLED`（未启用），未绑定时
+> fail-closed。alpha.2 不等于 Gate B RELEASE_ATTESTED——请勿将本次预发布视为
+> 正式公共发布。行为资格证据：claude 侧经真实 Claude Code 2.1.206 验证；
+> codex 侧经协议级 fake 宿主验证（codex 额度耗尽，非真 codex）。任何首次项目
+> 绑定应作为受监控的 canary 对待。
 
 <!-- release-skill:capability:safe-first-command -->
 > **从这里开始：** 安全的只读入口是 `e2e-test-help` 诊断技能，用于查看当前
@@ -37,8 +38,18 @@
 
 ## 安装
 
+目前不支持通过 npm 安装，本插件仅通过统一插件市场分发。请使用下方 Claude Code 或 Codex 市场命令完成安装。
+
+从统一市场 `ifoohoo/artifact-skill-set` 安装：
+
 ```bash
-npm install e2e-test
+# Claude Code — 从市场安装
+claude plugin marketplace add ifoohoo/artifact-skill-set
+claude plugin install e2e-test@artifact-skill-set
+
+# Codex — 从市场安装
+codex plugin marketplace add ifoohoo/artifact-skill-set --ref main
+codex plugin add e2e-test@artifact-skill-set
 ```
 
 详细安装说明请参见 [INSTALL.md](INSTALL.md)。

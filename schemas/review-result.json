@@ -1,0 +1,127 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "e2e-test/review-result/v1",
+  "title": "Review Result Protocol v1.0",
+  "description": "E2E review 阶段的结构化审阅结果",
+  "type": "object",
+  "required": ["review_id", "artifact_ref", "reviewer", "overall_status", "findings"],
+  "additionalProperties": false,
+  "properties": {
+    "review_id": {
+      "type": "string",
+      "pattern": "^REVIEW-[0-9]+$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "artifact_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "matrix_ref": {
+      "type": "string",
+      "minLength": 1,
+      "description": "被审阅制品绑定的权威伴生矩阵引用；review 必须校验制品与矩阵的引用、摘要一致。"
+    },
+    "matrix_digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$",
+      "description": "矩阵 DTO 的 stableDigest；矩阵移动、篡改后该摘要与制品绑定不符即审阅失败。"
+    },
+    "reviewer": {
+      "type": "object",
+      "required": ["type"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["deterministic", "llm", "human"]
+        },
+        "identity": { "type": "string" }
+      }
+    },
+    "overall_status": {
+      "type": "string",
+      "enum": ["PASS", "FAIL", "NEEDS_INPUT"]
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/finding"
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "total": { "type": "integer", "minimum": 0 },
+        "high": { "type": "integer", "minimum": 0 },
+        "medium": { "type": "integer", "minimum": 0 },
+        "low": { "type": "integer", "minimum": 0 },
+        "safe_fix": { "type": "integer", "minimum": 0 },
+        "business_decision": { "type": "integer", "minimum": 0 },
+        "out_of_scope": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "deterministic_checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_valid": { "type": "boolean" },
+        "contract_valid": { "type": "boolean" },
+        "matrix_complete": { "type": "boolean" },
+        "relations_valid": { "type": "boolean" }
+      }
+    }
+  },
+  "definitions": {
+    "finding": {
+      "type": "object",
+      "required": ["rule", "severity", "description"],
+      "additionalProperties": false,
+      "properties": {
+        "rule": {
+          "type": "string",
+          "pattern": "^E2E-F-\\d{3}$"
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["high", "medium", "low"]
+        },
+        "category": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "artifact_ref": {
+          "type": "string"
+        },
+        "case_ref": {
+          "type": "string"
+        },
+        "evidence": {
+          "type": "string"
+        },
+        "expected": {
+          "type": "string"
+        },
+        "actual": {
+          "type": "string"
+        },
+        "repairability": {
+          "type": "string",
+          "enum": ["safe-fix", "business-decision", "out-of-scope"]
+        },
+        "suggestion": {
+          "type": "string"
+        },
+        "rule_source": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
