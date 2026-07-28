@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://schemas.e2e-test.dev/behavior-host-receipt/v1",
+  "title": "Behavior Host Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["status", "host", "scenarioResult", "scenarioDigest"],
+  "properties": {
+    "status": { "type": "string", "const": "HOST_SCENARIO_COMPLETE" },
+    "host": { "type": "string", "enum": ["codex", "claude-code"] },
+    "scenarioResult": { "type": "string", "pattern": "^qualification-results/(codex|claude-code)\\.json$" },
+    "scenarioDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+  }
+}

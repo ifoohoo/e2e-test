@@ -1,0 +1,61 @@
+{
+  "$id": "e2e-test/one-time-handle/v1",
+  "type": "object",
+  "required": [
+    "handleId",
+    "secretDigest",
+    "oneTime",
+    "service",
+    "subject",
+    "project",
+    "plan",
+    "writeSetDigest",
+    "run",
+    "expiry"
+  ],
+  "properties": {
+    "handleId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "secretDigest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "oneTime": {
+      "type": "boolean",
+      "const": true
+    },
+    "service": {
+      "enum": [
+        "implement",
+        "execute"
+      ]
+    },
+    "subject": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "project": {
+      "type": "string",
+      "minLength": 1
+    },
+    "plan": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "writeSetDigest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "run": {
+      "type": "string",
+      "minLength": 1
+    },
+    "expiry": {
+      "type": "integer",
+      "minimum": 1
+    }
+  },
+  "additionalProperties": false
+}

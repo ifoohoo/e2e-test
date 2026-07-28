@@ -1,0 +1,257 @@
+{
+  "$id": "e2e-test/execution-plan/v1",
+  "type": "object",
+  "required": [
+    "planId",
+    "bindingDigest",
+    "profileDigest",
+    "testSelection",
+    "command",
+    "baseURL",
+    "readiness",
+    "allowlist",
+    "envWhitelist",
+    "secretHandles",
+    "timeouts",
+    "workers",
+    "retries",
+    "resources",
+    "browser",
+    "artifactPolicy",
+    "planDigest"
+  ],
+  "properties": {
+    "planId": {
+      "type": "string"
+    },
+    "bindingDigest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "profileDigest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "testSelection": {
+      "type": "object",
+      "required": [
+        "fileGlobs"
+      ],
+      "properties": {
+        "fileGlobs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "caseIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "command": {
+      "type": "object",
+      "required": [
+        "runner",
+        "invocation",
+        "args"
+      ],
+      "properties": {
+        "runner": {
+          "type": "string"
+        },
+        "invocation": {
+          "type": "string"
+        },
+        "args": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "startCommand": {
+      "type": "object",
+      "required": [
+        "runner",
+        "invocation",
+        "args"
+      ],
+      "properties": {
+        "runner": {
+          "type": "string"
+        },
+        "invocation": {
+          "type": "string"
+        },
+        "args": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "baseURL": {
+      "type": "string"
+    },
+    "readiness": {
+      "type": "object",
+      "required": [
+        "url",
+        "timeoutMs",
+        "expectedStatus"
+      ],
+      "properties": {
+        "url": {
+          "type": "string"
+        },
+        "timeoutMs": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "expectedStatus": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false
+    },
+    "allowlist": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "scheme",
+          "host",
+          "port"
+        ],
+        "properties": {
+          "scheme": {
+            "type": "string",
+            "enum": [
+              "http",
+              "https",
+              "ws",
+              "wss"
+            ]
+          },
+          "host": {
+            "type": "string"
+          },
+          "port": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 65535
+          },
+          "pathPrefix": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "envWhitelist": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "secretHandles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "timeouts": {
+      "type": "object",
+      "required": [
+        "test",
+        "total"
+      ],
+      "properties": {
+        "test": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "total": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "workers": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "retries": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "resources": {
+      "type": "object",
+      "required": [
+        "cpu",
+        "memMB"
+      ],
+      "properties": {
+        "cpu": {
+          "type": "number",
+          "minimum": 0
+        },
+        "memMB": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "artifactPolicy": {
+      "type": "object",
+      "required": [
+        "trace",
+        "screenshot"
+      ],
+      "properties": {
+        "trace": {
+          "const": "on"
+        },
+        "screenshot": {
+          "const": "only-on-failure"
+        }
+      },
+      "additionalProperties": false
+    },
+    "browser": {
+      "type": "object",
+      "required": [
+        "engine",
+        "channel"
+      ],
+      "properties": {
+        "engine": {
+          "const": "chromium"
+        },
+        "channel": {
+          "enum": [
+            "playwright",
+            "chrome"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "planDigest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  },
+  "additionalProperties": false
+}

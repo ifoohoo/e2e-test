@@ -1,0 +1,101 @@
+{
+  "$id": "e2e-test/freshness-fact/v1",
+  "type": "object",
+  "required": [
+    "factId",
+    "executionId",
+    "planDigest",
+    "nonce",
+    "issuedAt",
+    "expiry",
+    "evidenceDigests",
+    "current",
+    "stale",
+    "forged",
+    "attestation",
+    "selfDigest"
+  ],
+  "properties": {
+    "factId": {
+      "type": "string"
+    },
+    "executionId": {
+      "type": "string"
+    },
+    "planDigest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "nonce": {
+      "type": "string"
+    },
+    "issuedAt": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "expiry": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "evidenceDigests": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "source",
+          "digest",
+          "matched"
+        ],
+        "properties": {
+          "source": {
+            "type": "string"
+          },
+          "digest": {
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$"
+          },
+          "matched": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "current": {
+      "type": "boolean"
+    },
+    "stale": {
+      "type": "boolean"
+    },
+    "forged": {
+      "type": "boolean"
+    },
+    "attestation": {
+      "type": "object",
+      "required": [
+        "algorithm",
+        "keyId",
+        "mac"
+      ],
+      "properties": {
+        "algorithm": {
+          "type": "string",
+          "const": "HMAC-SHA256"
+        },
+        "keyId": {
+          "type": "string"
+        },
+        "mac": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "selfDigest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  },
+  "additionalProperties": false
+}

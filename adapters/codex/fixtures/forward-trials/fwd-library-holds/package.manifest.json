@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "packageId": "fwd-library-holds",
+  "domain": "library-hold-pickup",
+  "digests": {
+    "raw": "sha256:d733e7b715770715fdc0e5d20acab12d07e463b4d03d7217a4dd612a14112a17",
+    "projectFacts": "sha256:e3f5466766e61fb06ad5a3e842608ead34f8f7e5c8d175c9e7e7048b0de23715",
+    "goal": "sha256:28902bea7b88894f05b9015d2433e287ba342daa09ce4958ed1dbd258d05e103"
+  },
+  "containsExpectedArtifacts": false,
+  "mutations": [
+    {
+      "kind": "remove-ac",
+      "digest": "sha256:06cc5dff485be2e944c9d72a3c3b8d8f9ec1ee6cefac67c6577cfd7311032851"
+    },
+    {
+      "kind": "change-boundary",
+      "digest": "sha256:87dd9088c6028c5bb27955b227ffa9d91d67d87b2b1d6151eaccfe892cc3e83f"
+    },
+    {
+      "kind": "shared-state",
+      "digest": "sha256:b51b8d04a18d62d85bfd635a479a0b012f115c5a87131ab7bf44afac3d29ed3a"
+    },
+    {
+      "kind": "runner-ignore",
+      "digest": "sha256:e27596497c1daddf78233ad93d31fa77c9769f3f8c6b768a41b2a3021c30ac40"
+    },
+    {
+      "kind": "stale-evidence",
+      "digest": "sha256:a9be5a1015e3c03012004b963ae23cca7dd745c543af3bf409704d2bca5d0853"
+    }
+  ]
+}

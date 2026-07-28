@@ -1,0 +1,30 @@
+{
+  "systems": [
+    "document-service",
+    "declaration-service",
+    "customs-gateway",
+    "warehouse-service",
+    "audit-log"
+  ],
+  "runnerInventory": {
+    "cucumber": {
+      "active": true,
+      "include": [
+        "features/customs/**/*.feature"
+      ],
+      "ignored": false
+    }
+  },
+  "dataPolicy": {
+    "identity": "unique-declaration-batch",
+    "isolation": "tenant-and-batch partition"
+  },
+  "evidence": {
+    "required": [
+      "gateway-receipt",
+      "audit-log"
+    ],
+    "freshness": "stale",
+    "priorDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+  }
+}

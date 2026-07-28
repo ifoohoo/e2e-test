@@ -1,0 +1,61 @@
+{
+  "binding_id": "PROOF-001",
+  "timestamp": "2026-07-20T11:00:00Z",
+  "subject": {
+    "package_id": "E2E-PKG-001",
+    "package_digest": "sha256:11870b68b02fb3915d80c9ea654e2bef8222f214b81959151453b112777c6a4a",
+    "manifest_ref": "e2e/test-01.package.json"
+  },
+  "bindings": [
+    {
+      "case_id": "TC-001",
+      "proof_state": "evidence-bound",
+      "source_trace": {
+        "feature_id": "F-001",
+        "ac_id": "AC-001",
+        "ac_ids": ["AC-001", "AC-002"],
+        "scenario_id": "S-001"
+      },
+      "implementation": {
+        "files": ["tests/e2e/checkout.spec.ts"],
+        "commit": "abc123",
+        "runner": "playwright",
+        "inventory_ref": "playwright:TC-001",
+        "active": true
+      },
+      "evidence": {
+        "last_run": "2026-07-20T10:50:00Z",
+        "status": "passed",
+        "report_path": "runs/e2e-test/TC-001/report.json",
+        "report_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "binding_digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "freshness": "current"
+    },
+    {
+      "case_id": "TC-002",
+      "proof_state": "evidence-bound",
+      "source_trace": {
+        "feature_id": "F-001",
+        "ac_id": "AC-003",
+        "ac_ids": ["AC-003"],
+        "scenario_id": "S-002"
+      },
+      "implementation": {
+        "files": ["tests/e2e/payment-failure.spec.ts"],
+        "commit": "abc123",
+        "runner": "playwright",
+        "inventory_ref": "playwright:TC-002",
+        "active": true
+      },
+      "evidence": {
+        "last_run": "2026-07-20T10:52:00Z",
+        "status": "passed",
+        "report_path": "runs/e2e-test/TC-002/report.json",
+        "report_digest": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+      },
+      "binding_digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "freshness": "current"
+    }
+  ]
+}

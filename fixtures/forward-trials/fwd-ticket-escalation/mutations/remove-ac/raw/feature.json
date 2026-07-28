@@ -1,0 +1,10 @@
+{
+  "featureId": "SUPPORT-ESC-01",
+  "title": "高优先级工单升级到值班人员",
+  "actor": "客户支持专员",
+  "acceptanceCriteria": [],
+  "constraints": [
+    "值班表按时区轮换",
+    "消息渠道可能暂时不可用"
+  ]
+}

@@ -13,21 +13,22 @@
 - `operationalQualification`（操作资格）：双宿主运行协议资格，沿用独立证据。
 - `methodForwardQualification`（方法前向资格）：三套未知需求包已准备，真实双宿主方法试验完成前保持 `FORWARD_TRIALS_PENDING_CODEX`，不得冒充通过。
 - `releaseArtifactCertification`（发布制品认证）：尚未实施，显示为 `null`。
-- finding 能力以 `assets/finding-capability-manifest.json` 为准；E2E-F-002、E2E-F-006、E2E-F-010 仍为 planned，因此不能宣称技能族成熟稳定。
+- finding 能力以 `assets/finding-capability-manifest.json` 为准；E2E-F-002、E2E-F-006、E2E-F-010 现为 implemented（通用语义 detector + 结构化 reviewer packet，不按 fixture 名称硬编码），不再阻断稳定成熟；前向 6+6+6 资格未做，不宣称 deterministic/stable。
 - 默认 **NOT_ENABLED**（未启用）：需要项目显式 binding 才能启用。
-- v0.2.0-alpha.1 已完成公开发布与生产验证。v0.2.0-alpha.2 是第二个公开 alpha 预发布。Registry 0.2 正式公共发布和 E2E Test Gate B 正式公共发布（RELEASE_ATTESTED）仍是后续独立事务；alpha.2 不等于 RELEASE_ATTESTED。
+- v0.2.0-alpha.1 和 alpha.2 已完成公开发布与生产验证。v0.2.0-alpha.3 是第三个公开 alpha 预发布（候选/准备中）。Registry 0.2 正式公共发布和 E2E Test Gate B 正式公共发布（RELEASE_ATTESTED）仍是后续独立事务；alpha.3 不等于 RELEASE_ATTESTED。
 - 不替代 `artifact-chain-assistant` 的通用 `e2e`。
 
 <!-- release-skill:capability:external-write-boundary -->
-> **当前发布边界：** v0.2.0-alpha.2 是第二个公开 alpha 预发布（alpha）实验性
-> 技能族。v0.2.0-alpha.1 已完成公开发布与生产验证。Gate B 操作资格为
-> `CANDIDATE_QUALIFIED`（候选合格），**非 `RELEASE_ATTESTED`**（发布认证）；
-> 方法前向资格仍为 `FORWARD_TRIALS_PENDING_CODEX`（真实双宿主试验尚未完成）；
-> 发布制品认证为 `null`。本技能族默认 `NOT_ENABLED`（未启用），未绑定时
-> fail-closed。alpha.2 不等于 Gate B RELEASE_ATTESTED——请勿将本次预发布视为
-> 正式公共发布。行为资格证据：claude 侧经真实 Claude Code 2.1.206 验证；
-> codex 侧经协议级 fake 宿主验证（codex 额度耗尽，非真 codex）。任何首次项目
-> 绑定应作为受监控的 canary 对待。
+> **当前发布边界：** v0.2.0-alpha.3 是第三个公开 alpha 预发布（alpha）实验性
+> 技能族——候选/准备中阶段，尚未正式发布。v0.2.0-alpha.1 和 alpha.2 已完成公开
+> 发布与生产验证。Gate B 操作资格为 `CANDIDATE_QUALIFIED`（候选合格），
+> **非 `RELEASE_ATTESTED`**（发布认证）；方法前向资格仍为
+> `FORWARD_TRIALS_PENDING_CODEX`（真实双宿主试验尚未完成）；发布制品认证为
+> `null`。本技能族默认 `NOT_ENABLED`（未启用），未绑定时 fail-closed。alpha.3
+> 不等于 Gate B RELEASE_ATTESTED——请勿将本次预发布视为正式公共发布。行为资格
+> 证据：claude 侧经真实 Claude Code 2.1.206 验证；codex 侧经协议级 fake 宿主
+> 验证（codex 额度耗尽，非真 codex）。任何首次项目绑定应作为受监控的 canary
+> 对待。
 
 <!-- release-skill:capability:safe-first-command -->
 > **从这里开始：** 安全的只读入口是 `e2e-test-help` 诊断技能，用于查看当前

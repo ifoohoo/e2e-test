@@ -1,0 +1,302 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "e2e-test/matrix/v1",
+  "title": "E2E Test Matrix (Eight-Dimensional Model)",
+  "description": "权威八维矩阵模型，author/review/repair 共用",
+  "type": "object",
+  "required": ["matrix_id", "timestamp", "assessment_ref", "cases"],
+  "additionalProperties": false,
+  "properties": {
+    "matrix_id": {
+      "type": "string",
+      "pattern": "^MATRIX-[0-9]+$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "assessment_ref": {
+      "type": "string",
+      "pattern": "^ASSESS-[0-9]+$"
+    },
+    "cases": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/matrixCase"
+      },
+      "minItems": 1
+    }
+  },
+  "definitions": {
+    "matrixCase": {
+      "type": "object",
+      "required": [
+        "case_id", "candidate_ref", "actor_goal", "value_risk", "source_scope",
+        "path", "oracle", "data_identity", "environment",
+        "cleanup", "automation"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "type": "string",
+          "pattern": "^TC-\\d+[a-z]?$"
+        },
+        "candidate_ref": {
+          "type": "string",
+          "pattern": "^CAND-[0-9]+$"
+        },
+        "actor_goal": {
+          "$ref": "#/definitions/actorGoal"
+        },
+        "value_risk": {
+          "$ref": "#/definitions/valueRisk"
+        },
+        "source_scope": {
+          "$ref": "#/definitions/sourceScope"
+        },
+        "path": {
+          "$ref": "#/definitions/pathDim"
+        },
+        "oracle": {
+          "$ref": "#/definitions/oracleDim"
+        },
+        "data_identity": {
+          "$ref": "#/definitions/dataIdentity"
+        },
+        "environment": {
+          "$ref": "#/definitions/environmentDim"
+        },
+        "cleanup": {
+          "$ref": "#/definitions/cleanupDim"
+        },
+        "automation": {
+          "$ref": "#/definitions/automationDim"
+        }
+      }
+    },
+    "actorGoal": {
+      "type": "object",
+      "required": ["actor", "goal"],
+      "additionalProperties": false,
+      "description": "逐 case 无损保存的 Actor/Goal/Task；compose 不得仅取 cases[0] 的值代表全部 case。",
+      "properties": {
+        "actor": { "type": "string", "minLength": 1 },
+        "goal": { "type": "string", "minLength": 1 },
+        "task": { "type": "string", "minLength": 1 }
+      }
+    },
+    "valueRisk": {
+      "type": "object",
+      "required": ["business_value", "risk_level", "failure_impact"],
+      "additionalProperties": false,
+      "properties": {
+        "business_value": { "type": "string", "minLength": 1 },
+        "risk_level": { "type": "string", "enum": ["critical", "high", "medium", "low"] },
+        "failure_impact": { "type": "string", "minLength": 1 },
+        "waiver": {
+          "type": "object",
+          "required": ["reason", "risk_acceptance", "reviewer", "expires"],
+          "additionalProperties": false,
+          "properties": {
+            "reason": { "type": "string", "minLength": 1 },
+            "risk_acceptance": { "type": "string", "minLength": 1 },
+            "reviewer": { "type": "string", "minLength": 1 },
+            "expires": { "type": "string", "format": "date" }
+          }
+        }
+      }
+    },
+    "sourceScope": {
+      "type": "object",
+      "required": ["source_artifact", "acceptance_criteria", "scope_boundaries"],
+      "additionalProperties": false,
+      "description": "来源与范围：feature、AC、scenario、边界；waiver 承载于 value_risk.waiver，由 matrix-dto round-trip 表统一登记。",
+      "properties": {
+        "source_artifact": { "type": "string", "minLength": 1 },
+        "feature_ref": {
+          "type": "string",
+          "minLength": 1,
+          "description": "来源 feature 的稳定引用（与 raw input source 的 ref 一致）。"
+        },
+        "scenario_ref": {
+          "type": "string",
+          "minLength": 1,
+          "description": "来源 scenario 的稳定引用（与 raw input source 的 ref 一致）。"
+        },
+        "acceptance_criteria": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1
+        },
+        "scope_boundaries": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1
+        }
+      }
+    },
+    "pathDim": {
+      "type": "object",
+      "required": ["path_class", "steps", "cross_boundary"],
+      "additionalProperties": false,
+      "properties": {
+        "path_class": {
+          "type": "string",
+          "enum": ["happy", "error", "recovery", "edge", "security", "performance"]
+        },
+        "negative_check": {
+          "type": "boolean",
+          "description": "路径分类层的负向断言标记：true 表示本路径验证“某事未发生/不被允许”；具体断言文本承载于 oracle.negative_check。"
+        },
+        "steps": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1
+        },
+        "cross_boundary": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1
+        }
+      }
+    },
+    "oracleDim": {
+      "type": "object",
+      "required": ["observable", "criterion", "timeout_ms"],
+      "additionalProperties": false,
+      "description": "可观察 oracle、负向断言与时延语义；oracle 必须指向可观察外部状态，不得依赖实现内部细节。",
+      "properties": {
+        "observable": { "type": "string", "minLength": 1 },
+        "criterion": { "type": "string", "minLength": 1 },
+        "negative_check": {
+          "type": "string",
+          "minLength": 1,
+          "description": "负向断言文本：必须未发生/不得出现的可观察结果。"
+        },
+        "timeout_ms": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "时延语义：超过该时延即判定失败；必填且最小为 1（机器门禁要求 truthy 时延）。"
+        },
+        "latency_expectation": {
+          "type": "string",
+          "minLength": 1,
+          "description": "时延预期的自然语言说明（如 p95 目标）；机器门禁以 timeout_ms 为准。"
+        }
+      }
+    },
+    "dataIdentity": {
+      "type": "object",
+      "required": ["test_data", "identities", "isolation"],
+      "additionalProperties": false,
+      "properties": {
+        "test_data": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1
+        },
+        "identities": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1
+        },
+        "isolation": { "type": "string", "minLength": 1 },
+        "parallelism": {
+          "type": "object",
+          "required": ["strategy"],
+          "additionalProperties": false,
+          "description": "并行隔离策略：与哪些 case 可并行、以何种机制隔离。",
+          "properties": {
+            "strategy": {
+              "type": "string",
+              "enum": ["serial", "isolated-records", "sharded", "mutex", "other"]
+            },
+            "max_parallel": { "type": "integer", "minimum": 1 },
+            "notes": { "type": "string", "minLength": 1 }
+          }
+        },
+        "shared_state": { "type": "string" }
+      }
+    },
+    "environmentDim": {
+      "type": "object",
+      "required": ["topology", "external_deps", "setup"],
+      "additionalProperties": false,
+      "properties": {
+        "topology": { "type": "string", "minLength": 1 },
+        "external_deps": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "setup": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "cleanupDim": {
+      "type": "object",
+      "required": ["cleanup_steps", "failure_cleanup", "compensation", "idempotent"],
+      "additionalProperties": false,
+      "description": "正常清理、失败清理、补偿与幂等策略；三类清理数组均须非空，不得用空数组或空字符串逃逸。",
+      "properties": {
+        "cleanup_steps": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1
+        },
+        "failure_cleanup": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1
+        },
+        "compensation": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1,
+          "description": "补偿动作：副作用已发生后的反向操作（退款、释放、回滚）。"
+        },
+        "idempotent": { "type": "boolean" }
+      }
+    },
+    "automationDim": {
+      "type": "object",
+      "required": ["runner", "trace_report", "proof_condition", "implementation_binding"],
+      "additionalProperties": false,
+      "description": "runner、实现绑定、证据合同、成本与稳定性控制。",
+      "properties": {
+        "runner": { "type": "string", "minLength": 1 },
+        "trace_report": { "type": "string", "minLength": 1 },
+        "proof_condition": { "type": "string", "minLength": 1 },
+        "implementation_binding": {
+          "type": "string",
+          "minLength": 1,
+          "description": "实现绑定声明；validate 硬门禁：每个 active case 必须有实现绑定且 runner 逐字命中 project-facts inventory，否则 E2E-F-008 high。"
+        },
+        "required_artifacts": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "证据合同要求的执行产物（trace、截图、日志路径模式）。"
+        },
+        "cost_level": {
+          "type": "string",
+          "enum": ["low", "medium", "high"],
+          "description": "执行成本档位（环境占用/时长/外部费用）。"
+        },
+        "stability": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "稳定性控制：脆弱性来源与等待/重试策略。",
+          "properties": {
+            "flake_controls": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 }
+            },
+            "wait_strategy": { "type": "string", "minLength": 1 },
+            "retry_policy": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    }
+  }
+}

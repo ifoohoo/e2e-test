@@ -9,20 +9,21 @@ Experimental E2E test skill family — framework-neutral E2E specification autho
 - `e2e-test-help`: Read-only diagnostic entry point. Available.
 - `e2e-test`, `e2e-test-author`, `e2e-test-review`, `e2e-test-repair`: fail-closed when not enabled. Author and repair default to preview and require explicit user confirmation plus a one-time handle before commit.
 - Method-forward qualification remains `FORWARD_TRIALS_PENDING_CODEX` until genuine trials on both hosts complete; release-artifact certification is `null`.
-- Finding capability is authoritative only in `assets/finding-capability-manifest.json`; E2E-F-002, E2E-F-006, and E2E-F-010 remain planned, so the family does not claim stable maturity.
+- Finding capability is authoritative only in `assets/finding-capability-manifest.json`; E2E-F-002, E2E-F-006, and E2E-F-010 are now `implemented` (generic semantic detector + structured reviewer packet, not fixture-name hardcoded), so they no longer block stable maturity; forward 6+6+6 qualification is pending, so deterministic/stable is not claimed.
 - Default **NOT_ENABLED**: requires explicit project binding to activate.
-- v0.2.0-alpha.1 has completed public release and production verification. v0.2.0-alpha.2 is the second public alpha pre-release. Registry 0.2 formal public release and E2E Test Gate B formal public release (RELEASE_ATTESTED) remain separate subsequent milestones; alpha.2 does not equal RELEASE_ATTESTED.
+- v0.2.0-alpha.1 and alpha.2 have completed public release and production verification. v0.2.0-alpha.3 is the third public alpha pre-release (candidate/preparation). Registry 0.2 formal public release and E2E Test Gate B formal public release (RELEASE_ATTESTED) remain separate subsequent milestones; alpha.3 does not equal RELEASE_ATTESTED.
 - Does not replace `artifact-chain-assistant` generic `e2e`.
 
 <!-- release-skill:capability:external-write-boundary -->
-> **Current boundary:** v0.2.0-alpha.2 is the second public alpha pre-release
-> (alpha) experimental skill family. v0.2.0-alpha.1 has completed public
-> release and production verification. Gate B operational qualification is
+> **Current boundary:** v0.2.0-alpha.3 is the third public alpha pre-release
+> (alpha) experimental skill family — candidate/preparation stage, not yet
+> released. v0.2.0-alpha.1 and alpha.2 have completed public release and
+> production verification. Gate B operational qualification is
 > `CANDIDATE_QUALIFIED`, **not `RELEASE_ATTESTED`**; method-forward
 > qualification remains `FORWARD_TRIALS_PENDING_CODEX` (real dual-host
 > trials incomplete); release-artifact certification is `null`. The family
 > defaults to `NOT_ENABLED` and fails closed without explicit project
-> binding. alpha.2 does not equal Gate B RELEASE_ATTESTED — do not treat
+> binding. alpha.3 does not equal Gate B RELEASE_ATTESTED — do not treat
 > this pre-release as a formal public release. Behavioral evidence: Claude
 > side verified with real Claude Code 2.1.206; Codex side verified with a
 > protocol-level fake host (Codex quota exhausted — not real Codex). Treat

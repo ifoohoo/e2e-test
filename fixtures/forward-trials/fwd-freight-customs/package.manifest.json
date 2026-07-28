@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "packageId": "fwd-freight-customs",
+  "domain": "freight-customs-documents",
+  "digests": {
+    "raw": "sha256:17a794f0b4589bf8bb682e6823b0f0c160af22d1e9bb7e72b542982746ba9b9e",
+    "projectFacts": "sha256:45c3e8e977a6d384b11d488ca6748f4483ca1262bc95b8964035f4c9e22cc6b1",
+    "goal": "sha256:4832eb3e07e9c75ec95465c388f3139b79658e2299f109f1f88b035a6ea72a03"
+  },
+  "containsExpectedArtifacts": false,
+  "mutations": [
+    {
+      "kind": "remove-ac",
+      "digest": "sha256:2c523af510e767f519e804a00ea774e6d3293b4c33510d4a647d97ffb4fdb709"
+    },
+    {
+      "kind": "change-boundary",
+      "digest": "sha256:c53feeea4088a6ba37b8a275cbef83baf6dafd48746e0de3082bf786fe46cf2b"
+    },
+    {
+      "kind": "shared-state",
+      "digest": "sha256:61227e214f45f49f6f1c68c7b34b21ca72b7fdcf7c65f3ea0e1232806234c1e6"
+    },
+    {
+      "kind": "runner-ignore",
+      "digest": "sha256:2be2f4a063f5eb6770afadbb6c9c6b07a1667ca18944ea9cf236f6bdace89d5f"
+    },
+    {
+      "kind": "stale-evidence",
+      "digest": "sha256:99ca9be04256e61fe867451289eb0c0b022ba36b503a794e6ebcbbeeb371adad"
+    }
+  ]
+}

@@ -54,4 +54,4 @@ description: E2E 规格审阅技能。通过 service-runner.mjs 完成 Registry 
 ## 特殊识别能力
 
 - 当前确定性实现包括：只有 happy path（E2E-F-004）、不可观察 oracle（E2E-F-005）、无中断清理（E2E-F-007）、runner ignore/unscoped（E2E-F-008）、证据缺失（E2E-F-009）、陈旧 proof（E2E-F-012）等；以 `assets/finding-capability-manifest.json` 为唯一能力事实。
-- E2E-F-002、E2E-F-006、E2E-F-010 当前为 `planned`，不得声称已能稳定识别；任一 planned 规则都会阻断 family 宣称 stable。
+- E2E-F-002、E2E-F-006、E2E-F-010 现为 `implemented`：通用语义 detector 基于八维矩阵判定，不按 fixture 名称硬编码，产出结构化 reviewer packet；尚未通过前向 6+6+6 资格，不得宣称已稳定识别或 deterministic；修复需人工决策，无安全自动修复。

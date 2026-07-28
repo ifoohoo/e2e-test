@@ -1,0 +1,45 @@
+{
+  "matrix_id": "MATRIX-001",
+  "timestamp": "2026-07-19T10:10:00Z",
+  "assessment_ref": "ASSESS-001",
+  "cases": [
+    {
+      "case_id": "TC-1",
+      "candidate_ref": "CAND-001",
+      "value_risk": {
+        "business_value": "测试价值",
+        "risk_level": "high",
+        "failure_impact": "失败影响"
+      },
+      "source_scope": {
+        "source_artifact": "feature:F-001",
+        "acceptance_criteria": ["AC-001"],
+        "scope_boundaries": ["边界"]
+      },
+      "path": {
+        "path_class": "happy",
+        "steps": ["步骤1"],
+        "cross_boundary": ["boundary-1"]
+      },
+      "oracle": {
+        "observable": "document.querySelector('.success').innerText",
+        "criterion": "文本包含 'Success'"
+      },
+      "data_identity": {
+        "test_data": ["shared-test-user"],
+        "identities": ["admin"],
+        "isolation": "none"
+      },
+      "environment": {
+        "topology": "web",
+        "external_deps": [],
+        "setup": []
+      },
+      "automation": {
+        "runner": "playwright",
+        "trace_report": "runs/trace.zip",
+        "proof_condition": "pass"
+      }
+    }
+  ]
+}

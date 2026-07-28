@@ -1,0 +1,30 @@
+{
+  "systems": [
+    "ticket-service",
+    "sla-timer",
+    "oncall-schedule",
+    "escalation-service",
+    "messaging-gateway"
+  ],
+  "runnerInventory": {
+    "gauge": {
+      "active": true,
+      "include": [
+        "specs/escalation/**/*.spec"
+      ],
+      "ignored": false
+    }
+  },
+  "dataPolicy": {
+    "identity": "unique-ticket-and-schedule",
+    "isolation": "workspace partition"
+  },
+  "evidence": {
+    "required": [
+      "assignment-event",
+      "notification-receipt"
+    ],
+    "freshness": "stale",
+    "priorDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+  }
+}

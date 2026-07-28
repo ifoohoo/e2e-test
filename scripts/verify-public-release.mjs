@@ -25,7 +25,7 @@ try {
   releaseConfig = {
     requiredPaths: [
       'INSTALL.md', 'README.md', 'LICENSE', 'NOTICE', 'package.json',
-      'family/implementation.yaml', '.codex-plugin/plugin.json', '.claude-plugin/marketplace.json',
+      'family/implementation.yaml', '.codex-plugin/plugin.json', '.claude-plugin/plugin.json',
     ],
   };
 }

@@ -1,0 +1,88 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "e2e-test/inspection/v1",
+  "title": "E2E Inspection Result",
+  "type": "object",
+  "required": ["inspection_id", "timestamp", "inputs", "business_context", "candidate_paths"],
+  "additionalProperties": false,
+  "properties": {
+    "inspection_id": {
+      "type": "string",
+      "pattern": "^INSPECT-[0-9]+$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "inputs": {
+      "type": "object",
+      "required": ["source_type"],
+      "properties": {
+        "source_type": {
+          "type": "string",
+          "enum": ["prd", "scenario", "mixed", "existing-artifact"]
+        },
+        "source_ids": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "business_context": {
+      "type": "object",
+      "required": ["business_goal", "actors", "key_journeys"],
+      "properties": {
+        "business_goal": { "type": "string", "minLength": 1 },
+        "actors": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "key_journeys": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "constraints": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "来源约束：被测系统必须遵守的条件（时延、一致性、保留期等）。约束是被测语义的一部分，必须保留为约束语义，绝不得投影为 artifact.scope.non_goals。"
+        },
+        "non_goals": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "显式非目标：来源明确排除、本轮不验证的范围。artifact.scope.non_goals 只能来自此字段，绝不得来自 constraints；缺省时 scope.non_goals 为空数组。"
+        }
+      },
+      "additionalProperties": false
+    },
+    "candidate_paths": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path_id", "summary", "boundaries"],
+        "properties": {
+          "path_id": { "type": "string" },
+          "summary": { "type": "string", "minLength": 1 },
+          "goal": {
+            "type": "string",
+            "minLength": 1,
+            "description": "该候选路径对应的 Actor Goal；assess/design 逐 case 传递，不得丢失。"
+          },
+          "actors": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 },
+            "description": "该候选路径涉及的 Actor。"
+          },
+          "boundaries": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+          "related_acs": { "type": "array", "items": { "type": "string" } }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "dependencies": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "description": "inspect 阶段识别的外部依赖（系统、服务、数据源、第三方）。"
+    },
+    "uncertainties": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "description": "inspect 阶段识别的不确定项；非空时 assess 必须给出处理决策，validate 阶段据此判断是否 NEEDS_INPUT。"
+    }
+  }
+}

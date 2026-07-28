@@ -1,0 +1,157 @@
+{
+  "matrix_id": "MATRIX-001",
+  "timestamp": "2026-07-19T10:10:00Z",
+  "assessment_ref": "ASSESS-001",
+  "cases": [
+    {
+      "case_id": "TC-001",
+      "candidate_ref": "CAND-001",
+      "actor_goal": {
+        "actor": "buyer",
+        "goal": "完成商品购买并获得订单确认",
+        "task": "浏览、结算并支付"
+      },
+      "value_risk": {
+        "business_value": "核心购买流程直接影响营收",
+        "risk_level": "critical",
+        "failure_impact": "用户无法完成购买，直接损失订单收入"
+      },
+      "source_scope": {
+        "source_artifact": "feature:F-001",
+        "feature_ref": "feature:F-001",
+        "scenario_ref": "scenario:S-001",
+        "acceptance_criteria": ["AC-001", "AC-002"],
+        "scope_boundaries": ["从商品浏览到支付完成的完整流程", "不包含后台管理"]
+      },
+      "path": {
+        "path_class": "happy",
+        "negative_check": false,
+        "steps": [
+          "用户浏览商品列表",
+          "用户添加商品到购物车",
+          "用户进入结算页面",
+          "用户选择支付方式并确认支付",
+          "支付网关返回成功",
+          "订单状态更新为已支付",
+          "用户看到订单确认页面"
+        ],
+        "cross_boundary": ["browser→api-gateway", "api-gateway→payment-service", "payment-service→inventory-service"]
+      },
+      "oracle": {
+        "observable": "订单确认页面显示订单号和支付成功状态",
+        "criterion": "订单状态为 paid 且包含正确金额",
+        "negative_check": "订单状态不为 pending 或 failed",
+        "timeout_ms": 10000,
+        "latency_expectation": "订单确认页面在 10 秒内可见"
+      },
+      "data_identity": {
+        "test_data": ["测试商品 catalog-001", "测试库存 10 件"],
+        "identities": ["test-buyer-${uuid}"],
+        "isolation": "每个测试运行使用唯一 buyer ID 和独立商品库存",
+        "parallelism": {
+          "strategy": "isolated-records",
+          "max_parallel": 4,
+          "notes": "按 buyer ID 和商品库存分片"
+        }
+      },
+      "environment": {
+        "topology": "web-api-payment-inventory",
+        "external_deps": ["payment-gateway-sandbox"],
+        "setup": ["初始化测试商品", "预置测试账户余额"]
+      },
+      "cleanup": {
+        "cleanup_steps": ["删除测试订单", "恢复库存"],
+        "failure_cleanup": ["强制取消未完成订单", "恢复库存", "清理测试账户"],
+        "compensation": ["退款并释放库存"],
+        "idempotent": true
+      },
+      "automation": {
+        "runner": "playwright",
+        "trace_report": "runs/e2e-test/TC-001/trace.zip",
+        "proof_condition": "trace 中包含订单确认页面截图且订单状态为 paid",
+        "implementation_binding": "tests/e2e/checkout.spec.ts",
+        "required_artifacts": ["trace.zip", "order-confirmation.png"],
+        "cost_level": "medium",
+        "stability": {
+          "flake_controls": ["使用 web-first assertion", "独立 buyer 数据"],
+          "wait_strategy": "等待订单确认可见",
+          "retry_policy": "仅基础设施错误重试一次"
+        }
+      }
+    },
+    {
+      "case_id": "TC-002",
+      "candidate_ref": "CAND-002",
+      "actor_goal": {
+        "actor": "buyer",
+        "goal": "支付失败后看到明确结果且数据回滚",
+        "task": "触发失败支付并确认补偿"
+      },
+      "value_risk": {
+        "business_value": "支付失败后数据一致性保障",
+        "risk_level": "high",
+        "failure_impact": "支付失败但订单未回滚，导致用户被扣款但无订单"
+      },
+      "source_scope": {
+        "source_artifact": "feature:F-001",
+        "feature_ref": "feature:F-001",
+        "scenario_ref": "scenario:S-002",
+        "acceptance_criteria": ["AC-003"],
+        "scope_boundaries": ["支付失败场景的回滚和通知"]
+      },
+      "path": {
+        "path_class": "error",
+        "negative_check": true,
+        "steps": [
+          "用户发起支付",
+          "支付网关返回失败",
+          "订单服务回滚订单状态",
+          "库存服务恢复库存",
+          "通知服务发送支付失败通知"
+        ],
+        "cross_boundary": ["api-gateway→payment-service", "payment-service→order-service", "order-service→inventory-service"]
+      },
+      "oracle": {
+        "observable": "用户收到支付失败通知，订单状态为 cancelled",
+        "criterion": "订单状态为 cancelled 且库存已恢复",
+        "negative_check": "订单状态不为 paid",
+        "timeout_ms": 15000,
+        "latency_expectation": "失败通知与回滚在 15 秒内完成"
+      },
+      "data_identity": {
+        "test_data": ["测试商品 catalog-001", "会失败的支付方式"],
+        "identities": ["test-buyer-${uuid}"],
+        "isolation": "每个测试运行使用唯一 buyer ID 与独立通知队列",
+        "parallelism": {
+          "strategy": "mutex",
+          "max_parallel": 1,
+          "notes": "支付失败沙箱串行使用"
+        }
+      },
+      "environment": {
+        "topology": "web-api-payment-order-inventory-notification",
+        "external_deps": ["payment-gateway-sandbox-fail"],
+        "setup": ["初始化测试商品", "配置支付网关返回失败"]
+      },
+      "cleanup": {
+        "cleanup_steps": ["确认订单已取消", "确认库存已恢复"],
+        "failure_cleanup": ["强制取消订单", "强制恢复库存", "清理通知队列"],
+        "compensation": ["撤销支付授权", "恢复库存"],
+        "idempotent": true
+      },
+      "automation": {
+        "runner": "playwright",
+        "trace_report": "runs/e2e-test/TC-002/trace.zip",
+        "proof_condition": "trace 中包含取消订单截图和通知记录",
+        "implementation_binding": "tests/e2e/payment-failure.spec.ts",
+        "required_artifacts": ["trace.zip", "rollback-log.json"],
+        "cost_level": "high",
+        "stability": {
+          "flake_controls": ["隔离通知队列", "固定失败支付令牌"],
+          "wait_strategy": "轮询可观察订单状态，不使用 sleep",
+          "retry_policy": "业务失败不重试"
+        }
+      }
+    }
+  ]
+}

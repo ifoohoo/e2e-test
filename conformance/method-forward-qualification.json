@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "qualificationKind": "methodForwardQualification",
+  "qualificationStatus": "FORWARD_TRIALS_PENDING_CODEX",
+  "independentFromOperational": true,
+  "pendingMarkers": [
+    "FORWARD_TRIALS_PENDING_CODEX"
+  ],
+  "packages": [
+    {
+      "packageId": "fwd-freight-customs",
+      "domain": "freight-customs-documents",
+      "tarballDigest": "sha256:1b8ee12196f1f065bfc0a0da48463749fed3a693190e0f13bc951a61a0d05608",
+      "rawInputDigest": "sha256:a94f1febc7db57d5ce9605d108ba3231065dc88d849f8bd3ade2e5870453b3fb",
+      "projectFactsDigest": "sha256:7c8d1632afe5d8356c64cefcc324003c228a48496ffb86850048a99dfe7d1e71",
+      "goalDigest": "sha256:4832eb3e07e9c75ec95465c388f3139b79658e2299f109f1f88b035a6ea72a03",
+      "containsExpectedArtifacts": false
+    },
+    {
+      "packageId": "fwd-library-holds",
+      "domain": "library-hold-pickup",
+      "tarballDigest": "sha256:52c9224528f1c7ddf188e822791ca1b15ab996cd09aca9c4cd8a95511603da3d",
+      "rawInputDigest": "sha256:0cc7845af036c4e138f9efdcc115db0f895cc707f5c5c1c162d2c9a1f34c5c20",
+      "projectFactsDigest": "sha256:f26cf1615debcecbd32f33ccb393f1435b584dc578fcce7b3a7378a337549b83",
+      "goalDigest": "sha256:28902bea7b88894f05b9015d2433e287ba342daa09ce4958ed1dbd258d05e103",
+      "containsExpectedArtifacts": false
+    },
+    {
+      "packageId": "fwd-ticket-escalation",
+      "domain": "support-oncall-escalation",
+      "tarballDigest": "sha256:960ce35b192d86b0c7e82811d426f94d843ec24c39a1ca1f8ded2e5f21855c8e",
+      "rawInputDigest": "sha256:86e9c5f5357dfc366be2ac332f0dbd0f3d672880c74155ece88d420c79174f8f",
+      "projectFactsDigest": "sha256:82178599f95dafa9582afba62b748277beccc25aec9768a3ee06d8d56eecf470",
+      "goalDigest": "sha256:996642bbcb8bd8d0ddbf83735c9eca0a094dbd189ef23bf8133a6f46ce121ff4",
+      "containsExpectedArtifacts": false
+    }
+  ],
+  "hosts": {
+    "codex": {
+      "status": "PENDING",
+      "trials": []
+    },
+    "claude": {
+      "status": "PENDING",
+      "trials": []
+    }
+  },
+  "rubricSummary": {
+    "passCount": 0,
+    "partialCount": 0,
+    "failCount": 0
+  },
+  "oracleContract": {
+    "runnerContract": "每个真实宿主从隔离原始包自行运行完整八阶段 author 链，只允许默认预览。",
+    "evidenceContract": "只接受阶段结果摘要、预览清单、零未授权写入证明及独立 rubric；不得读取期望答案。",
+    "rubricSchema": "schemas/forward-trial-rubric.json"
+  },
+  "evidence": {
+    "familyApiRevision": "sha256:66cdd1098a93eb8d128c57010a9405dd1de55bee1e702ced44a93c202cc4b463",
+    "contractRevision": "sha256:374b99424519e42b40b621774fb602d62dfa23f48f792095f717bbabbe9e3f2a",
+    "bundleDigest": "sha256:981fa9a370f3a17f9431b618dec49cb340f05afb1c842ead086506350ab9697e",
+    "deterministicAttestation": "sha256:61b55ec8862b947e49a6faae309db0d66cd4ec9bbbbe1b63d2d8e860d4b10fec",
+    "operationalQualificationDigest": "sha256:78cd4882cd8168eda4ea416eb4e3d01791303e1aa291ccdb1ffe9c095dad2d96"
+  },
+  "digest": "sha256:cb27033fa10cc6a356883c0b99f0176e6ced33bc55027e9a3fe253d8b8c8a392"
+}

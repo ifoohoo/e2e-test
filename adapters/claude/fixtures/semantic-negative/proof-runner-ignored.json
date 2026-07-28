@@ -1,0 +1,35 @@
+{
+  "binding_id": "PROOF-901",
+  "timestamp": "2026-07-20T11:00:00Z",
+  "subject": {
+    "package_id": "E2E-PKG-901",
+    "package_digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "manifest_ref": "e2e/ignored.package.json"
+  },
+  "bindings": [
+    {
+      "case_id": "TC-901",
+      "proof_state": "stale",
+      "stale_reasons": ["runner-ignored"],
+      "source_trace": {
+        "feature_id": "F-001",
+        "ac_id": "AC-001",
+        "scenario_id": "S-001"
+      },
+      "implementation": {
+        "files": ["tests/e2e/ignored-test.spec.ts"],
+        "runner": "playwright",
+        "inventory_ref": "playwright:TC-901",
+        "active": true
+      },
+      "evidence": {
+        "last_run": "2026-07-20T10:50:00Z",
+        "status": "ignored",
+        "report_path": "runs/e2e-test/TC-901/report.json",
+        "report_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "binding_digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "freshness": "stale"
+    }
+  ]
+}

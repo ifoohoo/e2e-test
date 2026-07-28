@@ -1,0 +1,128 @@
+{
+  "$id": "e2e-test/raw-execution-result/v1",
+  "type": "object",
+  "required": [
+    "planDigest",
+    "runId",
+    "reporters",
+    "summary",
+    "exitCode",
+    "traces",
+    "screenshots",
+    "attemptedCases",
+    "producedReports",
+    "reporterDigest",
+    "rawDigest"
+  ],
+  "properties": {
+    "planDigest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "runId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "reporters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "path",
+          "digest"
+        ],
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "digest": {
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "run",
+        "pass",
+        "fail",
+        "skip"
+      ],
+      "properties": {
+        "run": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "pass": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "fail": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "skip": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "exitCode": {
+      "type": "integer"
+    },
+    "traces": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/artifact"
+      }
+    },
+    "screenshots": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/artifact"
+      }
+    },
+    "attemptedCases": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "producedReports": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "reporterDigest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "rawDigest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  },
+  "definitions": {
+    "artifact": {
+      "type": "object",
+      "required": [
+        "path",
+        "digest"
+      ],
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

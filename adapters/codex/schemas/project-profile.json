@@ -1,0 +1,129 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "e2e-test/project-profile/v1",
+  "title": "ProjectProfile",
+  "description": "项目浏览器自动化检测 profile，只读、确定性、可复算摘要。",
+  "type": "object",
+  "required": ["profileId", "projectRootDigest", "repoTopology", "playwright", "candidateTestDirs", "explicitFacts", "facts", "unsupported", "profileDigest"],
+  "additionalProperties": false,
+  "properties": {
+    "profileId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "projectRootDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "repoTopology": {
+      "type": "object",
+      "required": ["kind", "packageManager", "language"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["monorepo", "single"]
+        },
+        "packageManager": {
+          "type": "string"
+        },
+        "language": {
+          "type": "string",
+          "enum": ["typescript", "javascript", "other"]
+        }
+      }
+    },
+    "playwright": {
+      "type": "object",
+      "required": ["present"],
+      "additionalProperties": false,
+      "properties": {
+        "present": { "type": "boolean" },
+        "version": { "type": "string" },
+        "configPath": { "type": "string" },
+        "configDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+      },
+      "if": {
+        "properties": { "present": { "const": true } },
+        "required": ["present"]
+      },
+      "then": {
+        "anyOf": [
+          { "required": ["version"] },
+          { "required": ["configPath", "configDigest"] }
+        ]
+      }
+    },
+    "candidateTestDirs": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "explicitFacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "baseURL": { "type": "string" },
+        "readinessURL": { "type": "string" }
+      }
+    },
+    "startCommand": {
+      "type": "object",
+      "required": ["runner", "invocation", "args"],
+      "additionalProperties": false,
+      "properties": {
+        "runner": { "type": "string" },
+        "invocation": { "type": "string" },
+        "args": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "facts": {
+      "type": "object",
+      "required": ["evidence", "confidence", "conflicts", "unknowns"],
+      "additionalProperties": false,
+      "properties": {
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["claim", "source", "digest"],
+            "additionalProperties": false,
+            "properties": {
+              "claim": { "type": "string" },
+              "source": { "type": "string" },
+              "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+            }
+          }
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "conflicts": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "unknowns": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "unsupported": {
+      "type": "object",
+      "required": ["tauri", "rust", "mobile", "javaSpring", "production"],
+      "additionalProperties": false,
+      "properties": {
+        "tauri": { "type": "boolean" },
+        "rust": { "type": "boolean" },
+        "mobile": { "type": "boolean" },
+        "javaSpring": { "type": "boolean" },
+        "production": { "type": "boolean" }
+      }
+    },
+    "profileDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    }
+  }
+}

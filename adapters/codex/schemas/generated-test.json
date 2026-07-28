@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "e2e-test/generated-test/v1",
+  "title": "GeneratedTest",
+  "type": "object",
+  "required": [
+    "caseId",
+    "file",
+    "title",
+    "fixtureDigest",
+    "assertionDigest",
+    "contentDigest",
+    "locatorApproach",
+    "waitStrategy",
+    "retryPolicy",
+    "testDigest"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "caseId": { "type": "string", "minLength": 1 },
+    "file": { "type": "string", "minLength": 1 },
+    "title": { "type": "string", "minLength": 1 },
+    "fixtureDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "assertionDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "contentDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "locatorApproach": { "enum": ["role", "test-id"] },
+    "waitStrategy": {
+      "type": "object",
+      "required": ["kind", "timeoutMs"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "enum": ["poll", "event", "state"] },
+        "timeoutMs": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 120000
+        }
+      }
+    },
+    "retryPolicy": {
+      "type": "object",
+      "required": ["max"],
+      "additionalProperties": false,
+      "properties": {
+        "max": { "const": 0 }
+      }
+    },
+    "testDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    }
+  }
+}

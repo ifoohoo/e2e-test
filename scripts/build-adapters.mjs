@@ -87,6 +87,19 @@ const scriptsToSync = [
 
 let driftDetected = false;
 
+function collectDirFiles(dir) {
+  const results = [];
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const fullPath = join(dir, entry.name);
+    if (entry.isDirectory()) {
+      results.push(...collectDirFiles(fullPath));
+    } else {
+      results.push(fullPath);
+    }
+  }
+  return results;
+}
+
 // 生成技能副本
 for (const adapterType of adapterTypes) {
   for (const skill of skills) {
@@ -109,6 +122,87 @@ for (const adapterType of adapterTypes) {
     } else {
       mkdirSync(targetDir, { recursive: true });
       writeFileSync(targetFile, content);
+    }
+  }
+}
+
+// 同步技能本地资源闭包（references/、assets/、schemas/）到两个 adapter
+const skillResourceDirs = ['references', 'assets', 'schemas'];
+
+for (const adapterType of adapterTypes) {
+  const adapterRoot = join(adaptersDir, adapterType);
+  for (const skill of skills) {
+    for (const resDir of skillResourceDirs) {
+      const sourceDir = join(skill.dir, resDir);
+      const targetDir = join(adapterRoot, 'skills', skill.name, resDir);
+      let sourceFiles;
+      try {
+        sourceFiles = collectDirFiles(sourceDir);
+      } catch (error) {
+        if (error?.code !== 'ENOENT') throw error;
+        if (isCheck) {
+          let staleFiles = [];
+          try {
+            staleFiles = collectDirFiles(targetDir);
+          } catch (targetError) {
+            if (targetError?.code !== 'ENOENT') throw targetError;
+          }
+          for (const targetFile of staleFiles) {
+            const relPath = relative(adapterRoot, targetFile);
+            console.error(`STALE: ${adapterType}/${relPath} exists in adapter but not in canonical skill`);
+            driftDetected = true;
+          }
+        } else {
+          rmSync(targetDir, { recursive: true, force: true });
+        }
+        continue;
+      }
+
+      const sourceRelPaths = new Set();
+      if (!isCheck) {
+        rmSync(targetDir, { recursive: true, force: true });
+      }
+
+      for (const sourceFile of sourceFiles) {
+        const relPath = relative(pluginRoot, sourceFile);
+        sourceRelPaths.add(relPath);
+        const targetFile = join(adaptersDir, adapterType, relPath);
+
+        const content = readFileSync(sourceFile);
+
+        if (isCheck) {
+          try {
+            const existing = readFileSync(targetFile);
+            if (!content.equals(existing)) {
+              console.error(`DRIFT: ${adapterType}/${relPath}`);
+              driftDetected = true;
+            }
+          } catch {
+            console.error(`MISSING: ${adapterType}/${relPath}`);
+            driftDetected = true;
+          }
+        } else {
+          mkdirSync(join(targetFile, '..'), { recursive: true });
+          writeFileSync(targetFile, content);
+        }
+      }
+
+      // Check for stale files in adapter skill resource dir
+      if (isCheck) {
+        let targetFiles = [];
+        try {
+          targetFiles = collectDirFiles(targetDir);
+        } catch (error) {
+          if (error?.code !== 'ENOENT') throw error;
+        }
+        for (const targetFile of targetFiles) {
+          const relPath = relative(adapterRoot, targetFile);
+          if (!sourceRelPaths.has(relPath)) {
+            console.error(`STALE: ${adapterType}/${relPath} exists in adapter but not in canonical skill`);
+            driftDetected = true;
+          }
+        }
+      }
     }
   }
 }
@@ -172,19 +266,6 @@ const dirsToSync = [
   'authority-api', 'assets', 'schemas', 'references', 'fixtures', 'conformance',
   'family', 'stages', 'workers', 'scripts/lib', 'scripts/stage-validators',
 ];
-
-function collectDirFiles(dir) {
-  const results = [];
-  for (const entry of readdirSync(dir, { withFileTypes: true })) {
-    const fullPath = join(dir, entry.name);
-    if (entry.isDirectory()) {
-      results.push(...collectDirFiles(fullPath));
-    } else {
-      results.push(fullPath);
-    }
-  }
-  return results;
-}
 
 for (const adapterType of adapterTypes) {
   const adapterRoot = join(adaptersDir, adapterType);

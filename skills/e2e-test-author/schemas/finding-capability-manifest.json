@@ -1,0 +1,88 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "e2e-test/finding-capability-manifest/v1",
+  "title": "E2E Finding Capability Manifest",
+  "description": "机器可读 finding 能力清单：E2E-F-001 至 E2E-F-012 每条规则的实际能力状态。文档、help、Family API、实现描述和运行结果只允许声明本 manifest 中的能力；status 为 planned 的规则阻断 stable（stableBlocker 必须为 true）。manifest 与实际 rule handler 注册表必须双向一致，由 scripts/lib/finding-manifest.mjs 校验。",
+  "type": "object",
+  "required": ["schemaVersion", "rules", "digest"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "rules": {
+      "type": "array",
+      "minItems": 12,
+      "maxItems": 12,
+      "allOf": [
+        { "contains": { "properties": { "rule": { "const": "E2E-F-001" } }, "required": ["rule"] } },
+        { "contains": { "properties": { "rule": { "const": "E2E-F-002" } }, "required": ["rule"] } },
+        { "contains": { "properties": { "rule": { "const": "E2E-F-003" } }, "required": ["rule"] } },
+        { "contains": { "properties": { "rule": { "const": "E2E-F-004" } }, "required": ["rule"] } },
+        { "contains": { "properties": { "rule": { "const": "E2E-F-005" } }, "required": ["rule"] } },
+        { "contains": { "properties": { "rule": { "const": "E2E-F-006" } }, "required": ["rule"] } },
+        { "contains": { "properties": { "rule": { "const": "E2E-F-007" } }, "required": ["rule"] } },
+        { "contains": { "properties": { "rule": { "const": "E2E-F-008" } }, "required": ["rule"] } },
+        { "contains": { "properties": { "rule": { "const": "E2E-F-009" } }, "required": ["rule"] } },
+        { "contains": { "properties": { "rule": { "const": "E2E-F-010" } }, "required": ["rule"] } },
+        { "contains": { "properties": { "rule": { "const": "E2E-F-011" } }, "required": ["rule"] } },
+        { "contains": { "properties": { "rule": { "const": "E2E-F-012" } }, "required": ["rule"] } }
+      ],
+      "items": { "$ref": "#/definitions/ruleCapability" }
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$",
+      "description": "stableDigest(rules) 自签名摘要，供 Family API / help / gate-status 引用绑定。"
+    }
+  },
+  "definitions": {
+    "ruleCapability": {
+      "type": "object",
+      "required": ["rule", "title", "severity", "status", "repairability", "handler", "repairHandler", "stableBlocker"],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": { "status": { "const": "planned" } },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "stableBlocker": { "const": true },
+              "handler": { "type": "null" },
+              "repairHandler": { "type": "null" }
+            }
+          }
+        }
+      ],
+      "properties": {
+        "rule": {
+          "type": "string",
+          "pattern": "^E2E-F-\\d{3}$"
+        },
+        "title": { "type": "string", "minLength": 1 },
+        "severity": { "enum": ["high", "medium", "low"] },
+        "status": {
+          "enum": ["implemented", "deterministic", "semantic-review", "planned"],
+          "description": "implemented=有真实执行路径（通用）；deterministic=确定性脚本路径（schema/摘要/关系/状态可判定）；semantic-review=存在可执行的独立语义审阅路径（模型 reviewer 合同，经前向试验验证）；planned=无运行时路径，阻断 stable，文档不得声称已实现。"
+        },
+        "repairability": {
+          "enum": ["safe-fix", "business-decision", "out-of-scope"],
+          "description": "必须与 references/findings-catalog.md 的权威表一致（loadFindingCatalog 解析值）。"
+        },
+        "handler": {
+          "type": ["string", "null"],
+          "description": "产生该 finding 的处理器锚点，形如 scripts/lib/finding-handlers.mjs#detect:E2E-F-005 或 stages/review-core/SKILL.md#semantic-reviewer:E2E-F-002；planned 必须为 null。双向一致校验以该字段为注册表键。"
+        },
+        "repairHandler": {
+          "type": ["string", "null"],
+          "description": "自动修复处理器锚点；仅 repairability=safe-fix 且本字段非 null 时 repair 才可自动修复，否则返回 REPAIR_NEEDS_INPUT。"
+        },
+        "stableBlocker": {
+          "type": "boolean",
+          "description": "planned 规则必须为 true；gate-status 与 conformance 断言：任一 stableBlocker=true 的规则存在时 lifecycle.maturity 不得为 stable。"
+        },
+        "notes": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

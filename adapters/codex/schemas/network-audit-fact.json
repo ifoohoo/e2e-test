@@ -1,0 +1,87 @@
+{
+  "$id": "e2e-test/network-audit-fact/v1",
+  "type": "object",
+  "required": [
+    "factId",
+    "planDigest",
+    "runId",
+    "entries",
+    "hasEscape",
+    "attestation",
+    "selfDigest"
+  ],
+  "properties": {
+    "factId": {
+      "type": "string"
+    },
+    "planDigest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "runId": {
+      "type": "string"
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "originalTarget",
+          "normalizedTarget",
+          "allowed",
+          "reason",
+          "hop"
+        ],
+        "properties": {
+          "originalTarget": {
+            "type": "string"
+          },
+          "normalizedTarget": {
+            "type": "string"
+          },
+          "allowed": {
+            "type": "boolean"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "hop": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "hasEscape": {
+      "type": "boolean"
+    },
+    "attestation": {
+      "type": "object",
+      "required": [
+        "algorithm",
+        "keyId",
+        "mac"
+      ],
+      "properties": {
+        "algorithm": {
+          "type": "string",
+          "const": "HMAC-SHA256"
+        },
+        "keyId": {
+          "type": "string"
+        },
+        "mac": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "selfDigest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  },
+  "additionalProperties": false
+}

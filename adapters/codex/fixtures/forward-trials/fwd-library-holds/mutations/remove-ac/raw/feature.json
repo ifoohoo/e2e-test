@@ -1,0 +1,10 @@
+{
+  "featureId": "LIB-HOLD-01",
+  "title": "跨馆预约与到馆取书",
+  "actor": "持证读者",
+  "acceptanceCriteria": [],
+  "constraints": [
+    "调拨服务异步处理",
+    "通知可能重复投递"
+  ]
+}

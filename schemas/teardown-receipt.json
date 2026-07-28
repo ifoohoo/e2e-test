@@ -1,0 +1,88 @@
+{
+  "$id": "e2e-test/teardown-receipt/v1",
+  "type": "object",
+  "required": [
+    "planDigest",
+    "processes",
+    "ports",
+    "orphanProcesses",
+    "residualPorts",
+    "cleanupStatus",
+    "receiptDigest"
+  ],
+  "properties": {
+    "planDigest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "processes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "pid",
+          "kind",
+          "started",
+          "stopped"
+        ],
+        "properties": {
+          "pid": {
+            "type": "integer"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "started": {
+            "type": "boolean"
+          },
+          "stopped": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "ports": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "port",
+          "freed"
+        ],
+        "properties": {
+          "port": {
+            "type": "integer"
+          },
+          "freed": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "orphanProcesses": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "residualPorts": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      }
+    },
+    "cleanupStatus": {
+      "enum": [
+        "PASS",
+        "FAIL"
+      ]
+    },
+    "receiptDigest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  },
+  "additionalProperties": false
+}

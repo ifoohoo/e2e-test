@@ -1,0 +1,122 @@
+{
+  "title": "E2E Test Capability Catalog",
+  "description": "单一能力目录 schema。help/setup/quickstart 必须从同一目录文件加载同一套能力声明。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "catalogId", "generatedAt", "packageVersion", "capabilities"],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "catalogId": {
+      "type": "string",
+      "pattern": "^capability-catalog@"
+    },
+    "generatedAt": {
+      "type": "string",
+      "const": "__DETERMINISTIC__"
+    },
+    "packageVersion": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+"
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/capability"
+      },
+      "minItems": 1
+    }
+  },
+  "$defs": {
+    "capability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "type",
+        "status",
+        "versionSource",
+        "dependencies",
+        "permissions",
+        "scope",
+        "entryPoint"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "稳定身份标识"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["adoption-shell", "spec-kernel", "browser-extension", "internal-stage"],
+          "description": "能力类型"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["available", "planned", "internal"],
+          "description": "可调用状态"
+        },
+        "description": {
+          "type": "string"
+        },
+        "versionSource": {
+          "type": "string",
+          "description": "版本来源路径（交叉验证用）"
+        },
+        "dependencies": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "peer": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "optional": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        },
+        "permissions": {
+          "$ref": "#/$defs/permissions"
+        },
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "languages": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "frameworks": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "targets": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        },
+        "entryPoint": {
+          "type": "string",
+          "description": "技能目录或脚本入口路径"
+        }
+      }
+    },
+    "permissions": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "六类权限快照",
+      "properties": {
+        "sourceWrite": { "type": "boolean" },
+        "artifactWrite": { "type": "boolean" },
+        "verifyCommand": { "type": "boolean" },
+        "testCommand": { "type": "boolean" },
+        "processLifecycle": { "type": "boolean" },
+        "networkEgress": { "type": "boolean" }
+      }
+    }
+  }
+}

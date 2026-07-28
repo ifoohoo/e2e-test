@@ -1,0 +1,50 @@
+{
+  "matrix_id": "MATRIX-3",
+  "timestamp": "2026-07-19T10:10:00Z",
+  "assessment_ref": "ASSESS-001",
+  "cases": [
+    {
+      "case_id": "TC-1",
+      "candidate_ref": "CAND-001",
+      "value_risk": {
+        "business_value": "测试价值",
+        "risk_level": "critical",
+        "failure_impact": "失败影响"
+      },
+      "source_scope": {
+        "source_artifact": "feature:F-001",
+        "acceptance_criteria": ["AC-001"],
+        "scope_boundaries": ["边界"]
+      },
+      "path": {
+        "path_class": "happy",
+        "steps": ["步骤1", "步骤2"],
+        "cross_boundary": []
+      },
+      "oracle": {
+        "observable": "页面显示成功",
+        "criterion": "状态为 paid"
+      },
+      "data_identity": {
+        "test_data": ["test-data-1"],
+        "identities": ["test-user-1"],
+        "isolation": "unique-per-run"
+      },
+      "environment": {
+        "topology": "web-api",
+        "external_deps": [],
+        "setup": []
+      },
+      "cleanup": {
+        "cleanup_steps": [],
+        "failure_cleanup": [],
+        "idempotent": true
+      },
+      "automation": {
+        "runner": "playwright",
+        "trace_report": "runs/trace.zip",
+        "proof_condition": "pass"
+      }
+    }
+  ]
+}

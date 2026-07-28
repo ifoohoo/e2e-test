@@ -1,0 +1,29 @@
+{
+  "systems": [
+    "catalog-api",
+    "hold-service",
+    "transfer-service",
+    "circulation-service",
+    "notification-service"
+  ],
+  "runnerInventory": {
+    "playwright": {
+      "active": true,
+      "include": [
+        "tests/e2e/**/*.spec.ts"
+      ],
+      "ignored": false
+    }
+  },
+  "dataPolicy": {
+    "identity": "shared-fixed-account",
+    "isolation": "none"
+  },
+  "evidence": {
+    "required": [
+      "trace",
+      "service-event-log"
+    ],
+    "freshness": "current"
+  }
+}

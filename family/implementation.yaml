@@ -7,7 +7,7 @@ documentKind: v2-implementation
 schemaVersion: 2
 
 familyImplementationId: io.github.mzdbxqh.e2e-test
-version: 0.2.0-alpha.2
+version: 0.2.0-alpha.3
 pluginId: e2e-test
 
 implements:
@@ -42,7 +42,7 @@ bundle:
     - schemas
     - stages
     - workers
-  treeDigest: sha256:05038d0597ec75b8ffba6672865255278b6ad87c44a531fac6f9658243901f7b
+  treeDigest: sha256:f16d4a1027dedc5efb3adde2b39ac0585e239575f3b3b6ab515defa6fa030f12
 
 hostSupport:
   codex:
@@ -56,5 +56,5 @@ lifecycle:
   channel: stable
 
 conformance:
-  deterministicAttestation: sha256:7cc24567dd1093c16e3ad924c69e67c74efa98d12460f75b9c34996c25260c62
+  deterministicAttestation: sha256:769d6003d4b55ae8ac95d4202eef1040cbab716c54a11517f849e20f69705811
   behaviorQualification: conformance/behavior-qualification.json

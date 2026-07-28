@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "e2e-test/implementation-plan/v1",
+  "title": "ImplementationPlan",
+  "description": "E2E 测试实现计划，逐 matrix case 生成的确定性写集 preview。",
+  "type": "object",
+  "required": ["planId", "subjectDigest", "profileDigest", "cases", "locatorStrategy", "forbiddenPatterns", "convergenceBudget", "planDigest"],
+  "additionalProperties": false,
+  "properties": {
+    "planId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "subjectDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "profileDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "cases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["caseId", "targetFile", "title", "fixtureDigest", "assertionDigest", "businessOracleRef", "allowedWritePaths"],
+        "additionalProperties": false,
+        "properties": {
+          "caseId": { "type": "string", "minLength": 1 },
+          "targetFile": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[^/\\\\].*\\.(spec|test)\\.(ts|js)$"
+          },
+          "title": { "type": "string", "minLength": 1 },
+          "fixtureDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+          "assertionDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+          "businessOracleRef": { "type": "string", "minLength": 1 },
+          "allowedWritePaths": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 },
+            "minItems": 1
+          }
+        }
+      }
+    },
+    "locatorStrategy": {
+      "type": "string",
+      "enum": ["role", "test-id"]
+    },
+    "forbiddenPatterns": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "convergenceBudget": {
+      "type": "object",
+      "required": ["maxRepairRounds"],
+      "additionalProperties": false,
+      "properties": {
+        "maxRepairRounds": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "planDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    }
+  }
+}

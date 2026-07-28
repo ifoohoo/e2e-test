@@ -1,0 +1,137 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "e2e-test/forward-trial-rubric/v1",
+  "title": "Forward Trial Rubric Review",
+  "description": "方法前向资格的独立 rubric 评价结果。rubric reviewer 不得读取期望答案（readExpectedAnswers 机械断言为 false），只基于宿主在未知需求包上自行产生的作者链输出进行结构化评价。八个维度全部必填。",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "packageId",
+    "hostId",
+    "packetDigest",
+    "trialResultDigest",
+    "rawInputDigest",
+    "stageChainDigest",
+    "previewDigest",
+    "accessEvidenceDigest",
+    "reviewer",
+    "readExpectedAnswers",
+    "dimensions",
+    "overall",
+    "digest"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "packageId": {
+      "type": "string",
+      "pattern": "^fwd-[a-z0-9-]+$"
+    },
+    "hostId": { "enum": ["codex", "claude-code"] },
+    "packetDigest": { "$ref": "#/definitions/digest" },
+    "trialResultDigest": { "$ref": "#/definitions/digest" },
+    "rawInputDigest": { "$ref": "#/definitions/digest" },
+    "stageChainDigest": { "$ref": "#/definitions/digest" },
+    "previewDigest": { "$ref": "#/definitions/digest" },
+    "accessEvidenceDigest": {
+      "$ref": "#/definitions/digest",
+      "description": "控制平面生成的 reviewer 只读 packet / 独立输出根访问证据摘要；readExpectedAnswers=false 不能替代此证据。"
+    },
+    "reviewer": {
+      "type": "object",
+      "required": ["type"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "enum": ["deterministic", "llm", "human"] },
+        "identity": { "type": "string", "minLength": 1 }
+      }
+    },
+    "readExpectedAnswers": {
+      "const": false,
+      "description": "机械断言：rubric reviewer 未读取期望的 inspection/assessment/matrix 或评审结论；验证器校验试验包隔离与该字段一致。"
+    },
+    "dimensions": {
+      "type": "object",
+      "required": [
+        "candidateSelection",
+        "businessBoundary",
+        "oracleQuality",
+        "isolationCleanup",
+        "exceptionRecovery",
+        "traceability",
+        "matrixFidelity",
+        "executability"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "candidateSelection": {
+          "$ref": "#/definitions/dimensionScore",
+          "description": "候选取舍：E2E/下沉/业务判断的决策是否有准则依据（C1-C4），未包装非 E2E 项。"
+        },
+        "businessBoundary": {
+          "$ref": "#/definitions/dimensionScore",
+          "description": "业务边界：Actor/Goal/跨系统边界是否清晰且与原始来源一致。"
+        },
+        "oracleQuality": {
+          "$ref": "#/definitions/dimensionScore",
+          "description": "oracle：可观察性、负向断言、时延语义，无实现内部依赖。"
+        },
+        "isolationCleanup": {
+          "$ref": "#/definitions/dimensionScore",
+          "description": "隔离/清理：数据身份、并行隔离、正常与失败清理、补偿、幂等。"
+        },
+        "exceptionRecovery": {
+          "$ref": "#/definitions/dimensionScore",
+          "description": "异常恢复：error/recovery 路径覆盖与恢复后状态断言。"
+        },
+        "traceability": {
+          "$ref": "#/definitions/dimensionScore",
+          "description": "追溯：feature/AC/scenario → candidate → case → proof 的引用链完整。"
+        },
+        "matrixFidelity": {
+          "$ref": "#/definitions/dimensionScore",
+          "description": "八维保真：八个维度逐 case 无损，未用第一条 case 代表全部 case。"
+        },
+        "executability": {
+          "$ref": "#/definitions/dimensionScore",
+          "description": "可执行性：runner 绑定真实、证据合同可满足、成本与稳定性受控。"
+        }
+      }
+    },
+    "overall": {
+      "enum": ["PASS", "PARTIAL", "FAIL"],
+      "description": "八维全部 pass 才可 PASS；任一 fail 即 FAIL；其余为 PARTIAL。"
+    },
+    "summary": { "type": "string", "minLength": 1 },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$",
+      "description": "stableDigest(去 digest 字段的本对象) 自签名摘要。"
+    }
+  },
+  "definitions": {
+    "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "dimensionScore": {
+      "type": "object",
+      "required": ["score", "rationale", "evidenceRefs"],
+      "additionalProperties": false,
+      "properties": {
+        "score": {
+          "enum": ["pass", "partial", "fail", "unknown"],
+          "description": "unknown 仅允许在试验未完成（FORWARD_TRIALS_PENDING_CODEX）时出现。"
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1,
+          "description": "评分依据，必须引用宿主输出中的具体工件/case 标识，不得引用期望答案。"
+        },
+        "evidenceRefs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}

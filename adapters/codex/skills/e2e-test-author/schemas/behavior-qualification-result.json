@@ -1,0 +1,181 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://schemas.e2e-test.dev/behavior-qualification-result/v1",
+  "title": "Behavior Qualification Result",
+  "description": "安装包隔离后的 Codex 与 Claude Code 双宿主行为资格结果",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "qualificationStatus", "hosts", "trials", "evidence", "digest"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "qualificationKind": {
+      "enum": ["operationalQualification", "methodForwardQualification", "releaseArtifactCertification"],
+      "description": "资格命名（增量兼容）：缺省视为 operationalQualification；现有 conformance/behavior-qualification.json 与既有读取路径无需改动。新写入的证据文件必须显式置为 operationalQualification。methodForwardQualification 使用独立 schema schemas/method-forward-qualification.json，不得复用本 schema。"
+    },
+    "qualificationStatus": { "enum": ["QUALIFIED", "NOT_QUALIFIED", "BLOCKED"] },
+    "hosts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["codex", "claude"],
+      "properties": {
+        "codex": { "$ref": "#/$defs/hostResult" },
+        "claude": { "$ref": "#/$defs/hostResult" }
+      }
+    },
+    "trials": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 26,
+      "items": { "$ref": "#/$defs/trial" }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["packages", "qualificationSubjects", "familyApiRevision", "contractRevision", "bundleDigest", "deterministicAttestation", "scenarioIdentities"],
+      "properties": {
+        "packages": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "allOf": [
+            { "contains": { "properties": { "name": { "const": "agent-method-registry" } }, "required": ["name"] } },
+            { "contains": { "properties": { "name": { "const": "artifact-graph" } }, "required": ["name"] } },
+            { "contains": { "properties": { "name": { "const": "artifact-chain-assistant" } }, "required": ["name"] } },
+            { "contains": { "properties": { "name": { "const": "e2e-test" } }, "required": ["name"] } }
+          ],
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "version", "tarballDigest"],
+            "properties": {
+              "name": { "enum": ["agent-method-registry", "artifact-graph", "artifact-chain-assistant", "e2e-test"] },
+              "version": { "type": "string", "minLength": 1 },
+              "tarballDigest": { "$ref": "#/$defs/digest" }
+            }
+          }
+        },
+        "qualificationSubjects": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["root", "codex", "claude"],
+          "properties": {
+            "root": { "$ref": "#/$defs/qualificationSubject" },
+            "codex": { "$ref": "#/$defs/qualificationSubject" },
+            "claude": { "$ref": "#/$defs/qualificationSubject" }
+          }
+        },
+        "familyApiRevision": { "$ref": "#/$defs/digest" },
+        "contractRevision": { "$ref": "#/$defs/digest" },
+        "bundleDigest": { "$ref": "#/$defs/digest" },
+        "deterministicAttestation": { "$ref": "#/$defs/digest" },
+        "scenarioIdentities": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["codex", "claude"],
+          "properties": {
+            "codex": { "anyOf": [{ "type": "null" }, { "$ref": "#/$defs/scenarioIdentity" }] },
+            "claude": { "anyOf": [{ "type": "null" }, { "$ref": "#/$defs/scenarioIdentity" }] }
+          }
+        }
+      }
+    },
+    "digest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "qualificationSubject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "digest"],
+      "properties": {
+        "algorithm": { "const": "e2e-test-qualification-subject-v1" },
+        "digest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "scenarioIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["familyApiRevision", "contractRevision", "implementationId", "implementationVersion", "qualificationInputTarballDigest", "qualificationSubjectDigest", "bundleDigest", "deterministicAttestation", "fixtureDigests"],
+      "properties": {
+        "familyApiRevision": { "$ref": "#/$defs/digest" },
+        "contractRevision": { "$ref": "#/$defs/digest" },
+        "implementationId": { "type": "string", "minLength": 1 },
+        "implementationVersion": { "type": "string", "minLength": 1 },
+        "qualificationInputTarballDigest": { "$ref": "#/$defs/digest" },
+        "qualificationSubjectDigest": { "$ref": "#/$defs/digest" },
+        "bundleDigest": { "$ref": "#/$defs/digest" },
+        "deterministicAttestation": { "$ref": "#/$defs/digest" },
+        "fixtureDigests": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "digest"],
+            "properties": { "name": { "type": "string" }, "digest": { "$ref": "#/$defs/digest" } }
+          }
+        }
+      }
+    },
+    "hostResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["hostId", "cliVersion", "status", "adapterLoadMode", "skillReadsVerified", "businessCommandsVerified", "scenarioCommandVerified", "unexpectedToolsDetected", "packageUnmodified", "inputsUnmodified", "unauthorizedWriteDetected", "absolutePathDetected", "scenarioDigest", "toolEventsDigest"],
+      "properties": {
+        "hostId": { "enum": ["codex", "claude-code"] },
+        "cliVersion": { "type": "string", "minLength": 1 },
+        "status": { "enum": ["QUALIFIED", "NOT_QUALIFIED", "HOST_UNAVAILABLE", "TIMEOUT", "EVENT_STREAM_INVALID", "RECEIPT_INVALID", "SCENARIO_INVALID", "SKILL_READS_MISSING", "BUSINESS_COMMANDS_MISSING", "COMMAND_MISSING", "UNEXPECTED_TOOLS", "PACKAGE_MUTATED", "INPUT_MUTATED", "EXTRA_WRITES", "PATH_LEAK"] },
+        "adapterLoadMode": { "enum": ["skill-md-explicit", "plugin-dir"] },
+        "skillReadsVerified": { "type": "boolean" },
+        "businessCommandsVerified": { "type": "boolean" },
+        "scenarioCommandVerified": { "type": "boolean" },
+        "unexpectedToolsDetected": { "type": "boolean" },
+        "packageUnmodified": { "type": "boolean" },
+        "inputsUnmodified": { "type": "boolean" },
+        "unauthorizedWriteDetected": { "type": "boolean" },
+        "absolutePathDetected": { "type": "boolean" },
+        "scenarioDigest": { "$ref": "#/$defs/digest" },
+        "toolEventsDigest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "trial": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["hostId", "id", "status", "exitCode", "code", "runLockReverified", "finding", "filesystemDelta", "inputDigestStable"],
+      "properties": {
+        "hostId": { "enum": ["codex", "claude-code"] },
+        "id": { "enum": ["help", "author-no-binding", "review-no-binding", "repair-no-binding", "author", "review", "repair", "re-review", "business-decision", "bundle-drift", "host-swap", "caller-lock", "default-write-reject"] },
+        "status": { "enum": ["PASS", "FAIL"] },
+        "exitCode": { "type": "integer" },
+        "code": { "type": "string", "minLength": 1 },
+        "runLockReverified": { "type": "boolean" },
+        "finding": {
+          "anyOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["rule", "present"],
+              "properties": {
+                "rule": { "type": "string", "minLength": 1 },
+                "present": { "type": "boolean" }
+              }
+            }
+          ]
+        },
+        "filesystemDelta": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["added", "removed", "modified"],
+          "properties": {
+            "added": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+            "removed": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+            "modified": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
+          }
+        },
+        "inputDigestStable": { "type": ["boolean", "null"] }
+      }
+    }
+  }
+}

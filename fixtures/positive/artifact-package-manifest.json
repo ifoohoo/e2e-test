@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "packageId": "E2E-PKG-001",
+  "familyApi": {
+    "id": "artifact.e2e-test-family",
+    "major": 1,
+    "revisionDigest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "subject": {
+    "ref": "e2e/test-01.json",
+    "artifactId": "MATRIX-001:FILE",
+    "contract": "artifact.e2e-test@1",
+    "contractRevisionDigest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "mediaType": "application/json",
+    "contentDigest": "sha256:7180ae34985b141c28b264bdb55588b32162cc85def45cf7fd015ccb3d26a4b0"
+  },
+  "members": [
+    {
+      "role": "eight-dimensional-matrix",
+      "ref": "e2e/test-01.matrix.json",
+      "memberId": "MATRIX-001",
+      "protocol": "e2e-test/matrix",
+      "version": "1",
+      "mediaType": "application/json",
+      "contentDigest": "sha256:33139984719a5eca00d67b6b3cdaa107a6469f11f29afde0578955abdbbebea8"
+    }
+  ],
+  "stageChainDigest": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "packageDigest": "sha256:11870b68b02fb3915d80c9ea654e2bef8222f214b81959151453b112777c6a4a"
+}

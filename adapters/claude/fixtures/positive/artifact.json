@@ -1,0 +1,100 @@
+{
+  "metadata": {
+    "id": "checkout-flow:FILE",
+    "title": "E2E 测试规格：用户购买流程",
+    "status": "active",
+    "test_batch": "BATCH-001"
+  },
+  "scope": {
+    "business_goal": "确保用户能完成从浏览商品到支付完成的完整购买流程",
+    "actors": ["registered_buyer", "payment_gateway", "inventory_service"],
+    "system_boundaries": ["browser", "api-gateway", "payment-service", "inventory-service", "order-service"],
+    "non_goals": ["后台管理流程", "商品上架流程"]
+  },
+  "system_boundary": {
+    "components": ["web-frontend", "api-gateway", "payment-service", "inventory-service", "order-service", "notification-service"],
+    "external_dependencies": ["payment-gateway-sandbox", "email-service"],
+    "trust_boundaries": ["browser→api-gateway", "api-gateway→payment-service"]
+  },
+  "coverage": {
+    "ac_coverage": {
+      "AC-001": ["TC-001"],
+      "AC-002": ["TC-001"],
+      "AC-003": ["TC-002"]
+    },
+    "related_scenarios": ["S-001", "S-002"],
+    "related_features": ["F-001"],
+    "related_decisions": ["D-001"]
+  },
+  "environment_data": {
+    "topology": "web-api-payment-inventory",
+    "fixtures": ["test-catalog-001.json", "test-buyers.json"],
+    "identities": ["test-buyer-${uuid}"],
+    "isolation_strategy": "unique-identity-per-run"
+  },
+  "relations": [
+    {
+      "kind": "derives_from",
+      "target_type": "scenario",
+      "target_id": "S-001"
+    },
+    {
+      "kind": "verifies",
+      "target_type": "feature",
+      "target_id": "F-001",
+      "anchor": "AC-001"
+    }
+  ],
+  "test_cases": [
+    {
+      "case_id": "TC-001",
+      "goal": "验证用户从商品浏览到支付完成的完整购买流程",
+      "preconditions": ["用户已登录", "测试商品有库存", "测试账户有余额"],
+      "actions": [
+        {"step": 1, "action": "浏览商品列表", "expected_result": "商品列表正常显示"},
+        {"step": 2, "action": "添加商品到购物车", "expected_result": "购物车数量增加"},
+        {"step": 3, "action": "进入结算页面", "expected_result": "结算页面显示正确金额"},
+        {"step": 4, "action": "选择支付方式并确认", "expected_result": "支付请求发送成功"},
+        {"step": 5, "action": "等待支付完成", "expected_result": "订单状态变为 paid"}
+      ],
+      "oracles": [
+        {
+          "observable": "订单确认页面显示订单号和支付成功状态",
+          "criterion": "订单状态为 paid 且金额正确",
+          "timeout_ms": 10000
+        }
+      ],
+      "cleanup": ["删除测试订单", "恢复库存"],
+      "priority": "critical",
+      "trace_targets": ["F-001", "AC-001"],
+      "path_class": "happy"
+    },
+    {
+      "case_id": "TC-002",
+      "goal": "验证支付失败后的订单回滚和通知",
+      "preconditions": ["用户已登录", "配置支付网关返回失败"],
+      "actions": [
+        {"step": 1, "action": "发起支付", "expected_result": "支付请求发送"},
+        {"step": 2, "action": "支付网关返回失败", "expected_result": "系统收到失败响应"},
+        {"step": 3, "action": "等待回滚完成", "expected_result": "订单状态变为 cancelled"},
+        {"step": 4, "action": "检查通知", "expected_result": "收到支付失败通知"}
+      ],
+      "oracles": [
+        {
+          "observable": "用户收到支付失败通知，订单状态为 cancelled",
+          "criterion": "订单已取消且库存已恢复",
+          "timeout_ms": 15000
+        }
+      ],
+      "cleanup": ["确认订单已取消", "确认库存已恢复"],
+      "priority": "high",
+      "trace_targets": ["F-001", "AC-003"],
+      "path_class": "error"
+    }
+  ],
+  "evidence_contract": {
+    "required_artifacts": ["trace.zip", "screenshot.png", "order-status.json"],
+    "runner_binding": "playwright",
+    "proof_requirements": ["每个 case 有独立 trace", "trace 包含关键步骤截图"]
+  }
+}

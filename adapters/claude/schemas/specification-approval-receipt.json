@@ -1,0 +1,73 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "e2e-test/specification-approval-receipt/v1",
+  "title": "SpecificationApprovalReceipt",
+  "description": "E2E 测试规格批准收据，绑定 package/proof/review 的批准决策。",
+  "type": "object",
+  "required": ["schemaVersion", "kind", "approvalId", "subject", "review", "decision", "authority", "issuedAt", "approvalDigest"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "kind": {
+      "type": "string",
+      "const": "e2e-test-specification-approval"
+    },
+    "approvalId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "subject": {
+      "type": "object",
+      "required": ["packageId", "packageDigest", "proofRef", "proofDigest"],
+      "additionalProperties": false,
+      "properties": {
+        "packageId": { "type": "string", "minLength": 1 },
+        "packageDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+        "proofRef": { "type": "string", "minLength": 1 },
+        "proofDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+      }
+    },
+    "review": {
+      "type": "object",
+      "required": ["resultRef", "resultDigest", "acceptedFindingDigests"],
+      "additionalProperties": false,
+      "properties": {
+        "resultRef": { "type": "string", "minLength": 1 },
+        "resultDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+        "acceptedFindingDigests": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+        }
+      }
+    },
+    "decision": {
+      "type": "string",
+      "const": "APPROVED"
+    },
+    "authority": {
+      "type": "object",
+      "required": ["kind", "id"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "type": "string", "const": "project-owner" },
+        "id": { "type": "string", "minLength": 1 }
+      }
+    },
+    "issuedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "validUntil": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "approvalDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    }
+  }
+}

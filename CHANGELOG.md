@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.2.0-alpha.3 (2026-07-29) — 候选/准备中
+
+### M2–M5 规格到浏览器实验性链路与 28 条失效模式覆盖守恒
+
+- **M2–M5 规格链路**：从 E2E 规格编制（M2 extension design）经实现规划（M4 implementation planner）、代码草稿与审阅（M4 code draft/review），到浏览器执行（M5 browser execution）的实验性端到端链路已打通。
+- **真实 Chrome canary 资格**：以真实 Chrome canary 环境完成三安装根（three installation roots）资格验证，覆盖 Chromium 目标浏览器的真实启动与执行路径。
+- **28 条失效模式与覆盖守恒**：识别并记录 28 条失效模式（failure modes），覆盖守恒原则确保每条失效模式均有对应的守恒检查或已知残余风险标注。
+- **implement/execute 仍为 planned**：`artifact.e2e-test.browser.implement` 和 `artifact.e2e-test.browser.execute` 仍为计划状态（planned），不可调用；不继承旧 26/26 行为资格。
+- **启用前残余风险**：network、resource、system Chrome 相关风险为启用前残余风险，需在正式启用前完成缓解。
+- **alpha.3 不等于 RELEASE_ATTESTED**：本版本为候选/准备中阶段，不具备 RELEASE_ATTESTED 资格；Gate B 最终接受和公共发布仍是后续独立事务。
+
+### 已知限制
+
+- 既有 26/26 操作行为资格使用确定性协议级 fake host；它不构成 M6 `implement/execute` 的真实宿主资格，也不覆盖真实 Chrome、网络或资源隔离风险。
+- implement/execute 仍为 planned，不可调用。
+- alpha.3 不等于 Gate B RELEASE_ATTESTED。
+
 ## 0.2.0-alpha.2 (2026-07-27)
 
 ### 状态收敛与安装合同修复

@@ -1,0 +1,185 @@
+{
+  "$id": "e2e-test/canonical-result/v1",
+  "type": "object",
+  "required": [
+    "resultId",
+    "planDigest",
+    "bindingDigest",
+    "profileDigest",
+    "status",
+    "recomputeBasis",
+    "testsRun",
+    "pass",
+    "fail",
+    "skip",
+    "caseReconciliation",
+    "claimScope",
+    "writer",
+    "resultDigest"
+  ],
+  "properties": {
+    "resultId": {
+      "type": "string"
+    },
+    "planDigest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "bindingDigest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "profileDigest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "status": {
+      "enum": [
+        "SUCCEEDED",
+        "FAILED",
+        "BLOCKED"
+      ]
+    },
+    "recomputeBasis": {
+      "type": "object",
+      "required": [
+        "reporterDigest",
+        "rawDigest",
+        "exitCode",
+        "bindingReconciled",
+        "caseCoverage",
+        "teardownReceiptDigest",
+        "networkAuditFactDigest",
+        "resourceExecutionFactDigest",
+        "freshnessFactDigest",
+        "scopeChainDigest"
+      ],
+      "properties": {
+        "reporterDigest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "rawDigest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "exitCode": {
+          "type": "integer"
+        },
+        "bindingReconciled": {
+          "type": "boolean"
+        },
+        "caseCoverage": {
+          "type": "object",
+          "required": [
+            "run",
+            "pass",
+            "fail",
+            "skip"
+          ],
+          "properties": {
+            "run": {
+              "type": "integer"
+            },
+            "pass": {
+              "type": "integer"
+            },
+            "fail": {
+              "type": "integer"
+            },
+            "skip": {
+              "type": "integer"
+            }
+          },
+          "additionalProperties": false
+        },
+        "teardownReceiptDigest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "networkAuditFactDigest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "resourceExecutionFactDigest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "freshnessFactDigest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "scopeChainDigest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "testsRun": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "pass": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "fail": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "skip": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "caseReconciliation": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "caseId",
+          "bound",
+          "executed",
+          "status"
+        ],
+        "properties": {
+          "caseId": {
+            "type": "string"
+          },
+          "bound": {
+            "type": "boolean"
+          },
+          "executed": {
+            "type": "boolean"
+          },
+          "status": {
+            "enum": [
+              "pass",
+              "fail",
+              "skip",
+              "blocked"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "claimScope": {
+      "enum": [
+        "IMPLEMENTED",
+        "READY_TO_RUN",
+        "PASSED"
+      ]
+    },
+    "writer": {
+      "enum": [
+        "finalizer"
+      ]
+    },
+    "resultDigest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  },
+  "additionalProperties": false
+}

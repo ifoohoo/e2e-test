@@ -1,0 +1,157 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "e2e-test/preview-manifest/v1",
+  "title": "E2E Preview Manifest and Commit Handle Contract",
+  "description": "author/repair 默认 preview 的结果信封与一次性提交句柄合同。preview 在隔离 run root 生成工件、差异与拟写入集合，目标项目零写入；commit 必须携带与 secretDigest 匹配的随机秘密，且全部 bindings 未漂移。manifest 中不得出现绝对路径。",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "kind",
+    "service",
+    "runId",
+    "status",
+    "bindings",
+    "plannedWrites",
+    "previewDigest",
+    "commitHandle"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "kind": { "const": "preview" },
+    "service": { "enum": ["author", "repair"] },
+    "runId": {
+      "type": "string",
+      "pattern": "^run-[0-9a-f]{16,64}$"
+    },
+    "status": {
+      "enum": ["PREVIEW_READY", "PREVIEW_FAILED", "COMMITTED", "CONSUMED", "EXPIRED"],
+      "description": "PREVIEW_READY 可提交；COMMITTED 已成功提交；CONSUMED 句柄已消费（重放必失败）；EXPIRED 绑定已漂移或 run root 失效。"
+    },
+    "bindings": {
+      "type": "object",
+      "required": [
+        "inputDigest",
+        "providerDigest",
+        "familyApiRevision",
+        "contractRevision",
+        "writeSetDigest",
+        "bundleDigest"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "inputDigest": {
+          "$ref": "#/definitions/digest",
+          "description": "源输入（rawInputs 或 resume 三件套）的稳定摘要。"
+        },
+        "providerDigest": {
+          "$ref": "#/definitions/digest",
+          "description": "provider 安装身份摘要（runLock.provider/bindingDigest 派生）。"
+        },
+        "familyApiRevision": {
+          "$ref": "#/definitions/digest",
+          "description": "authority-api/api.json 的 revisionDigest。"
+        },
+        "contractRevision": {
+          "$ref": "#/definitions/digest",
+          "description": "artifact.e2e-test@1 的 contract revisionDigest。"
+        },
+        "matrixDigest": {
+          "$ref": "#/definitions/digest",
+          "description": "矩阵 DTO 的 stableDigest；author 必填，repair 可选。"
+        },
+        "writeSetDigest": {
+          "$ref": "#/definitions/digest",
+          "description": "stableDigest(排序后的 plannedWrites 路径集合)。"
+        },
+        "bundleDigest": {
+          "$ref": "#/definitions/digest",
+          "description": "bundle treeDigest（实现描述声明值）。"
+        }
+      }
+    },
+    "plannedWrites": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/plannedWrite" },
+      "description": "拟写入集合：commit 阶段只能写入这些路径且内容摘要必须匹配。"
+    },
+    "stageChainDigest": {
+      "$ref": "#/definitions/digest",
+      "description": "八工序 stage result 身份链摘要（逐 stage {stage,status,inputDigest,outputDigest} 序列的 stableDigest）。"
+    },
+    "previewDigest": {
+      "$ref": "#/definitions/digest",
+      "description": "stableDigest({service, runId, bindings, plannedWrites, stageChainDigest})；commit 前后复验的总锚点。"
+    },
+    "commitHandle": {
+      "type": "object",
+      "required": ["handleId", "secretDigest", "oneTime"],
+      "additionalProperties": false,
+      "properties": {
+        "handleId": {
+          "type": "string",
+          "pattern": "^handle-[0-9a-f]{16,64}$"
+        },
+        "secretDigest": {
+          "$ref": "#/definitions/digest",
+          "description": "随机秘密的 SHA-256；原始秘密只存在于 run root 的 commit-secret 文件（0600）与进程内返回，绝不写入 manifest 或响应 JSON。"
+        },
+        "oneTime": {
+          "const": true,
+          "description": "一次性：消费后 secret 文件被原子删除并写 commit.lock，重放返回 COMMIT_REPLAYED。"
+        }
+      }
+    },
+    "diagnostics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["code", "severity"],
+        "additionalProperties": false,
+        "properties": {
+          "code": { "type": "string", "minLength": 1 },
+          "severity": { "enum": ["error", "warning"] }
+        }
+      }
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "非确定性元数据，不参与 previewDigest 计算。"
+    }
+  },
+  "definitions": {
+    "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "plannedWrite": {
+      "type": "object",
+      "required": ["path", "contentDigest", "bytes", "targetExists"],
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^/\\\\]",
+          "description": "相对 projectRoot 的目标路径；禁止绝对路径。"
+        },
+        "contentDigest": { "$ref": "#/definitions/digest" },
+        "bytes": { "type": "integer", "minimum": 0 },
+        "targetExists": { "type": "boolean" },
+        "diffSummary": {
+          "type": "string",
+          "description": "对已存在目标的人类可读差异摘要（新增文件为 created）。"
+        }
+      }
+    },
+    "commitRequest": {
+      "type": "object",
+      "required": ["runId", "handleId", "secret"],
+      "additionalProperties": false,
+      "description": "显式提交请求（请求级字段 commit 的结构）；secret 为 64 位十六进制随机串，其 SHA-256 必须等于 manifest.commitHandle.secretDigest。",
+      "properties": {
+        "runId": { "type": "string", "pattern": "^run-[0-9a-f]{16,64}$" },
+        "handleId": { "type": "string", "pattern": "^handle-[0-9a-f]{16,64}$" },
+        "secret": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    }
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "matrix_id": "MATRIX-901",
+  "timestamp": "2026-07-19T10:10:00Z",
+  "assessment_ref": "ASSESS-001",
+  "cases": [
+    {
+      "case_id": "TC-1",
+      "candidate_ref": "CAND-001",
+      "value_risk": {
+        "business_value": "测试支付流程",
+        "risk_level": "critical",
+        "failure_impact": "支付失败导致用户流失"
+      },
+      "source_scope": {
+        "source_artifact": "feature:F-001",
+        "acceptance_criteria": ["AC-001"],
+        "scope_boundaries": ["支付系统"]
+      },
+      "path": {
+        "path_class": "happy",
+        "steps": ["用户发起支付", "确认支付金额", "完成支付"],
+        "cross_boundary": ["browser", "payment-gateway"]
+      },
+      "oracle": {
+        "observable": "支付成功页面显示订单号",
+        "criterion": "订单状态为 paid"
+      },
+      "data_identity": {
+        "test_data": ["test-user-001"],
+        "identities": ["test-user-001"],
+        "isolation": "unique-per-run"
+      },
+      "environment": {
+        "topology": "web-api-gateway",
+        "external_deps": [],
+        "setup": []
+      },
+      "cleanup": {
+        "cleanup_steps": ["清理测试订单"],
+        "failure_cleanup": ["回滚支付状态"],
+        "idempotent": true
+      },
+      "automation": {
+        "runner": "playwright",
+        "trace_report": "runs/trace.zip",
+        "proof_condition": "pass"
+      }
+    }
+  ]
+}

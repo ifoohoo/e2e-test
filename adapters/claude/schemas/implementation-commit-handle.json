@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "e2e-test/implementation-commit-handle/v1",
+  "title": "ImplementationCommitHandle",
+  "type": "object",
+  "required": [
+    "contract",
+    "handleId",
+    "service",
+    "projectDigest",
+    "planDigest",
+    "previewDigest",
+    "writeSetDigest",
+    "issuedAt",
+    "expiry",
+    "oneTime",
+    "secretDigest",
+    "signature",
+    "handleDigest"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "contract": { "const": "e2e-test/implementation-commit-handle/v1" },
+    "handleId": { "type": "string", "minLength": 1 },
+    "service": { "const": "implement" },
+    "projectDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "planDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "previewDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "writeSetDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "issuedAt": { "type": "integer", "minimum": 0 },
+    "expiry": { "type": "integer", "minimum": 1 },
+    "oneTime": { "const": true },
+    "secretDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "signature": {
+      "type": "object",
+      "required": ["algorithm", "keyId", "mac"],
+      "additionalProperties": false,
+      "properties": {
+        "algorithm": { "const": "HMAC-SHA256" },
+        "keyId": { "type": "string", "minLength": 1 },
+        "mac": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
+    "handleDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    }
+  }
+}

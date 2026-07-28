@@ -1,0 +1,90 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "e2e-test/implementation-commit-preview/v1",
+  "title": "ImplementationCommitPreview",
+  "type": "object",
+  "required": [
+    "contract",
+    "commitPreviewId",
+    "planDigest",
+    "requestDigest",
+    "reviewDigest",
+    "plannedWrites",
+    "bindingManifest",
+    "validationPlan",
+    "previewDigest"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "contract": { "const": "e2e-test/implementation-commit-preview/v1" },
+    "commitPreviewId": { "type": "string", "minLength": 1 },
+    "planDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "requestDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "reviewDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "plannedWrites": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "caseId",
+          "file",
+          "change",
+          "beforeDigest",
+          "afterDigest",
+          "source",
+          "diff"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "caseId": { "type": "string", "minLength": 1 },
+          "file": { "type": "string", "minLength": 1 },
+          "change": { "enum": ["create", "update"] },
+          "beforeDigest": {
+            "anyOf": [
+              { "type": "null" },
+              { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+            ]
+          },
+          "afterDigest": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "source": { "type": "string", "minLength": 1, "maxLength": 524288 },
+          "diff": { "type": "string", "minLength": 1, "maxLength": 1048576 }
+        }
+      }
+    },
+    "bindingManifest": { "type": "object" },
+    "validationPlan": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "object",
+        "required": ["kind", "tool", "args"],
+        "additionalProperties": false,
+        "properties": {
+          "kind": { "enum": ["format", "typecheck", "syntax", "collect"] },
+          "tool": { "enum": ["prettier", "tsc", "node", "playwright"] },
+          "args": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    },
+    "previewDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "featureId": "FREIGHT-CUSTOMS-01",
+  "title": "出口货运报关单据流",
+  "actor": "货代操作员",
+  "acceptanceCriteria": [],
+  "constraints": [
+    "海关回执异步到达",
+    "单据包含敏感商业信息"
+  ]
+}

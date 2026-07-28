@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "packageId": "fwd-ticket-escalation",
+  "domain": "support-oncall-escalation",
+  "digests": {
+    "raw": "sha256:bda61facbfea39dfb4aa34f6964a66b039dabf00a12b862f34a4991da7fea9ab",
+    "projectFacts": "sha256:6f32bc927f9a02611119465c80d02c0b7af611e40618910e1fba1b47a8d14949",
+    "goal": "sha256:996642bbcb8bd8d0ddbf83735c9eca0a094dbd189ef23bf8133a6f46ce121ff4"
+  },
+  "containsExpectedArtifacts": false,
+  "mutations": [
+    {
+      "kind": "remove-ac",
+      "digest": "sha256:2401f75117896e4d75d8d3ad819a2b5b0a7c6597f28621e8a33afc885a583a5c"
+    },
+    {
+      "kind": "change-boundary",
+      "digest": "sha256:68303c9a3dc3ca8437298046b9f8ab5eccbb0c29a41b927686f677121d7d183e"
+    },
+    {
+      "kind": "shared-state",
+      "digest": "sha256:40ab3e14504c765052cbc3e066c6f32b40fcc9927ad2ee5e348f41a0e9870529"
+    },
+    {
+      "kind": "runner-ignore",
+      "digest": "sha256:49679c0399859e287c183f4f7c9a65db38bbe1478648da5b1c528d98586e203d"
+    },
+    {
+      "kind": "stale-evidence",
+      "digest": "sha256:634ebc6c357cbe97fa548c35a59fcda91d8be8fb0cb3b20977647387faafd9dc"
+    }
+  ]
+}

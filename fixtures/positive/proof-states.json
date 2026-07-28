@@ -1,0 +1,54 @@
+{
+  "states": [
+    {
+      "name": "planned",
+      "binding": { "case_id": "TC-101", "freshness": "missing" },
+      "ctx": {},
+      "expected": "planned"
+    },
+    {
+      "name": "candidate-linked",
+      "binding": {
+        "case_id": "TC-102",
+        "source_trace": { "feature_id": "F-001", "ac_id": "AC-001", "scenario_id": "S-001" },
+        "freshness": "missing"
+      },
+      "ctx": {},
+      "expected": "candidate-linked"
+    },
+    {
+      "name": "implementation-bound",
+      "binding": {
+        "case_id": "TC-103",
+        "source_trace": { "feature_id": "F-001", "ac_id": "AC-001", "scenario_id": "S-001" },
+        "implementation": { "files": ["tests/e2e/tc-103.spec.ts"], "runner": "playwright", "inventory_ref": "playwright:TC-103", "active": true },
+        "freshness": "missing"
+      },
+      "ctx": { "runnerInventory": { "playwright:TC-103": { "active": true } }, "activeBindingCount": 1 },
+      "expected": "implementation-bound"
+    },
+    {
+      "name": "evidence-bound",
+      "binding": {
+        "case_id": "TC-105",
+        "source_trace": { "feature_id": "F-001", "ac_id": "AC-001", "scenario_id": "S-001" },
+        "implementation": { "files": ["tests/e2e/tc-105.spec.ts"], "runner": "playwright", "inventory_ref": "playwright:TC-105", "active": true },
+        "evidence": { "status": "passed", "report_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" },
+        "freshness": "current"
+      },
+      "ctx": { "runnerInventory": { "playwright:TC-105": { "active": true } }, "activeBindingCount": 1, "recomputedReportDigest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" },
+      "expected": "evidence-bound"
+    },
+    {
+      "name": "stale",
+      "binding": {
+        "case_id": "TC-106",
+        "source_trace": { "feature_id": "F-001", "ac_id": "AC-001", "scenario_id": "S-001" },
+        "freshness": "stale"
+      },
+      "ctx": { "versionLockMatches": false },
+      "expected": "stale",
+      "expectedReasons": ["version-lock-changed"]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "inspection_id": "INSPECT-001",
+  "timestamp": "2026-07-19T10:00:00Z",
+  "inputs": {
+    "source_type": "prd"
+  },
+  "candidate_paths": [
+    {
+      "path_id": "PATH-001",
+      "summary": "测试路径",
+      "boundaries": ["browser"]
+    }
+  ]
+}

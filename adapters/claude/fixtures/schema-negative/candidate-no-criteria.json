@@ -1,0 +1,16 @@
+{
+  "assessment_id": "ASSESS-001",
+  "timestamp": "2026-07-19T10:05:00Z",
+  "inspection_ref": "INSPECT-001",
+  "candidates": [
+    {
+      "candidate_id": "CAND-001",
+      "feature_ref": "feature:F-003",
+      "ac_ref": "AC-010",
+      "criteria_met": [],
+      "path_summary": "单一接口参数验证",
+      "risk_level": "low",
+      "decision": "E2E"
+    }
+  ]
+}

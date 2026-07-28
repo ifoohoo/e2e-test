@@ -16,7 +16,7 @@
       "inputsUnmodified": true,
       "unauthorizedWriteDetected": false,
       "absolutePathDetected": false,
-      "scenarioDigest": "sha256:dda5f7bf8ec26f62ad159587774e3b2af99c08c9a775a5a34e8c8c4fce59697a",
+      "scenarioDigest": "sha256:21491da3840c561650962196062b4efe6274757b49790ed6eb368ed5c6a23bf9",
       "toolEventsDigest": "sha256:13766e254d7073143f0380bb97ade00dcb55d8e9959da14f370f04e6b3dcc5f6"
     },
     "claude": {
@@ -32,7 +32,7 @@
       "inputsUnmodified": true,
       "unauthorizedWriteDetected": false,
       "absolutePathDetected": false,
-      "scenarioDigest": "sha256:83ec71d955d0983d039f17541ebebaa6dcb653f09c12ca14cd928d821fbb7df2",
+      "scenarioDigest": "sha256:58c92f532261dd76b2559a79721985792ce4f49e56eb3b4db4043f8e5a80d038",
       "toolEventsDigest": "sha256:9faa1a1fe23f5b50e981d13f6afdca317dfff2c85f9715df3b3dfb30856a2d34"
     }
   },
@@ -109,7 +109,8 @@
         "added": [
           "artifacts/e2e/authored.json",
           "artifacts/e2e/authored.matrix.json",
-          "artifacts/e2e/authored.package.json"
+          "artifacts/e2e/authored.package.json",
+          "artifacts/e2e/authored.proof.json"
         ],
         "removed": [],
         "modified": []
@@ -149,7 +150,9 @@
       },
       "filesystemDelta": {
         "added": [
-          "artifacts/e2e/repaired.json"
+          "artifacts/e2e/repaired.json",
+          "artifacts/e2e/repaired.matrix.json",
+          "artifacts/e2e/repaired.package.json"
         ],
         "removed": [],
         "modified": []
@@ -321,7 +324,8 @@
         "added": [
           "artifacts/e2e/authored.json",
           "artifacts/e2e/authored.matrix.json",
-          "artifacts/e2e/authored.package.json"
+          "artifacts/e2e/authored.package.json",
+          "artifacts/e2e/authored.proof.json"
         ],
         "removed": [],
         "modified": []
@@ -361,7 +365,9 @@
       },
       "filesystemDelta": {
         "added": [
-          "artifacts/e2e/repaired.json"
+          "artifacts/e2e/repaired.json",
+          "artifacts/e2e/repaired.matrix.json",
+          "artifacts/e2e/repaired.package.json"
         ],
         "removed": [],
         "modified": []
@@ -471,48 +477,48 @@
       },
       {
         "name": "artifact-graph",
-        "version": "0.8.0",
-        "tarballDigest": "sha256:6d94fde556b912b01bc89a5f318f1d9475e27dbb1a173344ebd433fb74d80000"
+        "version": "0.8.2",
+        "tarballDigest": "sha256:ebd46c66b0c726eabe657df4fc11a159f0c3cbabbea3dd1dace66e27fa853ec4"
       },
       {
         "name": "artifact-chain-assistant",
-        "version": "0.8.0",
-        "tarballDigest": "sha256:1d073e1453851efeef2f2e597db079f9f811c2b90e158ec9627c74d121577e42"
+        "version": "0.8.2",
+        "tarballDigest": "sha256:c7034d38ce6572d4acf3c62736b04b859e61e8c9d60ff6ce3188ef270d92469f"
       },
       {
         "name": "e2e-test",
-        "version": "0.2.0-alpha.2",
-        "tarballDigest": "sha256:fa11e6e0818c9a72ca829114d892d7b46d26b863a52b7ba6507c5040430859dd"
+        "version": "0.2.0-alpha.3",
+        "tarballDigest": "sha256:62eee986cfe9ecf1b40c116cbd2dc3dc764133d24ace9c30b6af14ebd95c331f"
       }
     ],
     "qualificationSubjects": {
       "root": {
         "algorithm": "e2e-test-qualification-subject-v1",
-        "digest": "sha256:ebbb87dd09248ed697d0cc3389789480ec1bd4a945a697ebec42bde5502bd862"
+        "digest": "sha256:25b73b4192ef119c7e40e5677f932ab45d5f48ff1337d2795d80604925bb124a"
       },
       "codex": {
         "algorithm": "e2e-test-qualification-subject-v1",
-        "digest": "sha256:ae0879998021c110c31642b2dceafa6596408feff7fbf56cc124482946d45441"
+        "digest": "sha256:39e9de4b169cd60ef8b30b923e97ea35a23a93db105ea1319216595fe4db82df"
       },
       "claude": {
         "algorithm": "e2e-test-qualification-subject-v1",
-        "digest": "sha256:30809b855da1b4b265131e477e9aa7991019af060aad1998fd3a9c0c2c23a333"
+        "digest": "sha256:f902396e7b515c394154c0ff89a1946caf83f9553cf821a77f227180181f136b"
       }
     },
     "familyApiRevision": "sha256:66cdd1098a93eb8d128c57010a9405dd1de55bee1e702ced44a93c202cc4b463",
     "contractRevision": "sha256:374b99424519e42b40b621774fb602d62dfa23f48f792095f717bbabbe9e3f2a",
-    "bundleDigest": "sha256:05038d0597ec75b8ffba6672865255278b6ad87c44a531fac6f9658243901f7b",
-    "deterministicAttestation": "sha256:7cc24567dd1093c16e3ad924c69e67c74efa98d12460f75b9c34996c25260c62",
+    "bundleDigest": "sha256:f16d4a1027dedc5efb3adde2b39ac0585e239575f3b3b6ab515defa6fa030f12",
+    "deterministicAttestation": "sha256:769d6003d4b55ae8ac95d4202eef1040cbab716c54a11517f849e20f69705811",
     "scenarioIdentities": {
       "codex": {
         "familyApiRevision": "sha256:66cdd1098a93eb8d128c57010a9405dd1de55bee1e702ced44a93c202cc4b463",
         "contractRevision": "sha256:374b99424519e42b40b621774fb602d62dfa23f48f792095f717bbabbe9e3f2a",
         "implementationId": "io.github.mzdbxqh.e2e-test",
-        "implementationVersion": "0.2.0-alpha.2",
-        "qualificationInputTarballDigest": "sha256:fa11e6e0818c9a72ca829114d892d7b46d26b863a52b7ba6507c5040430859dd",
-        "qualificationSubjectDigest": "sha256:ae0879998021c110c31642b2dceafa6596408feff7fbf56cc124482946d45441",
-        "bundleDigest": "sha256:21542e007fce8cfe593fab983dd0a101d0892ce82127561e255f2664cab2f3db",
-        "deterministicAttestation": "sha256:dccb2c200f5f0185ccf51badb43719d0be9e8f2625d1171d09f213a1a27ac703",
+        "implementationVersion": "0.2.0-alpha.3",
+        "qualificationInputTarballDigest": "sha256:62eee986cfe9ecf1b40c116cbd2dc3dc764133d24ace9c30b6af14ebd95c331f",
+        "qualificationSubjectDigest": "sha256:39e9de4b169cd60ef8b30b923e97ea35a23a93db105ea1319216595fe4db82df",
+        "bundleDigest": "sha256:4873b83dce6555b9bfff7ece0ea2cc7e6de45ae967d0ef16ede83b550d2d9a2f",
+        "deterministicAttestation": "sha256:a017134e1fd39aa58af2b9fb480035a20b1179991696ce64ccf8cd598c89a8cc",
         "fixtureDigests": [
           {
             "name": "artifact.json",
@@ -536,11 +542,11 @@
         "familyApiRevision": "sha256:66cdd1098a93eb8d128c57010a9405dd1de55bee1e702ced44a93c202cc4b463",
         "contractRevision": "sha256:374b99424519e42b40b621774fb602d62dfa23f48f792095f717bbabbe9e3f2a",
         "implementationId": "io.github.mzdbxqh.e2e-test",
-        "implementationVersion": "0.2.0-alpha.2",
-        "qualificationInputTarballDigest": "sha256:fa11e6e0818c9a72ca829114d892d7b46d26b863a52b7ba6507c5040430859dd",
-        "qualificationSubjectDigest": "sha256:30809b855da1b4b265131e477e9aa7991019af060aad1998fd3a9c0c2c23a333",
-        "bundleDigest": "sha256:21542e007fce8cfe593fab983dd0a101d0892ce82127561e255f2664cab2f3db",
-        "deterministicAttestation": "sha256:dccb2c200f5f0185ccf51badb43719d0be9e8f2625d1171d09f213a1a27ac703",
+        "implementationVersion": "0.2.0-alpha.3",
+        "qualificationInputTarballDigest": "sha256:62eee986cfe9ecf1b40c116cbd2dc3dc764133d24ace9c30b6af14ebd95c331f",
+        "qualificationSubjectDigest": "sha256:f902396e7b515c394154c0ff89a1946caf83f9553cf821a77f227180181f136b",
+        "bundleDigest": "sha256:4873b83dce6555b9bfff7ece0ea2cc7e6de45ae967d0ef16ede83b550d2d9a2f",
+        "deterministicAttestation": "sha256:809b46ec7406b7218a1f2007594bb673f43f4779ca5de3bfed32823a518cf88e",
         "fixtureDigests": [
           {
             "name": "artifact.json",
@@ -562,5 +568,5 @@
       }
     }
   },
-  "digest": "sha256:3db07f77c48787b616ce846b68e03187048664848763c1d5e1a9db4315819b87"
+  "digest": "sha256:642b6ff3e8aa9c36ca5b01e30f83d16c2c30f428ea1df2773a4d92f89397411d"
 }

@@ -1,0 +1,98 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "e2e-test/code-repair-request/v1",
+  "title": "CodeRepairRequest",
+  "type": "object",
+  "required": [
+    "contract",
+    "reviewDigest",
+    "planDigest",
+    "requestDigest",
+    "repairRound",
+    "cases",
+    "constraints",
+    "repairRequestDigest"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "contract": { "const": "e2e-test/code-repair-request/v1" },
+    "reviewDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "planDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "requestDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "repairRound": { "type": "integer", "minimum": 1 },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "caseId",
+          "file",
+          "title",
+          "assertionDigest",
+          "oracle",
+          "findingIds"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "caseId": { "type": "string", "minLength": 1 },
+          "file": { "type": "string", "minLength": 1 },
+          "title": { "type": "string", "minLength": 1 },
+          "assertionDigest": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "oracle": {
+            "type": "object",
+            "required": ["observable", "criterion", "negativeCheck", "timeoutMs"],
+            "additionalProperties": false,
+            "properties": {
+              "observable": { "type": "string", "minLength": 1 },
+              "criterion": { "type": "string", "minLength": 1 },
+              "negativeCheck": { "type": "string", "minLength": 1 },
+              "timeoutMs": { "type": "integer", "minimum": 1 }
+            }
+          },
+          "findingIds": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    },
+    "constraints": {
+      "type": "object",
+      "required": [
+        "preserveCaseId",
+        "preserveFile",
+        "preserveTitle",
+        "preserveAssertionDigest",
+        "preserveOracle",
+        "allowedRepairOwner"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "preserveCaseId": { "const": true },
+        "preserveFile": { "const": true },
+        "preserveTitle": { "const": true },
+        "preserveAssertionDigest": { "const": true },
+        "preserveOracle": { "const": true },
+        "allowedRepairOwner": { "const": "test" }
+      }
+    },
+    "repairRequestDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    }
+  }
+}

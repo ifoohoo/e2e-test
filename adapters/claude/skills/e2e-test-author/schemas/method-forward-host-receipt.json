@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "e2e-test/method-forward-host-receipt/v1",
+  "title": "Method Forward Host Receipt",
+  "description": "宿主在 author 驱动链结束时必须返回的结构化 receipt。成功形状只允许在驱动真实成功时出现；失败形状必须与驱动真实状态一致，宿主外层退出码不得掩盖业务失败。",
+  "oneOf": [
+    {
+      "type": "object",
+      "title": "Author 驱动真实成功",
+      "required": ["status", "hostId", "packageId", "authorResult"],
+      "additionalProperties": false,
+      "properties": {
+        "status": { "type": "string", "const": "AUTHOR_PREVIEW_COMPLETE" },
+        "hostId": { "type": "string", "enum": ["codex", "claude-code"] },
+        "packageId": { "type": "string", "pattern": "^fwd-[a-z0-9-]+$" },
+        "authorResult": { "type": "string", "const": "results/author-output.json" }
+      }
+    },
+    {
+      "type": "object",
+      "title": "驱动失败/受阻/需输入的诚实失败 receipt",
+      "required": ["status", "hostId", "packageId", "failure"],
+      "additionalProperties": false,
+      "properties": {
+        "status": { "type": "string", "enum": ["AUTHOR_DRIVER_FAILED", "BLOCKED", "NEEDS_INPUT"] },
+        "hostId": { "type": "string", "enum": ["codex", "claude-code"] },
+        "packageId": { "type": "string", "pattern": "^fwd-[a-z0-9-]+$" },
+        "failure": {
+          "type": "object",
+          "required": ["code"],
+          "additionalProperties": false,
+          "properties": {
+            "code": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]+$" },
+            "diagnostics": {
+              "type": "array",
+              "maxItems": 16,
+              "items": {
+                "type": "object",
+                "required": ["code"],
+                "additionalProperties": false,
+                "properties": {
+                  "code": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]+$" },
+                  "stage": { "type": "string", "maxLength": 80 },
+                  "message": { "type": "string", "maxLength": 240 }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

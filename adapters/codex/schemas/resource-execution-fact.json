@@ -1,0 +1,96 @@
+{
+  "$id": "e2e-test/resource-execution-fact/v1",
+  "type": "object",
+  "required": [
+    "factId",
+    "planDigest",
+    "runId",
+    "mechanism",
+    "budget",
+    "usage",
+    "withinBudget",
+    "attestation",
+    "selfDigest"
+  ],
+  "properties": {
+    "factId": {
+      "type": "string"
+    },
+    "planDigest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "runId": {
+      "type": "string"
+    },
+    "mechanism": {
+      "type": "string",
+      "minLength": 1
+    },
+    "budget": {
+      "type": "object",
+      "required": [
+        "cpu",
+        "memMB"
+      ],
+      "properties": {
+        "cpu": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "memMB": {
+          "type": "integer",
+          "minimum": 128
+        }
+      },
+      "additionalProperties": false
+    },
+    "usage": {
+      "type": "object",
+      "required": [
+        "cpuPeak",
+        "memPeakMB"
+      ],
+      "properties": {
+        "cpuPeak": {
+          "type": "number",
+          "minimum": 0
+        },
+        "memPeakMB": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "withinBudget": {
+      "type": "boolean"
+    },
+    "attestation": {
+      "type": "object",
+      "required": [
+        "algorithm",
+        "keyId",
+        "mac"
+      ],
+      "properties": {
+        "algorithm": {
+          "const": "HMAC-SHA256"
+        },
+        "keyId": {
+          "type": "string"
+        },
+        "mac": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "selfDigest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,266 @@
+{
+  "metadata": {
+    "id": "MATRIX-001:FILE",
+    "title": "E2E 测试规格：确保用户能完成从浏览商品到支付完成的完整购买流程",
+    "status": "active",
+    "test_batch": "MATRIX-001"
+  },
+  "scope": {
+    "business_goal": "确保用户能完成从浏览商品到支付完成的完整购买流程",
+    "actors": [
+      "registered_buyer",
+      "payment_gateway",
+      "inventory_service",
+      "buyer"
+    ],
+    "system_boundaries": [
+      "browser",
+      "api-gateway",
+      "payment-service",
+      "inventory-service",
+      "order-service",
+      "notification-service",
+      "browser→api-gateway",
+      "api-gateway→payment-service",
+      "payment-service→inventory-service",
+      "payment-service→order-service",
+      "order-service→inventory-service"
+    ],
+    "non_goals": [
+      "payment gateway latency < 5s",
+      "inventory must be real-time"
+    ]
+  },
+  "system_boundary": {
+    "components": [
+      "browser",
+      "api-gateway",
+      "payment-service",
+      "inventory-service",
+      "order-service",
+      "notification-service",
+      "browser→api-gateway",
+      "api-gateway→payment-service",
+      "payment-service→inventory-service",
+      "payment-service→order-service",
+      "order-service→inventory-service"
+    ],
+    "external_dependencies": [
+      "payment-gateway-sandbox",
+      "payment-gateway-sandbox-fail"
+    ],
+    "trust_boundaries": []
+  },
+  "coverage": {
+    "ac_coverage": {
+      "AC-001": [
+        "TC-001"
+      ],
+      "AC-002": [
+        "TC-001"
+      ],
+      "AC-003": [
+        "TC-002"
+      ]
+    },
+    "related_scenarios": [
+      "S-001",
+      "S-002"
+    ],
+    "related_features": [
+      "F-001"
+    ],
+    "related_decisions": []
+  },
+  "environment_data": {
+    "topology": "TC-001:web-api-payment-inventory | TC-002:web-api-payment-order-inventory-notification",
+    "fixtures": [
+      "测试商品 catalog-001",
+      "测试库存 10 件",
+      "初始化测试商品",
+      "预置测试账户余额",
+      "会失败的支付方式",
+      "配置支付网关返回失败"
+    ],
+    "identities": [
+      "test-buyer-${uuid}"
+    ],
+    "isolation_strategy": "TC-001:每个测试运行使用唯一 buyer ID 和独立商品库存 | TC-002:每个测试运行使用唯一 buyer ID 与独立通知队列"
+  },
+  "relations": [
+    {
+      "kind": "derives_from",
+      "target_type": "scenario",
+      "target_id": "S-001"
+    },
+    {
+      "kind": "verifies",
+      "target_type": "feature",
+      "target_id": "F-001",
+      "anchor": "AC-001"
+    },
+    {
+      "kind": "derives_from",
+      "target_type": "scenario",
+      "target_id": "S-002"
+    },
+    {
+      "kind": "verifies",
+      "target_type": "feature",
+      "target_id": "F-001",
+      "anchor": "AC-003"
+    },
+    {
+      "kind": "implemented_by",
+      "target_type": "code",
+      "target_id": "tests/e2e/checkout.spec.ts",
+      "anchor": "TC-001"
+    },
+    {
+      "kind": "implemented_by",
+      "target_type": "code",
+      "target_id": "tests/e2e/payment-failure.spec.ts",
+      "anchor": "TC-002"
+    }
+  ],
+  "test_cases": [
+    {
+      "case_id": "TC-001",
+      "goal": "完成商品购买并获得订单确认",
+      "preconditions": [
+        "初始化测试商品",
+        "预置测试账户余额"
+      ],
+      "actions": [
+        {
+          "step": 1,
+          "action": "用户浏览商品列表"
+        },
+        {
+          "step": 2,
+          "action": "用户添加商品到购物车"
+        },
+        {
+          "step": 3,
+          "action": "用户进入结算页面"
+        },
+        {
+          "step": 4,
+          "action": "用户选择支付方式并确认支付"
+        },
+        {
+          "step": 5,
+          "action": "支付网关返回成功"
+        },
+        {
+          "step": 6,
+          "action": "订单状态更新为已支付"
+        },
+        {
+          "step": 7,
+          "action": "用户看到订单确认页面"
+        }
+      ],
+      "oracles": [
+        {
+          "observable": "订单确认页面显示订单号和支付成功状态",
+          "criterion": "订单状态为 paid 且包含正确金额",
+          "timeout_ms": 10000
+        }
+      ],
+      "cleanup": [
+        "删除测试订单",
+        "恢复库存",
+        "失败清理：强制取消未完成订单",
+        "失败清理：恢复库存",
+        "失败清理：清理测试账户",
+        "补偿：退款并释放库存"
+      ],
+      "priority": "critical",
+      "trace_targets": [
+        "CAND-001",
+        "feature:F-001",
+        "scenario:S-001",
+        "AC-001",
+        "AC-002"
+      ],
+      "path_class": "happy"
+    },
+    {
+      "case_id": "TC-002",
+      "goal": "完成商品购买并获得订单确认",
+      "preconditions": [
+        "初始化测试商品",
+        "预置测试账户余额"
+      ],
+      "actions": [
+        {
+          "step": 1,
+          "action": "用户浏览商品列表"
+        },
+        {
+          "step": 2,
+          "action": "用户添加商品到购物车"
+        },
+        {
+          "step": 3,
+          "action": "用户进入结算页面"
+        },
+        {
+          "step": 4,
+          "action": "用户选择支付方式并确认支付"
+        },
+        {
+          "step": 5,
+          "action": "支付网关返回成功"
+        },
+        {
+          "step": 6,
+          "action": "订单状态更新为已支付"
+        },
+        {
+          "step": 7,
+          "action": "用户看到订单确认页面"
+        }
+      ],
+      "oracles": [
+        {
+          "observable": "订单确认页面显示订单号和支付成功状态",
+          "criterion": "订单状态为 paid 且包含正确金额",
+          "timeout_ms": 10000
+        }
+      ],
+      "cleanup": [
+        "删除测试订单",
+        "恢复库存",
+        "失败清理：强制取消未完成订单",
+        "失败清理：恢复库存",
+        "失败清理：清理测试账户",
+        "补偿：退款并释放库存"
+      ],
+      "priority": "critical",
+      "trace_targets": [
+        "CAND-001",
+        "feature:F-001",
+        "scenario:S-001",
+        "AC-001",
+        "AC-002"
+      ],
+      "path_class": "happy"
+    }
+  ],
+  "evidence_contract": {
+    "required_artifacts": [
+      "runs/e2e-test/TC-001/trace.zip",
+      "trace.zip",
+      "order-confirmation.png",
+      "runs/e2e-test/TC-002/trace.zip",
+      "rollback-log.json"
+    ],
+    "runner_binding": "playwright",
+    "proof_requirements": [
+      "TC-001:trace 中包含订单确认页面截图且订单状态为 paid",
+      "TC-002:trace 中包含取消订单截图和通知记录"
+    ]
+  }
+}

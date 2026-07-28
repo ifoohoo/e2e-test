@@ -1,0 +1,159 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "e2e-test/candidate-assessment/v1",
+  "title": "E2E Candidate Assessment",
+  "type": "object",
+  "required": ["assessment_id", "timestamp", "inspection_ref", "candidates"],
+  "additionalProperties": false,
+  "properties": {
+    "assessment_id": {
+      "type": "string",
+      "pattern": "^ASSESS-[0-9]+$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "inspection_ref": {
+      "type": "string",
+      "pattern": "^INSPECT-[0-9]+$"
+    },
+    "candidates": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/candidate"
+      },
+      "minItems": 1
+    },
+    "downstream_items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/downstreamItem"
+      }
+    }
+  },
+  "definitions": {
+    "candidate": {
+      "type": "object",
+      "required": ["candidate_id", "feature_ref", "ac_ref", "criteria_met", "path_summary", "risk_level", "decision", "e2e_rationale"],
+      "additionalProperties": false,
+      "properties": {
+        "candidate_id": {
+          "type": "string",
+          "pattern": "^CAND-[0-9]+$"
+        },
+        "feature_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ac_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scenario_ref": {
+          "type": "string"
+        },
+        "criteria_met": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["C1", "C2", "C3", "C4"]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "path_summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "risk_level": {
+          "type": "string",
+          "enum": ["critical", "high", "medium", "low"]
+        },
+        "decision": {
+          "type": "string",
+          "const": "E2E"
+        },
+        "boundaries": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "e2e_rationale": {
+          "type": "object",
+          "required": ["criteria_meanings", "collaboration_risk", "lower_tier_insufficiency"],
+          "additionalProperties": false,
+          "description": "WP1C：E2E 候选的结构化充分理由。不得只列 C1-C4 标签或重复 path_summary；必须逐项说明命中准则的含义、真实协同风险或业务损失、以及为何 unit/integration/contract 不能充分证明。语义充分性由 assess 阶段机械校验（标签式/重复 path_summary 失败关闭）。",
+          "properties": {
+            "criteria_meanings": {
+              "type": "array",
+              "minItems": 1,
+              "description": "criteria_met 中每个准则都必须有一条含义说明；含义不得只是准则标签本身。",
+              "items": {
+                "type": "object",
+                "required": ["criterion", "meaning"],
+                "additionalProperties": false,
+                "properties": {
+                  "criterion": { "type": "string", "enum": ["C1", "C2", "C3", "C4"] },
+                  "meaning": { "type": "string", "minLength": 8 }
+                }
+              }
+            },
+            "collaboration_risk": {
+              "type": "string",
+              "minLength": 8,
+              "description": "真实协同风险或业务损失：只在真实系统协同中出现、下层测试无法捕获的风险，或失败造成的业务损失。"
+            },
+            "lower_tier_insufficiency": {
+              "type": "string",
+              "minLength": 8,
+              "description": "为何 unit/integration/contract 不能充分证明该路径；不得重复 path_summary。"
+            }
+          }
+        }
+      }
+    },
+    "downstreamItem": {
+      "type": "object",
+      "required": ["item_id", "feature_ref", "ac_ref", "path_summary", "decision", "downstream"],
+      "additionalProperties": false,
+      "properties": {
+        "item_id": {
+          "type": "string",
+          "pattern": "^DOWN-[0-9]+$"
+        },
+        "feature_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ac_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "path_summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "decision": {
+          "type": "string",
+          "const": "DOWNSTREAM"
+        },
+        "downstream": {
+          "type": "object",
+          "required": ["target", "reason"],
+          "additionalProperties": false,
+          "properties": {
+            "target": {
+              "type": "string",
+              "enum": ["unit", "integration", "contract"]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    }
+  }
+}

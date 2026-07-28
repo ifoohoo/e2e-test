@@ -1,0 +1,50 @@
+{
+  "matrix_id": "MATRIX-902",
+  "timestamp": "2026-07-19T10:10:00Z",
+  "assessment_ref": "ASSESS-001",
+  "cases": [
+    {
+      "case_id": "TC-1",
+      "candidate_ref": "CAND-001",
+      "value_risk": {
+        "business_value": "验证数据持久化",
+        "risk_level": "high",
+        "failure_impact": "数据丢失"
+      },
+      "source_scope": {
+        "source_artifact": "feature:F-001",
+        "acceptance_criteria": ["AC-001"],
+        "scope_boundaries": ["数据层"]
+      },
+      "path": {
+        "path_class": "happy",
+        "steps": ["提交表单", "数据入库", "查询确认"],
+        "cross_boundary": ["browser", "api", "database"]
+      },
+      "oracle": {
+        "observable": "SELECT COUNT(*) FROM orders WHERE user_id = ? AND status = 'completed'",
+        "criterion": "数据库记录数大于 0"
+      },
+      "data_identity": {
+        "test_data": ["test-user-002"],
+        "identities": ["test-user-002"],
+        "isolation": "unique-per-run"
+      },
+      "environment": {
+        "topology": "web-api-db",
+        "external_deps": [],
+        "setup": []
+      },
+      "cleanup": {
+        "cleanup_steps": ["清理测试数据"],
+        "failure_cleanup": ["回滚数据库"],
+        "idempotent": true
+      },
+      "automation": {
+        "runner": "playwright",
+        "trace_report": "runs/trace.zip",
+        "proof_condition": "pass"
+      }
+    }
+  ]
+}

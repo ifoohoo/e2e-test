@@ -1,0 +1,25 @@
+{
+  "binding_id": "PROOF-002",
+  "timestamp": "2026-07-19T11:00:00Z",
+  "artifact_ref": "checkout-flow:FILE",
+  "bindings": [
+    {
+      "case_id": "TC-1",
+      "source_trace": {
+        "feature_id": "F-001",
+        "ac_id": "AC-001"
+      },
+      "implementation": {
+        "files": ["tests/e2e/ignored-test.spec.ts"],
+        "runner": "playwright"
+      },
+      "evidence": {
+        "last_run": "2026-07-19T10:50:00Z",
+        "status": "skipped",
+        "report_path": "runs/e2e-test/TC-1/report.json",
+        "report_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "binding_digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+  ]
+}

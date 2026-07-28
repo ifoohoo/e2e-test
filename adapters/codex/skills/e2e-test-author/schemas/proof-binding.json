@@ -1,0 +1,181 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "e2e-test/proof-binding/v1",
+  "title": "E2E Proof Binding",
+  "type": "object",
+  "required": ["binding_id", "timestamp", "subject", "bindings"],
+  "additionalProperties": false,
+  "properties": {
+    "binding_id": {
+      "type": "string",
+      "pattern": "^PROOF-[0-9]+$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "artifact_ref": {
+      "type": "string",
+      "minLength": 1,
+      "description": "首次公开发布前的兼容读取字段；新写入必须使用 subject，后续移除。"
+    },
+    "subject": {
+      "type": "object",
+      "required": ["package_id", "package_digest", "manifest_ref"],
+      "additionalProperties": false,
+      "properties": {
+        "package_id": { "type": "string", "minLength": 1 },
+        "package_digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+        "manifest_ref": { "type": "string", "minLength": 1 }
+      },
+      "description": "proof 单向绑定 E2E package manifest；manifest 不反向包含 proof，避免摘要循环。"
+    },
+    "bindings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/caseBinding"
+      },
+      "minItems": 1
+    }
+  },
+  "definitions": {
+    "caseBinding": {
+      "type": "object",
+      "required": ["case_id", "proof_state", "freshness"],
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "type": "string",
+          "pattern": "^TC-\\d+[a-z]?$"
+        },
+        "proof_state": {
+          "type": "string",
+          "enum": ["planned", "candidate-linked", "implementation-bound", "evidence-bound", "stale"],
+          "description": "proof 五状态：planned（仅规格）→ candidate-linked（完成 feature/AC/scenario 或候选追溯）→ implementation-bound（唯一活跃且处于 runner inventory 范围内的实现绑定）→ evidence-bound（实现实际执行、证据满足合同且新鲜）；stale 为任一来源/实现/runner/证据/version lock 变化后失鲜。状态由 scripts/lib/proof-state.mjs 从真实输入推导，不得因候选存在而高于 candidate-linked。"
+        },
+        "stale_reasons": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "source-changed",
+              "implementation-changed",
+              "runner-changed",
+              "runner-ignored",
+              "runner-skipped",
+              "runner-unscoped",
+              "evidence-missing",
+              "digest-drift",
+              "version-lock-changed",
+              "freshness-expired"
+            ]
+          },
+          "uniqueItems": true,
+          "description": "proof_state 为 stale 时必须非空；每个原因对应一类 finding（E2E-F-008/E2E-F-009/E2E-F-012）的证据输入。"
+        },
+        "source_trace": {
+          "type": "object",
+          "required": ["feature_id"],
+          "additionalProperties": false,
+          "properties": {
+            "feature_id": { "type": "string", "minLength": 1 },
+            "ac_id": {
+              "type": "string",
+              "description": "兼容单值 AC 引用，保留为 ac_ids[0]；新写入必须同时给出规范化的 ac_ids。"
+            },
+            "ac_ids": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 },
+              "minItems": 1,
+              "uniqueItems": true,
+              "description": "WP1B：规范化多值 AC 追溯。逐 case 无损保留 source_scope.acceptance_criteria 的全部 AC；复合 AC case 不得只保留 acceptance_criteria[0]。ac_id（若存在）必须等于 ac_ids[0]。"
+            },
+            "scenario_id": { "type": "string" }
+          }
+        },
+        "implementation": {
+          "type": "object",
+          "required": ["files", "runner"],
+          "additionalProperties": false,
+          "properties": {
+            "files": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^[^*?\\[\\]{}]+$",
+                "description": "WP1E：具体实现文件路径，禁止通配符；glob 是发现范围，只能放在 discovery_glob，不得伪装成具体文件。"
+              },
+              "description": "WP1E：受 active runner inventory 管辖的具体实现文件。glob_only（仅发现范围无具体文件）或 out_of_scope（具体文件越界）时为空数组，proof_state 降级为 stale/runner-unscoped，不得误报 implementation-bound。"
+            },
+            "commit": { "type": "string" },
+            "runner": { "type": "string", "minLength": 1 },
+            "inventory_ref": {
+              "type": "string",
+              "minLength": 1,
+              "description": "runner inventory 中对应条目的稳定引用；缺失或不匹配即 unscoped，不得进入 implementation-bound。"
+            },
+            "active": {
+              "type": "boolean",
+              "description": "是否为该 case 唯一活跃实现绑定；存在重复活跃绑定时产生 E2E-F-008。"
+            },
+            "discovery_glob": {
+              "type": "string",
+              "minLength": 1,
+              "description": "WP1E：inventory 发现范围 glob（与具体 files 语义分离）；仅作发现范围，不得作为具体实现文件。"
+            },
+            "glob_only": {
+              "type": "boolean",
+              "description": "WP1E：true 表示模型仅给出 glob 发现范围而 inventory 无对应具体文件，files 为空，诚实降级为非 implementation-bound。"
+            },
+            "out_of_scope": {
+              "type": "string",
+              "minLength": 1,
+              "description": "WP1E：模型给出的具体文件越界 active runner inventory 管辖时记录原值，files 为空，诚实降级为非 implementation-bound。"
+            }
+          }
+        },
+        "evidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "last_run": { "type": "string", "format": "date-time" },
+            "status": {
+              "type": "string",
+              "enum": ["passed", "failed", "skipped", "ignored", "unscoped", "error"],
+              "description": "ignored/skipped/unscoped 不得产生 evidence-bound；必须降级为 stale 并产生对应 finding。"
+            },
+            "report_path": { "type": "string" },
+            "report_digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+          }
+        },
+        "binding_digest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "freshness": {
+          "type": "string",
+          "enum": ["current", "stale", "missing"]
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "proof_state": { "const": "stale" } }, "required": ["proof_state"] },
+          "then": { "required": ["stale_reasons"], "properties": { "stale_reasons": { "minItems": 1 } } }
+        },
+        {
+          "if": { "properties": { "proof_state": { "enum": ["candidate-linked", "implementation-bound", "evidence-bound"] } }, "required": ["proof_state"] },
+          "then": { "required": ["source_trace"] }
+        },
+        {
+          "if": { "properties": { "proof_state": { "enum": ["implementation-bound", "evidence-bound"] } }, "required": ["proof_state"] },
+          "then": { "required": ["implementation"] }
+        },
+        {
+          "if": { "properties": { "proof_state": { "const": "evidence-bound" } }, "required": ["proof_state"] },
+          "then": { "required": ["evidence"] }
+        }
+      ]
+    }
+  }
+}

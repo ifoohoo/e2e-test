@@ -1,0 +1,29 @@
+{
+  "systems": [
+    "document-service",
+    "declaration-service",
+    "customs-gateway",
+    "warehouse-service",
+    "audit-log"
+  ],
+  "runnerInventory": {
+    "cucumber": {
+      "active": true,
+      "include": [
+        "features/customs/**/*.feature"
+      ],
+      "ignored": false
+    }
+  },
+  "dataPolicy": {
+    "identity": "shared-fixed-account",
+    "isolation": "none"
+  },
+  "evidence": {
+    "required": [
+      "gateway-receipt",
+      "audit-log"
+    ],
+    "freshness": "current"
+  }
+}

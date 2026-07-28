@@ -31,7 +31,7 @@ description: 只读诊断入口，输出 Gate 状态、API/contract digest、能
 - 版本、Gate 状态、API/contract 精确 digest
 - 安装/启用/兼容/信任/解析状态
 - 能力清单、适用场景、最小示例
-- finding 能力清单（`findingCapabilities`）：由 `assets/finding-capability-manifest.json` 推导的 manifest digest、implemented/planned 规则集与 `stableBlocked`；planned 规则（E2E-F-002、E2E-F-006、E2E-F-010）继续阻断 stable，与 gate-status 同源一致
+- finding 能力清单（`findingCapabilities`）：由 `assets/finding-capability-manifest.json` 推导的 manifest digest、implemented/planned 规则集与 `stableBlocked`；E2E-F-002/F-006/F-010 现为 implemented（通用语义 detector + 结构化 reviewer packet），不再阻断 stable，但前向 6+6+6 资格未做，不得宣称 deterministic/stable；与 gate-status 同源一致
 - 诊断：确定性 conformance、`operationalQualification`（双宿主运行资格）、`methodForwardQualification`（未知需求前向方法资格）、`releaseArtifactCertification`（发布制品认证）和 adapter 状态
 - 三种资格独立显示：方法资格为 `FORWARD_TRIALS_PENDING_CODEX` 时必须原样报告；发布认证未实施时必须显示 `null`，不得由运行资格推导
 - where-am-i 引导，零项目写入

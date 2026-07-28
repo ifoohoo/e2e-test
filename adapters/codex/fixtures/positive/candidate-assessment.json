@@ -1,0 +1,57 @@
+{
+  "assessment_id": "ASSESS-001",
+  "timestamp": "2026-07-19T10:05:00Z",
+  "inspection_ref": "INSPECT-001",
+  "candidates": [
+    {
+      "candidate_id": "CAND-001",
+      "feature_ref": "feature:F-001",
+      "ac_ref": "AC-001",
+      "scenario_ref": "scenario:S-001",
+      "criteria_met": ["C1", "C2"],
+      "path_summary": "跨浏览器、API、支付网关和库存服务的完整购买流程",
+      "risk_level": "critical",
+      "decision": "E2E",
+      "boundaries": ["browser", "api-gateway", "payment-service", "inventory-service"],
+      "e2e_rationale": {
+        "criteria_meanings": [
+          { "criterion": "C1", "meaning": "路径跨越浏览器、API 网关、支付服务与库存服务四个独立部署边界，任一边界契约漂移都会改变端到端结果" },
+          { "criterion": "C2", "meaning": "浏览到支付完成是核心营收旅程，失败直接造成订单流失与资金不一致" }
+        ],
+        "collaboration_risk": "支付授权、库存扣减与订单落库分布在三个服务，真实协同下才暴露超时、部分成功与消息乱序，单服务测试无法复现这些时序耦合",
+        "lower_tier_insufficiency": "单元测试只能覆盖单个服务的计算分支，契约测试只校验两两接口字段，都无法证明跨四个边界的资金与库存最终一致，因此必须由 E2E 真实协同证明"
+      }
+    },
+    {
+      "candidate_id": "CAND-002",
+      "feature_ref": "feature:F-001",
+      "ac_ref": "AC-003",
+      "scenario_ref": "scenario:S-002",
+      "criteria_met": ["C4"],
+      "path_summary": "支付失败后的订单回滚和补偿",
+      "risk_level": "high",
+      "decision": "E2E",
+      "boundaries": ["payment-service", "order-service"],
+      "e2e_rationale": {
+        "criteria_meanings": [
+          { "criterion": "C4", "meaning": "需要证明支付失败后订单回滚、库存恢复与用户通知的补偿闭环，且重复触发保持幂等" }
+        ],
+        "collaboration_risk": "补偿横跨支付服务、订单服务与通知服务，回滚与通知的真实时序及幂等只在故障注入下的真实协同中可验证",
+        "lower_tier_insufficiency": "单元测试无法驱动真实支付网关失败，契约测试无法覆盖回滚后的跨服务状态收敛，故补偿与幂等证明必须由 E2E 承担"
+      }
+    }
+  ],
+  "downstream_items": [
+    {
+      "item_id": "DOWN-001",
+      "feature_ref": "feature:F-002",
+      "ac_ref": "AC-005",
+      "path_summary": "商品价格计算逻辑",
+      "decision": "DOWNSTREAM",
+      "downstream": {
+        "target": "unit",
+        "reason": "纯算法逻辑，可由单元测试充分证明"
+      }
+    }
+  ]
+}

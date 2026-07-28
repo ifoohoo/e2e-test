@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "status": "PASS",
+  "bundleDigest": "sha256:4873b83dce6555b9bfff7ece0ea2cc7e6de45ae967d0ef16ede83b550d2d9a2f",
+  "attestation": {
+    "digest": "sha256:809b46ec7406b7218a1f2007594bb673f43f4779ca5de3bfed32823a518cf88e",
+    "checkCount": 92
+  }
+}

@@ -1,0 +1,215 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "e2e-test/method-forward-qualification/v1",
+  "title": "Method Forward Qualification",
+  "description": "方法前向资格：未知原始需求包上的专业方法资格。与操作资格（schemas/behavior-qualification-result.json，qualificationKind=operationalQualification）独立存储、独立摘要、独立显示；independentFromOperational 机械断言不得由操作资格自动推出。本执行器无法调用两个真实宿主时状态置为 FORWARD_TRIALS_PENDING_CODEX，不得伪造 QUALIFIED。",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "qualificationKind",
+    "qualificationStatus",
+    "independentFromOperational",
+    "packages",
+    "hosts",
+    "rubricSummary",
+    "oracleContract",
+    "evidence",
+    "digest"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "qualificationKind": { "const": "methodForwardQualification" },
+    "qualificationStatus": {
+      "enum": ["NOT_STARTED", "PACKAGES_PREPARED", "FORWARD_TRIALS_PENDING_CODEX", "QUALIFIED", "NOT_QUALIFIED", "BLOCKED"],
+      "description": "NOT_STARTED 未开始；PACKAGES_PREPARED 试验包与 rubric 已备；FORWARD_TRIALS_PENDING_CODEX 确定性部分完成、真实双宿主试验待 Codex 在周期验收执行（诚实 pending，不是通过）；QUALIFIED 双宿主三包全部通过 rubric；NOT_QUALIFIED 任一试验失败；BLOCKED 环境或合同阻断。"
+    },
+    "independentFromOperational": {
+      "const": true,
+      "description": "机械断言：本资格不得由 operationalQualification 推导或蕴含；验证器必须校验该字段为 true 且本证据拥有独立 digest 与独立存储路径（conformance/method-forward-qualification.json）。"
+    },
+    "pendingMarkers": {
+      "type": "array",
+      "items": { "enum": ["FORWARD_TRIALS_PENDING_CODEX"] },
+      "uniqueItems": true,
+      "description": "qualificationStatus 为 FORWARD_TRIALS_PENDING_CODEX 时必须含该标记；help/gate-status 必须原样显示。"
+    },
+    "packages": {
+      "type": "array",
+      "minItems": 3,
+      "items": { "$ref": "#/definitions/trialPackage" },
+      "description": "至少 3 个此前未进入技能、脚本和固定 fixture 的原始需求包，覆盖不同业务域。"
+    },
+    "hosts": {
+      "type": "object",
+      "required": ["codex", "claude"],
+      "additionalProperties": false,
+      "properties": {
+        "codex": { "$ref": "#/definitions/hostForwardResult" },
+        "claude": { "$ref": "#/definitions/hostForwardResult" }
+      }
+    },
+    "rubricSummary": {
+      "type": "object",
+      "required": ["passCount", "partialCount", "failCount"],
+      "additionalProperties": false,
+      "properties": {
+        "passCount": { "type": "integer", "minimum": 0 },
+        "partialCount": { "type": "integer", "minimum": 0 },
+        "failCount": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "oracleContract": {
+      "type": "object",
+      "required": ["runnerContract", "evidenceContract", "rubricSchema"],
+      "additionalProperties": false,
+      "description": "runner/oracle 合同：宿主必须自行执行完整作者链；oracle 只接受可观察外部证据；rubric reviewer 不得读取期望答案。",
+      "properties": {
+        "runnerContract": { "type": "string", "minLength": 1 },
+        "evidenceContract": { "type": "string", "minLength": 1 },
+        "rubricSchema": { "type": "string", "const": "schemas/forward-trial-rubric.json" }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "required": [
+        "familyApiRevision",
+        "contractRevision",
+        "bundleDigest",
+        "deterministicAttestation",
+        "operationalQualificationDigest"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "familyApiRevision": { "$ref": "#/definitions/digest" },
+        "contractRevision": { "$ref": "#/definitions/digest" },
+        "bundleDigest": { "$ref": "#/definitions/digest" },
+        "deterministicAttestation": { "$ref": "#/definitions/digest" },
+        "operationalQualificationDigest": {
+          "anyOf": [{ "type": "null" }, { "$ref": "#/definitions/digest" }],
+          "description": "仅用于并列显示操作资格身份，不得作为本资格 QUALIFIED 的推导输入。"
+        }
+      }
+    },
+    "digest": { "$ref": "#/definitions/digest" }
+  },
+  "definitions": {
+    "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "trialPackage": {
+      "type": "object",
+      "required": [
+        "packageId",
+        "domain",
+        "tarballDigest",
+        "rawInputDigest",
+        "projectFactsDigest",
+        "goalDigest",
+        "containsExpectedArtifacts"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "packageId": {
+          "type": "string",
+          "pattern": "^fwd-[a-z0-9-]+$"
+        },
+        "domain": {
+          "type": "string",
+          "minLength": 1,
+          "description": "业务域标识；三包必须互不相同，且不得为既有固定 fixture 的电商 checkout/支付域。"
+        },
+        "tarballDigest": { "$ref": "#/definitions/digest" },
+        "rawInputDigest": { "$ref": "#/definitions/digest" },
+        "projectFactsDigest": { "$ref": "#/definitions/digest" },
+        "goalDigest": { "$ref": "#/definitions/digest" },
+        "containsExpectedArtifacts": {
+          "const": false,
+          "description": "机械断言：包内不得含期望的 inspection/assessment/matrix 或答案；scripts/forward-trials-prepare.mjs 生成时强制扫描并置 false。"
+        },
+        "mutationOf": {
+          "type": "string",
+          "pattern": "^fwd-[a-z0-9-]+$",
+          "description": "变异/反事实子包指向的基础包；基础包省略本字段。"
+        },
+        "mutationKind": {
+          "enum": ["remove-ac", "change-boundary", "shared-state", "runner-ignore", "stale-evidence"]
+        }
+      }
+    },
+    "hostForwardResult": {
+      "type": "object",
+      "required": ["status", "trials"],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "enum": ["QUALIFIED", "NOT_QUALIFIED", "PENDING", "HOST_UNAVAILABLE", "BLOCKED"]
+        },
+        "cliVersion": { "type": "string", "minLength": 1 },
+        "trials": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/forwardTrial" }
+        }
+      }
+    },
+    "forwardTrial": {
+      "type": "object",
+      "required": [
+        "packageId",
+        "rawInputDigest",
+        "projectFactsDigest",
+        "goalDigest",
+        "hostInvocationDigest",
+        "eventStreamDigest",
+        "authorChainCompleted",
+        "stageChainDigest",
+        "stageResultsManifestDigest",
+        "previewManifestDigest",
+        "artifactPackageDigest",
+        "reviewerPacketDigest",
+        "rubricDigest",
+        "zeroUnauthorizedWrites",
+        "absolutePathDetected",
+        "writeDelta"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "packageId": { "type": "string", "pattern": "^fwd-[a-z0-9-]+$" },
+        "rawInputDigest": { "$ref": "#/definitions/digest" },
+        "projectFactsDigest": { "$ref": "#/definitions/digest" },
+        "goalDigest": { "$ref": "#/definitions/digest" },
+        "hostInvocationDigest": { "$ref": "#/definitions/digest" },
+        "eventStreamDigest": { "$ref": "#/definitions/digest" },
+        "authorChainCompleted": {
+          "type": "boolean",
+          "description": "宿主是否自行完成 inspect→assess→design→compose→review-core→repair-core→reconcile→validate 全链。"
+        },
+        "stageChainDigest": {
+          "anyOf": [{ "type": "null" }, { "$ref": "#/definitions/digest" }]
+        },
+        "stageResultsManifestDigest": {
+          "anyOf": [{ "type": "null" }, { "$ref": "#/definitions/digest" }]
+        },
+        "previewManifestDigest": {
+          "anyOf": [{ "type": "null" }, { "$ref": "#/definitions/digest" }]
+        },
+        "artifactPackageDigest": {
+          "anyOf": [{ "type": "null" }, { "$ref": "#/definitions/digest" }]
+        },
+        "reviewerPacketDigest": {
+          "anyOf": [{ "type": "null" }, { "$ref": "#/definitions/digest" }]
+        },
+        "rubricDigest": {
+          "anyOf": [{ "type": "null" }, { "$ref": "#/definitions/digest" }],
+          "description": "独立 rubric 结果（schemas/forward-trial-rubric.json）摘要；rubric 不得读取期望答案。"
+        },
+        "exitSummary": { "type": "string", "minLength": 1 },
+        "zeroUnauthorizedWrites": { "type": "boolean" },
+        "absolutePathDetected": { "type": "boolean" }
+        ,"writeDelta": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[^/\\\\].*" },
+          "uniqueItems": true
+        }
+      }
+    }
+  }
+}

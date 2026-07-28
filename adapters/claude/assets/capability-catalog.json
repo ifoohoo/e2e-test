@@ -1,0 +1,228 @@
+{
+  "schemaVersion": 1,
+  "catalogId": "capability-catalog@1",
+  "generatedAt": "__DETERMINISTIC__",
+  "packageVersion": "0.2.0-alpha.3",
+  "capabilities": [
+    {
+      "id": "artifact.e2e-test.help",
+      "type": "adoption-shell",
+      "status": "available",
+      "description": "只读诊断入口，输出 Gate 状态、能力清单和下一步",
+      "versionSource": "family/implementation.yaml",
+      "dependencies": { "peer": [], "optional": [] },
+      "permissions": {
+        "sourceWrite": false,
+        "artifactWrite": false,
+        "verifyCommand": false,
+        "testCommand": false,
+        "processLifecycle": false,
+        "networkEgress": false
+      },
+      "scope": {
+        "languages": [],
+        "frameworks": [],
+        "targets": []
+      },
+      "entryPoint": "skills/e2e-test-help"
+    },
+    {
+      "id": "artifact.e2e-test.setup",
+      "type": "adoption-shell",
+      "status": "available",
+      "description": "只读采用外壳：check/profile/plan/doctor 全只读；apply 无合法写入目标时零写入",
+      "versionSource": "family/implementation.yaml",
+      "dependencies": { "peer": [], "optional": [] },
+      "permissions": {
+        "sourceWrite": false,
+        "artifactWrite": false,
+        "verifyCommand": false,
+        "testCommand": false,
+        "processLifecycle": false,
+        "networkEgress": false
+      },
+      "scope": {
+        "languages": [],
+        "frameworks": [],
+        "targets": []
+      },
+      "entryPoint": "scripts/lib/setup-shell.mjs"
+    },
+    {
+      "id": "artifact.e2e-test.quickstart",
+      "type": "adoption-shell",
+      "status": "available",
+      "description": "确定性纯函数路由：同输入同字节输出；不继承目标工作流权限",
+      "versionSource": "family/implementation.yaml",
+      "dependencies": { "peer": [], "optional": [] },
+      "permissions": {
+        "sourceWrite": false,
+        "artifactWrite": false,
+        "verifyCommand": false,
+        "testCommand": false,
+        "processLifecycle": false,
+        "networkEgress": false
+      },
+      "scope": {
+        "languages": [],
+        "frameworks": [],
+        "targets": []
+      },
+      "entryPoint": "scripts/lib/quickstart-router.mjs"
+    },
+    {
+      "id": "artifact.e2e-test.default",
+      "type": "spec-kernel",
+      "status": "available",
+      "description": "默认入口，intent routing",
+      "versionSource": "family/implementation.yaml",
+      "dependencies": { "peer": [], "optional": [] },
+      "permissions": {
+        "sourceWrite": false,
+        "artifactWrite": false,
+        "verifyCommand": false,
+        "testCommand": false,
+        "processLifecycle": false,
+        "networkEgress": false
+      },
+      "scope": {
+        "languages": [],
+        "frameworks": [],
+        "targets": []
+      },
+      "entryPoint": "skills/e2e-test"
+    },
+    {
+      "id": "artifact.e2e-test.author",
+      "type": "spec-kernel",
+      "status": "available",
+      "description": "E2E 规格编制",
+      "versionSource": "family/implementation.yaml",
+      "dependencies": { "peer": [], "optional": [] },
+      "permissions": {
+        "sourceWrite": false,
+        "artifactWrite": true,
+        "verifyCommand": false,
+        "testCommand": false,
+        "processLifecycle": false,
+        "networkEgress": false
+      },
+      "scope": {
+        "languages": [],
+        "frameworks": [],
+        "targets": []
+      },
+      "entryPoint": "skills/e2e-test-author"
+    },
+    {
+      "id": "artifact.e2e-test.review",
+      "type": "spec-kernel",
+      "status": "available",
+      "description": "E2E 规格审阅",
+      "versionSource": "family/implementation.yaml",
+      "dependencies": { "peer": [], "optional": [] },
+      "permissions": {
+        "sourceWrite": false,
+        "artifactWrite": true,
+        "verifyCommand": false,
+        "testCommand": false,
+        "processLifecycle": false,
+        "networkEgress": false
+      },
+      "scope": {
+        "languages": [],
+        "frameworks": [],
+        "targets": []
+      },
+      "entryPoint": "skills/e2e-test-review"
+    },
+    {
+      "id": "artifact.e2e-test.repair",
+      "type": "spec-kernel",
+      "status": "available",
+      "description": "E2E 规格修复",
+      "versionSource": "family/implementation.yaml",
+      "dependencies": { "peer": [], "optional": [] },
+      "permissions": {
+        "sourceWrite": false,
+        "artifactWrite": true,
+        "verifyCommand": false,
+        "testCommand": false,
+        "processLifecycle": false,
+        "networkEgress": false
+      },
+      "scope": {
+        "languages": ["TypeScript"],
+        "frameworks": [],
+        "targets": []
+      },
+      "entryPoint": "skills/e2e-test-repair"
+    },
+    {
+      "id": "artifact.e2e-test.browser.implement",
+      "type": "browser-extension",
+      "status": "planned",
+      "description": "从已批准规格生成 Playwright 测试代码（计划中，尚不可调用）",
+      "versionSource": "family/implementation.yaml",
+      "dependencies": { "peer": [], "optional": ["@playwright/test"] },
+      "permissions": {
+        "sourceWrite": true,
+        "artifactWrite": true,
+        "verifyCommand": true,
+        "testCommand": false,
+        "processLifecycle": false,
+        "networkEgress": false
+      },
+      "scope": {
+        "languages": ["TypeScript"],
+        "frameworks": ["Playwright Test"],
+        "targets": ["Chromium"]
+      },
+      "entryPoint": "N/A_PLANNED"
+    },
+    {
+      "id": "artifact.e2e-test.browser.execute",
+      "type": "browser-extension",
+      "status": "planned",
+      "description": "运行真实 Playwright 测试并生成规范执行结果（计划中，尚不可调用）",
+      "versionSource": "family/implementation.yaml",
+      "dependencies": { "peer": [], "optional": ["@playwright/test"] },
+      "permissions": {
+        "sourceWrite": false,
+        "artifactWrite": true,
+        "verifyCommand": false,
+        "testCommand": true,
+        "processLifecycle": true,
+        "networkEgress": true
+      },
+      "scope": {
+        "languages": ["TypeScript"],
+        "frameworks": ["Playwright Test"],
+        "targets": ["Chromium"]
+      },
+      "entryPoint": "N/A_PLANNED"
+    },
+    {
+      "id": "artifact.e2e-test.internal.project-profile-detector",
+      "type": "internal-stage",
+      "status": "internal",
+      "description": "项目事实探测器（内部阶段，不暴露为用户服务）",
+      "versionSource": "family/implementation.yaml",
+      "dependencies": { "peer": [], "optional": [] },
+      "permissions": {
+        "sourceWrite": false,
+        "artifactWrite": false,
+        "verifyCommand": false,
+        "testCommand": false,
+        "processLifecycle": false,
+        "networkEgress": false
+      },
+      "scope": {
+        "languages": [],
+        "frameworks": [],
+        "targets": []
+      },
+      "entryPoint": "scripts/lib/project-profile-detector.mjs"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "binding": {
+    "case_id": "TC-902",
+    "source_trace": { "feature_id": "F-001", "ac_id": "AC-001", "scenario_id": "S-001" },
+    "freshness": "missing"
+  },
+  "ctx": {},
+  "claimedState": "evidence-bound",
+  "expectedViolation": "PROOF_STATE_INVALID"
+}

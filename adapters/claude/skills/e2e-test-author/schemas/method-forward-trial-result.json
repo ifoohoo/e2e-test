@@ -1,0 +1,103 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "e2e-test/method-forward-trial-result/v1",
+  "title": "Method Forward Trial Result",
+  "description": "一次未知需求方法正向试验的确定性结果。该结果由外层验证器根据宿主事件、八工序 run root、预览工件和写集重建，不能由宿主自报通过。",
+  "type": "object",
+  "required": ["schemaVersion", "trialId", "packageId", "hostId", "evidenceMode", "status", "input", "invocation", "author", "isolation", "digest"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "trialId": { "type": "string", "pattern": "^(codex|claude-code)--fwd-[a-z0-9-]+$" },
+    "packageId": { "type": "string", "pattern": "^fwd-[a-z0-9-]+$" },
+    "hostId": { "enum": ["codex", "claude-code"] },
+    "evidenceMode": { "enum": ["real", "synthetic"] },
+    "status": { "enum": ["PASS", "FAIL", "BLOCKED"] },
+    "code": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]+$" },
+    "input": {
+      "type": "object",
+      "required": ["tarballDigest", "rawInputDigest", "projectFactsDigest", "goalDigest", "pluginSubjectDigest"],
+      "additionalProperties": false,
+      "properties": {
+        "tarballDigest": { "$ref": "#/definitions/digest" },
+        "rawInputDigest": { "$ref": "#/definitions/digest" },
+        "projectFactsDigest": { "$ref": "#/definitions/digest" },
+        "goalDigest": { "$ref": "#/definitions/digest" },
+        "pluginSubjectDigest": { "$ref": "#/definitions/digest" }
+      }
+    },
+    "invocation": {
+      "type": "object",
+      "required": ["cliVersion", "exitCode", "timedOut", "hostInvocationDigest", "eventStreamDigest", "skillReadVerified", "authorCommandVerified", "unexpectedToolDetected", "budgetTimeoutMs", "budgetSource"],
+      "additionalProperties": false,
+      "properties": {
+        "cliVersion": { "type": "string", "minLength": 1 },
+        "exitCode": { "type": ["integer", "null"] },
+        "timedOut": { "type": "boolean" },
+        "hostInvocationDigest": { "$ref": "#/definitions/digest" },
+        "eventStreamDigest": { "$ref": "#/definitions/digest" },
+        "skillReadVerified": { "type": "boolean" },
+        "authorCommandVerified": { "type": "boolean" },
+        "unexpectedToolDetected": { "type": "boolean" },
+        "budgetTimeoutMs": { "type": ["integer", "null"], "minimum": 1000, "description": "R27 杠杆 3：实际生效的运行预算（毫秒）" },
+        "budgetSource": { "type": ["string", "null"], "enum": ["cli", "env", "default", null], "description": "R27 杠杆 3：预算来源" }
+      }
+    },
+    "author": {
+      "type": "object",
+      "required": ["chainCompleted", "stages", "stageChainDigest", "stageResultsManifestDigest", "previewDigest", "artifactPackageDigest", "plannedWrites", "evidenceRefs"],
+      "additionalProperties": false,
+      "properties": {
+        "chainCompleted": { "type": "boolean" },
+        "stages": {
+          "type": "array",
+          "items": { "enum": ["inspect", "assess", "design", "compose", "review-core", "repair-core", "reconcile", "validate"] },
+          "minItems": 0,
+          "maxItems": 8,
+          "uniqueItems": true
+        },
+        "stageChainDigest": { "anyOf": [{ "type": "null" }, { "$ref": "#/definitions/digest" }] },
+        "stageResultsManifestDigest": { "anyOf": [{ "type": "null" }, { "$ref": "#/definitions/digest" }] },
+        "previewDigest": { "anyOf": [{ "type": "null" }, { "$ref": "#/definitions/digest" }] },
+        "artifactPackageDigest": { "anyOf": [{ "type": "null" }, { "$ref": "#/definitions/digest" }] },
+        "plannedWrites": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["path", "contentDigest"],
+            "additionalProperties": false,
+            "properties": {
+              "path": { "type": "string", "pattern": "^[^/\\\\].*" },
+              "contentDigest": { "$ref": "#/definitions/digest" }
+            }
+          }
+        },
+        "evidenceRefs": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[^/\\\\].*" },
+          "uniqueItems": true
+        }
+      }
+    },
+    "isolation": {
+      "type": "object",
+      "required": ["inputUnmodified", "pluginUnmodified", "zeroUnauthorizedWrites", "absolutePathDetected", "writeDelta"],
+      "additionalProperties": false,
+      "properties": {
+        "inputUnmodified": { "type": "boolean" },
+        "pluginUnmodified": { "type": "boolean" },
+        "zeroUnauthorizedWrites": { "type": "boolean" },
+        "absolutePathDetected": { "type": "boolean" }
+        ,"writeDelta": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[^/\\\\].*" },
+          "uniqueItems": true
+        }
+      }
+    },
+    "digest": { "$ref": "#/definitions/digest" }
+  },
+  "definitions": {
+    "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "inspection_id": "INSPECT-001",
+  "timestamp": "2026-07-19T10:00:00Z",
+  "inputs": {
+    "source_type": "prd",
+    "source_ids": ["feature:F-001"]
+  },
+  "business_context": {
+    "business_goal": "确保用户能完成从浏览商品到支付完成的完整购买流程",
+    "actors": ["registered_buyer", "payment_gateway", "inventory_service"],
+    "key_journeys": ["browse-to-checkout", "payment-completion", "order-confirmation"],
+    "constraints": ["payment gateway latency < 5s", "inventory must be real-time"],
+    "non_goals": ["后台管理流程", "商品上架流程"]
+  },
+  "candidate_paths": [
+    {
+      "path_id": "PATH-001",
+      "summary": "用户从商品浏览到支付完成的完整购买流程",
+      "boundaries": ["browser", "api-gateway", "payment-service", "inventory-service"],
+      "related_acs": ["AC-001", "AC-002"]
+    },
+    {
+      "path_id": "PATH-002",
+      "summary": "支付失败后的订单回滚和用户通知",
+      "boundaries": ["payment-service", "order-service", "notification-service"],
+      "related_acs": ["AC-003"]
+    }
+  ]
+}

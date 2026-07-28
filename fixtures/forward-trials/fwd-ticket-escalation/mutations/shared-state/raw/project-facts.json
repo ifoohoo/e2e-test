@@ -1,0 +1,29 @@
+{
+  "systems": [
+    "ticket-service",
+    "sla-timer",
+    "oncall-schedule",
+    "escalation-service",
+    "messaging-gateway"
+  ],
+  "runnerInventory": {
+    "gauge": {
+      "active": true,
+      "include": [
+        "specs/escalation/**/*.spec"
+      ],
+      "ignored": false
+    }
+  },
+  "dataPolicy": {
+    "identity": "shared-fixed-account",
+    "isolation": "none"
+  },
+  "evidence": {
+    "required": [
+      "assignment-event",
+      "notification-receipt"
+    ],
+    "freshness": "current"
+  }
+}

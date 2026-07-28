@@ -1,0 +1,38 @@
+{
+  "metadata": {
+    "id": "neg-no-rel:FILE",
+    "title": "缺少关系的制品",
+    "status": "active"
+  },
+  "scope": {
+    "business_goal": "测试目标",
+    "actors": ["user"]
+  },
+  "system_boundary": {
+    "components": ["web"]
+  },
+  "coverage": {},
+  "environment_data": {},
+  "relations": [
+    {
+      "kind": "derives_from",
+      "target_type": "scenario",
+      "target_id": "S-001"
+    }
+  ],
+  "test_cases": [
+    {
+      "case_id": "TC-1",
+      "goal": "测试目标",
+      "preconditions": ["前置条件"],
+      "actions": [{"step": 1, "action": "操作"}],
+      "oracles": [{"observable": "结果", "criterion": "标准"}],
+      "cleanup": [],
+      "priority": "medium",
+      "trace_targets": ["F-001"]
+    }
+  ],
+  "evidence_contract": {
+    "required_artifacts": ["trace.zip"]
+  }
+}

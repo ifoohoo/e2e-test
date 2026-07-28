@@ -1,0 +1,26 @@
+{
+  "review_id": "REVIEW-001",
+  "timestamp": "2026-07-19T10:30:00Z",
+  "artifact_ref": "project:e2e-spec:checkout-flow",
+  "reviewer": {
+    "type": "deterministic",
+    "identity": "e2e-test-review-core"
+  },
+  "overall_status": "PASS",
+  "findings": [],
+  "summary": {
+    "total": 0,
+    "high": 0,
+    "medium": 0,
+    "low": 0,
+    "safe_fix": 0,
+    "business_decision": 0,
+    "out_of_scope": 0
+  },
+  "deterministic_checks": {
+    "schema_valid": true,
+    "contract_valid": true,
+    "matrix_complete": true,
+    "relations_valid": true
+  }
+}
