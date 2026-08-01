@@ -223,19 +223,26 @@ export function prepareImplementationCommitPreview(input = {}) {
     );
   }
   const root = realpathSync(context.planningInput.projectRoot);
-  const files = context.preview.previews.map(item => item.file);
-  if (new Set(files).size !== files.length) {
-    return failure(
-      COMMIT_FAILURE_CODES.M4_COMMIT_DUPLICATE_TARGET,
-      ['首期一个 GeneratedTest 必须对应一个独立目标文件'],
-    );
-  }
   const generatedById = new Map(
     context.preview.generatedTests.map(item => [item.caseId, item]),
   );
-  const plannedWrites = [];
+  // 按文件路径分组：同文件同内容允许去重，同文件不同内容拒绝
+  const fileGroups = new Map();
   for (const item of context.preview.previews) {
-    const inspected = inspectTarget(root, item.file);
+    const existing = fileGroups.get(item.file);
+    if (existing && existing.contentDigest !== item.contentDigest) {
+      return failure(
+        COMMIT_FAILURE_CODES.M4_COMMIT_DUPLICATE_TARGET,
+        [`同路径不同内容:${item.file}`],
+      );
+    }
+    if (!existing) {
+      fileGroups.set(item.file, item);
+    }
+  }
+  const plannedWrites = [];
+  for (const [file, item] of fileGroups) {
+    const inspected = inspectTarget(root, file);
     const generated = generatedById.get(item.caseId);
     if (!inspected ||
         rawDigest(Buffer.from(item.source, 'utf8')) !== item.contentDigest ||
@@ -247,12 +254,12 @@ export function prepareImplementationCommitPreview(input = {}) {
     }
     plannedWrites.push({
       caseId: item.caseId,
-      file: item.file,
+      file,
       change: inspected.exists ? 'update' : 'create',
       beforeDigest: inspected.digest,
       afterDigest: item.contentDigest,
       source: item.source,
-      diff: deterministicDiff(item.file, inspected.bytes, item.source),
+      diff: deterministicDiff(file, inspected.bytes, item.source),
     });
   }
   const bindingManifest = makeBindingManifest(context);

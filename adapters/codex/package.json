@@ -1,10 +1,10 @@
 {
   "name": "e2e-test",
-  "version": "0.2.0-alpha.3",
-  "description": "E2E 测试专业技能族 — 框架中立、experimental 的 E2E 规格技能族",
+  "version": "0.2.0-alpha.4",
+  "description": "E2E \u6d4b\u8bd5\u4e13\u4e1a\u6280\u80fd\u65cf \u2014 \u6846\u67b6\u4e2d\u7acb\u3001experimental \u7684 E2E \u89c4\u683c\u6280\u80fd\u65cf",
   "type": "module",
   "license": "Apache-2.0",
-  "author": "广州市风荷科技有限公司",
+  "author": "\u5e7f\u5dde\u5e02\u98ce\u8377\u79d1\u6280\u6709\u9650\u516c\u53f8",
   "contributors": [
     "mzdbxqh"
   ],
@@ -34,7 +34,9 @@
     "method-forward:prepare": "node scripts/method-forward-qualification-prepare.mjs",
     "method-forward:trial": "node scripts/method-forward-trial-runner.mjs",
     "method-forward:review": "node scripts/method-forward-reviewer.mjs",
-    "method-forward:aggregate": "node scripts/method-forward-qualification-aggregate.mjs"
+    "method-forward:aggregate": "node scripts/method-forward-qualification-aggregate.mjs",
+    "test:release-gates": "node --test test/release-gates/*.test.mjs",
+    "evidence:refresh": "node scripts/evidence-refresh.mjs"
   },
   "keywords": [
     "e2e",
@@ -65,7 +67,8 @@
   ],
   "dependencies": {
     "ajv": "^8.20.0",
-    "ajv-formats": "^3.0.1"
+    "ajv-formats": "^3.0.1",
+    "typescript": "^5.8.3"
   },
   "peerDependencies": {
     "agent-method-registry": ">=0.2.0 <0.3.0",
@@ -81,6 +84,7 @@
   },
   "devDependencies": {
     "artifact-graph": "0.6.1",
-    "js-yaml": "^5.2.2"
+    "js-yaml": "^5.2.2",
+    "prettier": "^3.9.6"
   }
 }

@@ -9,4 +9,4 @@ description: 仅供 E2E author/review 内部编排把制品包、实现、runner
 
 候选存在不能越级为实现或证据绑定；实现必须在 inventory 内唯一且活跃；ignored、skipped、unscoped 不得成为 evidence-bound；proof 只单向绑定 package manifest。
 
-调用 `workers/reconcile-worker.mjs`，方法细节见 `references/proof-reconciliation.md`。
+调用 `../../workers/reconcile-worker.mjs`，方法细节见 `../../references/proof-reconciliation.md`。

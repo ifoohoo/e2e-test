@@ -1,6 +1,25 @@
 # Changelog
 
-## 0.2.0-alpha.3 (2026-07-29) — 候选/准备中
+## 0.2.0-alpha.4 (2026-08-01) — GitHub prerelease
+
+### 浏览器公开 implement→execute、真实 Chromium、三根证明闭包
+
+- **浏览器公开链路**：`artifact.e2e-test.browser.implement` 和 `artifact.e2e-test.browser.execute` 在显式 ExtensionBinding 下实验性可调用；默认 NOT_ENABLED。
+- **真实 Chromium**：以真实 Chromium 环境完成浏览器执行路径验证。
+- **网络/资源/浏览器策略**：网络、资源隔离和浏览器策略已集成到执行路径。
+- **ExtensionBinding 生命周期**：项目 binding 持续有效至显式撤销，或 package/contract/service/scope/write-set/permission/digest 漂移；`boundAt` 只作审计时间，不引入隐式 TTL。
+- **OneTimeHandle**：副作用时效和防重放由一次性 handle 的 expiry 与消费状态机承担。
+- **三根操作证明身份闭包**：root、Codex adapter 与 Claude adapter 的 descriptor、conformance 和 behavior qualification 身份可独立复算；`releaseArtifactCertification` 仍为 `null`。
+- **service-runner 版本动态化**：消除 service-runner.mjs 对版本的硬编码，从 implementation descriptor 动态获取期望版本。
+- **alpha.4 不等于 RELEASE_ATTESTED**：本版本作为 GitHub prerelease（PUBLIC_RELEASE_READY）发布；不具备 RELEASE_ATTESTED 资格。统一 marketplace 可用性由独立事务治理。
+
+### 已知限制
+
+- alpha.4 是 GitHub prerelease，不具备 RELEASE_ATTESTED。
+- implement/execute 默认 NOT_ENABLED，需要显式 ExtensionBinding。
+- 方法前向资格仍为 FORWARD_TRIALS_PENDING_CODEX。
+
+## 0.2.0-alpha.3 (2026-07-29) — 已发布
 
 ### M2–M5 规格到浏览器实验性链路与 28 条失效模式覆盖守恒
 

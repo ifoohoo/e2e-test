@@ -19,6 +19,8 @@ import {
   sep,
 } from 'node:path';
 
+import * as ts from 'typescript';
+
 import { validateArtifactContract } from './artifact-contract-validation.mjs';
 import { prepareImplementationPlan } from './browser-implementation-planner.mjs';
 import { stableDigest } from './digest.mjs';
@@ -356,6 +358,61 @@ export function prepareCodeDraftRequest(input = {}) {
   };
 }
 
+/**
+ * 用 TypeScript parser 检测 skip/fixme/only 结构规则（Node 2.4 parser 化，
+ * 取代启发式剥离器及其全部已知边界——正则字面量内引号、关键字后正则、
+ * 属性名伪装、`}` 后除号歧义等均由真实 AST 天然覆盖）：
+ * - PropertyAccessExpression：test/describe.only|skip|fixme(...) 命中；
+ * - ElementAccessExpression：test/describe['only'|'skip'|'fixme'](...)
+ *   计算属性（字符串/无替换模板字面量）同法命中；
+ * - 解析失败（非合法 JS/TS）fail-closed：返回 SOURCE_PARSE_FAILED
+ *   （按含违规处理，不静默放行）。
+ * 只使用 typescript 的 parser/scanner API，不引入编译链其余部分。
+ * 同时供 browser-code-review.mjs 复用（单一实现，不再需要副本一致性断言）。
+ */
+const STRUCTURAL_CALL_CODES = Object.freeze({
+  only: 'TEST_ONLY',
+  skip: 'SKIP_OR_FIXME',
+  fixme: 'SKIP_OR_FIXME',
+});
+
+export function detectStructuralViolations(source) {
+  const sourceFile = ts.createSourceFile(
+    'draft.ts',
+    source,
+    ts.ScriptTarget.Latest,
+    true,
+    ts.ScriptKind.TS,
+  );
+  if ((sourceFile.parseDiagnostics || []).length > 0) {
+    return ['SOURCE_PARSE_FAILED'];
+  }
+  const violations = [];
+  const visit = (node) => {
+    if (ts.isCallExpression(node)) {
+      const callee = node.expression;
+      if (ts.isPropertyAccessExpression(callee) &&
+          ts.isIdentifier(callee.expression) &&
+          (callee.expression.text === 'test' ||
+            callee.expression.text === 'describe')) {
+        const hit = STRUCTURAL_CALL_CODES[callee.name.text];
+        if (hit) violations.push(hit);
+      } else if (ts.isElementAccessExpression(callee) &&
+          ts.isIdentifier(callee.expression) &&
+          (callee.expression.text === 'test' ||
+            callee.expression.text === 'describe') &&
+          (ts.isStringLiteral(callee.argumentExpression) ||
+            ts.isNoSubstitutionTemplateLiteral(callee.argumentExpression))) {
+        const hit = STRUCTURAL_CALL_CODES[callee.argumentExpression.text];
+        if (hit) violations.push(hit);
+      }
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(sourceFile);
+  return [...new Set(violations)];
+}
+
 function sourceViolations(draft, requestCase) {
   const source = draft.source;
   const violations = [];
@@ -373,10 +430,13 @@ function sourceViolations(draft, requestCase) {
   if (draft.locatorApproach === 'test-id' && !source.includes('getByTestId(')) {
     violations.push('TEST_ID_LOCATOR_NOT_EVIDENCED');
   }
+  // skip/fixme/only 结构规则用 TypeScript AST 遍历检测（parser 化，
+  // 取代启发式剥离器）；解析失败 fail-closed 按含违规处理；
+  // 其余 forbidden 规则保持原文/正则语义不动
+  violations.push(...detectStructuralViolations(source));
   const forbidden = [
     ['CSS_SELECTOR_CHAIN', /(?:\.locator\s*\(|querySelector(?:All)?\s*\(|\$\$\s*\()/],
     ['FIXED_WAIT', /(?:waitForTimeout|setTimeout|sleep)\s*\(/],
-    ['SKIP_OR_FIXME', /\b(?:test|describe)\.(?:skip|fixme)\s*\(/],
     ['ARBITRARY_RETRY', /\bretr(?:y|ies)\b/i],
     ['DYNAMIC_CODE_EXECUTION', /\b(?:eval|Function)\s*\(/],
     ['COMMAND_OR_FILESYSTEM_ACCESS', /(?:node:)?(?:child_process|fs\/promises|fs|process)\b|(?:exec|spawn|fork)\s*\(/],
@@ -385,7 +445,9 @@ function sourceViolations(draft, requestCase) {
     ['ABSOLUTE_PATH_LEAK', /(?:^|[ "'`])(?:\/(?:Users|home|tmp|private|var|etc)\/|[A-Za-z]:[\\/])/m],
   ];
   for (const [code, pattern] of forbidden) {
-    if (pattern.test(source)) violations.push(code);
+    if (pattern.test(source)) {
+      violations.push(code);
+    }
   }
   if (draft.retryPolicy.max !== 0) violations.push('RETRY_NOT_ZERO');
   if (draft.waitStrategy.timeoutMs > requestCase.oracle.timeoutMs) {

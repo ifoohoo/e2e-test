@@ -199,29 +199,14 @@ export function setupDoctor(projectRoot, pluginRoot) {
   const { catalog, digest, errors } = loadCapabilityCatalog(effectivePluginRoot);
 
   if (catalog) {
-    // 检查 planned 能力是否被错误标记为 available
-    for (const cap of catalog.capabilities) {
-      if (cap.type === 'browser-extension' && cap.status !== 'planned') {
+    // 从 loadCapabilityCatalog 的 errors 中筛选 entryPoint 相关错误
+    for (const error of errors) {
+      if (error.startsWith('ENTRYPOINT_') || error.startsWith('BROWSER_ENTRYPOINT_')) {
         driftChecks.push({
-          id: cap.id,
-          issue: 'BROWSER_EXTENSION_NOT_PLANNED',
-          message: `浏览器扩展 ${cap.id} 状态应为 planned，当前为 ${cap.status}`,
+          issue: 'BROWSER_EXTENSION_ENTRYPOINT_INVALID',
+          message: error,
         });
       }
-    }
-
-    // 检查 implement/execute 是否可调用
-    const implementCallable = catalog.capabilities.some(
-      c => c.id === 'artifact.e2e-test.browser.implement' && c.status === 'available'
-    );
-    const executeCallable = catalog.capabilities.some(
-      c => c.id === 'artifact.e2e-test.browser.execute' && c.status === 'available'
-    );
-    if (implementCallable) {
-      driftChecks.push({ issue: 'IMPLEMENT_SHOULD_NOT_BE_CALLABLE', message: 'implement 不应标记为 available' });
-    }
-    if (executeCallable) {
-      driftChecks.push({ issue: 'EXECUTE_SHOULD_NOT_BE_CALLABLE', message: 'execute 不应标记为 available' });
     }
   }
 

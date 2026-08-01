@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "catalogId": "capability-catalog@1",
   "generatedAt": "__DETERMINISTIC__",
-  "packageVersion": "0.2.0-alpha.3",
+  "packageVersion": "0.2.0-alpha.4",
   "capabilities": [
     {
       "id": "artifact.e2e-test.help",
@@ -161,8 +161,8 @@
     {
       "id": "artifact.e2e-test.browser.implement",
       "type": "browser-extension",
-      "status": "planned",
-      "description": "从已批准规格生成 Playwright 测试代码（计划中，尚不可调用）",
+      "status": "available",
+      "description": "从已批准规格生成 Playwright 测试代码（候选包内可调用）",
       "versionSource": "family/implementation.yaml",
       "dependencies": { "peer": [], "optional": ["@playwright/test"] },
       "permissions": {
@@ -178,13 +178,13 @@
         "frameworks": ["Playwright Test"],
         "targets": ["Chromium"]
       },
-      "entryPoint": "N/A_PLANNED"
+      "entryPoint": "skills/e2e-test-implement"
     },
     {
       "id": "artifact.e2e-test.browser.execute",
       "type": "browser-extension",
-      "status": "planned",
-      "description": "运行真实 Playwright 测试并生成规范执行结果（计划中，尚不可调用）",
+      "status": "available",
+      "description": "运行真实 Playwright 测试并生成规范执行结果（候选包内可调用）",
       "versionSource": "family/implementation.yaml",
       "dependencies": { "peer": [], "optional": ["@playwright/test"] },
       "permissions": {
@@ -200,7 +200,7 @@
         "frameworks": ["Playwright Test"],
         "targets": ["Chromium"]
       },
-      "entryPoint": "N/A_PLANNED"
+      "entryPoint": "skills/e2e-test-execute"
     },
     {
       "id": "artifact.e2e-test.internal.project-profile-detector",

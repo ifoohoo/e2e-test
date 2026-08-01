@@ -7,7 +7,10 @@
 
 import { createHash } from 'node:crypto';
 
-import { readTrustedDraftContext } from './browser-code-draft.mjs';
+import {
+  detectStructuralViolations,
+  readTrustedDraftContext,
+} from './browser-code-draft.mjs';
 import { stableDigest } from './digest.mjs';
 import { validateSchema } from './schema-validation.mjs';
 
@@ -32,6 +35,10 @@ const FINDING_DEFINITIONS = Object.freeze({
   CSS_SELECTOR_CHAIN: ['high', '使用了脆弱 CSS/query selector 定位'],
   FIXED_WAIT: ['high', '使用了固定等待或 sleep'],
   SKIP_OR_FIXME: ['high', '测试包含 skip/fixme'],
+  PARSE_FAILED: ['high', '测试源码不是合法 JS/TS，无法结构解析（fail-closed）'],
+  // oracle implementation.forbiddenPatterns 含 test.only（Node 2.4 Attempt 002
+  // 生产缺陷修复）：review 层同族 high finding
+  TEST_ONLY: ['high', '测试包含 only（--forbid-only 违例）'],
   ARBITRARY_RETRY: ['high', '测试包含任意 retry'],
   DYNAMIC_CODE_EXECUTION: ['high', '测试包含动态代码执行'],
   COMMAND_OR_FILESYSTEM_ACCESS: ['high', '测试代码直接访问命令、进程或文件系统'],
@@ -128,10 +135,15 @@ export function inspectCodeSource({ source, requestCase }) {
       /\.to(?:BeTruthy|BeDefined|BeVisible)\s*\(/.test(source) && !strongAssertion) {
     codes.push('WEAK_BUSINESS_ASSERTION');
   }
+  // skip/fixme/only 结构规则用 TypeScript AST 遍历检测（parser 化，
+  // 取代启发式剥离器，单一实现来自 browser-code-draft.mjs）；
+  // 解析失败 fail-closed 记 PARSE_FAILED；其余 forbidden 规则保持原语义
+  for (const code of detectStructuralViolations(source)) {
+    codes.push(code === 'SOURCE_PARSE_FAILED' ? 'PARSE_FAILED' : code);
+  }
   const rules = [
     ['CSS_SELECTOR_CHAIN', /(?:\.locator\s*\(|querySelector(?:All)?\s*\(|\$\$\s*\()/],
     ['FIXED_WAIT', /(?:waitForTimeout|setTimeout|sleep)\s*\(/],
-    ['SKIP_OR_FIXME', /\b(?:test|describe)\.(?:skip|fixme)\s*\(/],
     ['ARBITRARY_RETRY', /\bretr(?:y|ies)\b/i],
     ['DYNAMIC_CODE_EXECUTION', /\b(?:eval|Function)\s*\(/],
     ['COMMAND_OR_FILESYSTEM_ACCESS', /(?:node:)?(?:child_process|fs\/promises|fs|process)\b|(?:exec|spawn|fork)\s*\(/],

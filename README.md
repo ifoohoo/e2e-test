@@ -11,23 +11,22 @@ Experimental E2E test skill family — framework-neutral E2E specification autho
 - Method-forward qualification remains `FORWARD_TRIALS_PENDING_CODEX` until genuine trials on both hosts complete; release-artifact certification is `null`.
 - Finding capability is authoritative only in `assets/finding-capability-manifest.json`; E2E-F-002, E2E-F-006, and E2E-F-010 are now `implemented` (generic semantic detector + structured reviewer packet, not fixture-name hardcoded), so they no longer block stable maturity; forward 6+6+6 qualification is pending, so deterministic/stable is not claimed.
 - Default **NOT_ENABLED**: requires explicit project binding to activate.
-- v0.2.0-alpha.1 and alpha.2 have completed public release and production verification. v0.2.0-alpha.3 is the third public alpha pre-release (candidate/preparation). Registry 0.2 formal public release and E2E Test Gate B formal public release (RELEASE_ATTESTED) remain separate subsequent milestones; alpha.3 does not equal RELEASE_ATTESTED.
+- v0.2.0-alpha.4 is the current GitHub prerelease (PUBLIC_RELEASE_READY); alpha.1, alpha.2, and alpha.3 are prior prereleases. Unified-marketplace availability is governed independently. Registry 0.2 formal public release and E2E Test Gate B formal public release (RELEASE_ATTESTED) remain separate subsequent milestones; alpha.4 does not equal RELEASE_ATTESTED.
+- `artifact.e2e-test.browser.implement` and `artifact.e2e-test.browser.execute` are experimentally callable under explicit ExtensionBinding; default NOT_ENABLED.
 - Does not replace `artifact-chain-assistant` generic `e2e`.
 
 <!-- release-skill:capability:external-write-boundary -->
-> **Current boundary:** v0.2.0-alpha.3 is the third public alpha pre-release
-> (alpha) experimental skill family — candidate/preparation stage, not yet
-> released. v0.2.0-alpha.1 and alpha.2 have completed public release and
-> production verification. Gate B operational qualification is
-> `CANDIDATE_QUALIFIED`, **not `RELEASE_ATTESTED`**; method-forward
-> qualification remains `FORWARD_TRIALS_PENDING_CODEX` (real dual-host
-> trials incomplete); release-artifact certification is `null`. The family
-> defaults to `NOT_ENABLED` and fails closed without explicit project
-> binding. alpha.3 does not equal Gate B RELEASE_ATTESTED — do not treat
-> this pre-release as a formal public release. Behavioral evidence: Claude
-> side verified with real Claude Code 2.1.206; Codex side verified with a
-> protocol-level fake host (Codex quota exhausted — not real Codex). Treat
-> any first project binding as a monitored canary.
+> **Current boundary:** v0.2.0-alpha.4 is the current GitHub prerelease
+> (PUBLIC_RELEASE_READY); unified-marketplace availability is governed
+> independently. v0.2.0-alpha.1, alpha.2, and alpha.3 are prior prereleases. Gate B
+> operational qualification is `CANDIDATE_QUALIFIED`, **not
+> `RELEASE_ATTESTED`**; method-forward qualification remains
+> `FORWARD_TRIALS_PENDING_CODEX` (real dual-host trials incomplete);
+> release-artifact certification is `null`. The family defaults to
+> `NOT_ENABLED` and fails closed without explicit project binding. alpha.4
+> does not equal Gate B RELEASE_ATTESTED — do not treat this prerelease as the
+> formal Gate B release. implement/execute are experimentally callable under
+> explicit ExtensionBinding; default NOT_ENABLED.
 
 <!-- release-skill:capability:safe-first-command -->
 > **Start here:** the safe read-only entry is the `e2e-test-help` diagnostic

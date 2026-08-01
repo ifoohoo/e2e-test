@@ -12,13 +12,19 @@
  * - exact-shape：schema 校验使用 additionalProperties:false
  */
 
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, statSync } from 'node:fs';
 import { createRequire } from 'node:module';
-import { join, resolve } from 'node:path';
+import { isAbsolute, join, resolve } from 'node:path';
 import { stableDigest } from './digest.mjs';
 
 const pluginRoot = resolve(import.meta.dirname, '..', '..');
 const require = createRequire(join(pluginRoot, 'package.json'));
+
+// ─── 浏览器服务冻结入口映射 ───
+const BROWSER_ENTRYPOINT_MAP = Object.freeze({
+  'artifact.e2e-test.browser.implement': 'skills/e2e-test-implement',
+  'artifact.e2e-test.browser.execute': 'skills/e2e-test-execute',
+});
 
 // ─── Schema validation ───
 let _ajvInstance = null;
@@ -113,12 +119,79 @@ export function loadCapabilityCatalog(root) {
     }
   }
 
+  // Validate available capability entryPoint（使用共享 validator）
+  errors.push(...validateCatalogEntryPoints(catalog, effectiveRoot));
+
   // Compute digest of catalog (excluding generatedAt which is deterministic placeholder)
   const catalogForDigest = { ...catalog };
   delete catalogForDigest.generatedAt;
   const digest = stableDigest(catalogForDigest);
 
   return { catalog, digest, errors };
+}
+
+/**
+ * 验证 available 能力的 entryPoint 有效性。
+ * 独立于 loadCapabilityCatalog，不阻塞目录加载。
+ * @param {object} catalog - 目录对象
+ * @param {string} [root] - 插件根目录
+ * @returns {string[]} 错误列表
+ */
+export function validateCatalogEntryPoints(catalog, root) {
+  const effectiveRoot = root || pluginRoot;
+  const errors = [];
+  if (!catalog?.capabilities) return errors;
+  for (const cap of catalog.capabilities) {
+    if (cap.status !== 'available' || !cap.entryPoint) continue;
+    const ep = cap.entryPoint;
+
+    // N/A_PLANNED 保持失败关闭
+    if (ep === 'N/A_PLANNED') {
+      errors.push(`ENTRYPOINT_NA_PLANNED: ${cap.id} 状态为 available 但 entryPoint 为 N/A_PLANNED`);
+      continue;
+    }
+
+    // 绝对路径
+    if (isAbsolute(ep)) {
+      errors.push(`ENTRYPOINT_ABSOLUTE: ${cap.id} entryPoint 是绝对路径`);
+      continue;
+    }
+
+    // 路径遍历
+    if (ep.includes('..')) {
+      errors.push(`ENTRYPOINT_TRAVERSAL: ${cap.id} entryPoint 包含 ..`);
+      continue;
+    }
+
+    // 不存在
+    const epPath = join(effectiveRoot, ep);
+    if (!existsSync(epPath)) {
+      errors.push(`ENTRYPOINT_NOT_FOUND: ${cap.id} entryPoint 不存在: ${ep}`);
+      continue;
+    }
+
+    // browser 服务额外检查
+    const isBrowser = cap.id === 'artifact.e2e-test.browser.implement'
+      || cap.id === 'artifact.e2e-test.browser.execute';
+    if (isBrowser) {
+      const expectedEp = BROWSER_ENTRYPOINT_MAP[cap.id];
+      if (expectedEp && ep !== expectedEp) {
+        errors.push(`BROWSER_ENTRYPOINT_MISMATCH: ${cap.id} entryPoint 不匹配冻结映射：期望 ${expectedEp}，实际 ${ep}`);
+        continue;
+      }
+      // 检查是否为目录（包含无法访问的情况）
+      let isDir = false;
+      try {
+        isDir = statSync(epPath).isDirectory();
+      } catch {
+        // statSync 失败，视为不是目录
+      }
+      if (!isDir) {
+        errors.push(`BROWSER_ENTRYPOINT_TYPE_MISMATCH: ${cap.id} entryPoint 不是目录: ${ep}`);
+      }
+    }
+  }
+  return errors;
 }
 
 /**

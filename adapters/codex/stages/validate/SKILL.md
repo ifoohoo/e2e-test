@@ -9,4 +9,4 @@ description: 仅供 E2E 工作流内部执行最终 contract、round-trip、pack
 
 任何高严重度 finding 使工序失败；非 evidence-bound 只能如实显示状态，不能渲染为通过。验证器不判断候选或 Oracle 的专业语义质量。
 
-调用 `workers/validate-worker.mjs`；结果符合 `schemas/stage-result.json`，不得直接提交项目文件。
+调用 `../../workers/validate-worker.mjs`；结果符合 `../../schemas/stage-result.json`，不得直接提交项目文件。

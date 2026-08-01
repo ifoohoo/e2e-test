@@ -20,6 +20,7 @@ const skillsDir = join(pluginRoot, 'skills');
 const scriptsDir = join(pluginRoot, 'scripts');
 const adaptersDir = join(pluginRoot, 'adapters');
 const isCheck = process.argv.includes('--check');
+const skipProofCheck = process.argv.includes('--skip-proof-check');
 
 // 读取 package.json 获取版本等信息
 const pkg = JSON.parse(readFileSync(join(pluginRoot, 'package.json'), 'utf8'));
@@ -83,6 +84,7 @@ const scriptsToSync = [
   'method-forward-qualification-aggregate.mjs',
   'method-forward-batch-runner.mjs',
   'verify-truthfulness.mjs',
+  'browser-extension-runner.mjs',
 ];
 
 let driftDetected = false;
@@ -416,6 +418,47 @@ const adapterTreeDigests = {};
         if (currentDigest !== expectedDigest) {
           console.error(`DRIFT: ${adapterType}/family/implementation.yaml treeDigest: declared ${currentDigest}, expected ${expectedDigest}`);
           driftDetected = true;
+        }
+        if (!skipProofCheck) {
+          // Verify adapter conformance evidence (R32 三根闭包)：
+          // last-run.json 必须与当前 descriptor 的 bundle/attestation 一致。
+          const adapterConformanceDir = join(adapterRoot, 'conformance');
+          const declaredAttestation = implContent.match(
+            /^\s*deterministicAttestation:\s*(sha256:[a-f0-9]{64})\s*$/m,
+          )?.[1];
+          const lastRunPath = join(adapterConformanceDir, 'last-run.json');
+          try {
+            const lastRun = JSON.parse(readFileSync(lastRunPath, 'utf8'));
+            if (lastRun.status !== 'PASS' ||
+                lastRun.bundleDigest !== expectedDigest ||
+                lastRun.attestation?.digest !== declaredAttestation) {
+              console.error(
+                `DRIFT: ${adapterType}/conformance/last-run.json bundleDigest/attestation proof identity`,
+              );
+              driftDetected = true;
+            }
+          } catch (err) {
+            console.error(`DRIFT: ${adapterType}/conformance/last-run.json unreadable: ${err.message}`);
+            driftDetected = true;
+          }
+          // behavior qualification 顶层 bundle 属于 root；adapter 的本地证明
+          // 位于 scenarioIdentities.<host>，必须与 adapter descriptor 一致。
+          const bqPath = join(adapterConformanceDir, 'behavior-qualification.json');
+          try {
+            const bq = JSON.parse(readFileSync(bqPath, 'utf8'));
+            const localIdentity = bq.evidence?.scenarioIdentities?.[adapterType];
+            if (bq.qualificationStatus !== 'QUALIFIED' ||
+                localIdentity?.bundleDigest !== expectedDigest ||
+                localIdentity?.deterministicAttestation !== declaredAttestation) {
+              console.error(
+                `DRIFT: ${adapterType}/conformance/behavior-qualification.json local proof identity`,
+              );
+              driftDetected = true;
+            }
+          } catch (err) {
+            console.error(`DRIFT: ${adapterType}/conformance/behavior-qualification.json unreadable: ${err.message}`);
+            driftDetected = true;
+          }
         }
       } else {
         // Build mode: write the correct treeDigest

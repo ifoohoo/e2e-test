@@ -1,0 +1,119 @@
+{
+  "title": "ExtensionBinding",
+  "description": "浏览器扩展绑定记录。exact-shape：未知字段拒绝。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "recordId",
+    "extensionId",
+    "service",
+    "boundBy",
+    "boundAt",
+    "scope",
+    "enabled",
+    "status",
+    "extensionContractRevision",
+    "packageVersion",
+    "permissionSnapshot",
+    "bindingDigest"
+  ],
+  "properties": {
+    "recordId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "绑定记录唯一标识"
+    },
+    "extensionId": {
+      "type": "string",
+      "const": "artifact.e2e-test.browser",
+      "description": "扩展身份标识"
+    },
+    "service": {
+      "type": "string",
+      "enum": [
+        "artifact.e2e-test.browser.implement",
+        "artifact.e2e-test.browser.execute"
+      ],
+      "description": "绑定的服务身份"
+    },
+    "boundBy": {
+      "type": "string",
+      "description": "绑定发起者"
+    },
+    "boundAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "绑定时间戳"
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["project"],
+      "properties": {
+        "project": {
+          "type": "string",
+          "description": "项目根目录真实路径"
+        },
+        "subject": {
+          "type": "string",
+          "description": "主题摘要（plan digest 或 binding digest）"
+        },
+        "allowWritePaths": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "允许写入的规范化路径列表"
+        }
+      }
+    },
+    "enabled": {
+      "type": "boolean",
+      "description": "active⇔enabled=true, revoked⇔enabled=false"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "revoked"],
+      "description": "绑定状态"
+    },
+    "extensionContractRevision": {
+      "type": "string",
+      "const": "e2e-test/browser-productization-delta@4",
+      "description": "扩展合同版本"
+    },
+    "packageVersion": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+",
+      "description": "候选包版本"
+    },
+    "permissionSnapshot": {
+      "$ref": "#/$defs/permissions"
+    },
+    "bindingDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$",
+      "description": "binding 去 bindingDigest 后的稳定摘要"
+    }
+  },
+  "$defs": {
+    "permissions": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "六类权限快照",
+      "required": [
+        "sourceWrite",
+        "artifactWrite",
+        "verifyCommand",
+        "testCommand",
+        "processLifecycle",
+        "networkEgress"
+      ],
+      "properties": {
+        "sourceWrite": { "type": "boolean" },
+        "artifactWrite": { "type": "boolean" },
+        "verifyCommand": { "type": "boolean" },
+        "testCommand": { "type": "boolean" },
+        "processLifecycle": { "type": "boolean" },
+        "networkEgress": { "type": "boolean" }
+      }
+    }
+  }
+}

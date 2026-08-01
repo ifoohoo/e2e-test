@@ -56,6 +56,9 @@ export const EXECUTION_FAILURE_CODES = Object.freeze({
   M5_HANDLE_SCOPE_MISMATCH: 'M5_HANDLE_SCOPE_MISMATCH',
   M5_HANDLE_REPLAYED: 'M5_HANDLE_REPLAYED',
   M5_PREFLIGHT_BLOCKED: 'M5_PREFLIGHT_BLOCKED',
+  M5_BROWSER_UNAVAILABLE: 'M5_BROWSER_UNAVAILABLE',
+  M5_BROWSER_VERSION_MISMATCH: 'M5_BROWSER_VERSION_MISMATCH',
+  M5_ISOLATION_UNAVAILABLE: 'M5_ISOLATION_UNAVAILABLE',
   M5_LIFECYCLE_ADAPTER_FAILED: 'M5_LIFECYCLE_ADAPTER_FAILED',
   M5_READINESS_BLOCKED: 'M5_READINESS_BLOCKED',
   M5_RUNNER_FAILED: 'M5_RUNNER_FAILED',
@@ -194,6 +197,7 @@ export function prepareExecutionPlan(input = {}) {
     workers = 1,
     resources = { cpu: 1, memMB: 1024 },
     browser = { engine: 'chromium', channel: 'playwright' },
+    isolation,
     artifactPolicy = {
       trace: 'on',
       screenshot: 'only-on-failure',
@@ -269,6 +273,8 @@ export function prepareExecutionPlan(input = {}) {
       !Number.isInteger(resources.memMB) || resources.memMB < 128 ||
       browser?.engine !== 'chromium' ||
       !['playwright', 'chrome'].includes(browser?.channel) ||
+      typeof browser?.version !== 'string' ||
+      !/^\d+\.\d+\.\d+\.\d+$/.test(browser.version) ||
       artifactPolicy?.trace !== 'on' ||
       artifactPolicy?.screenshot !== 'only-on-failure') {
     return failure(
@@ -276,11 +282,23 @@ export function prepareExecutionPlan(input = {}) {
       ['worker/timeout/resource 预算无效'],
     );
   }
+  // isolation 可选：提供时必须精确是 { executor: 'docker', image: 非空字符串 }，
+  // 缺省 = 既有本机进程宿主路径，行为不变
+  if (isolation !== undefined &&
+      (isolation === null || typeof isolation !== 'object' ||
+        Array.isArray(isolation) ||
+        isolation.executor !== 'docker' ||
+        typeof isolation.image !== 'string' || isolation.image.length === 0)) {
+    return failure(
+      EXECUTION_FAILURE_CODES.M5_PLAN_CONFIG_INVALID,
+      ['isolation 必须是 { executor: "docker", image: 非空字符串 }'],
+    );
+  }
   const binding = commitResult.bindingManifest;
-  const files = binding.bindings.map(item => item.file);
+  // 多 case 共用同一文件时按文件集合去重；caseIds 保留全部
+  const files = [...new Set(binding.bindings.map(item => item.file))];
   const caseIds = binding.bindings.map(item => item.caseId);
-  if (!exactSet(files, [...new Set(files)]) ||
-      files.some(file =>
+  if (files.some(file =>
         isAbsolute(file) ||
         file.includes('\\') ||
         file.split('/').includes('..') ||
@@ -337,6 +355,14 @@ export function prepareExecutionPlan(input = {}) {
     resources,
     browser,
     artifactPolicy,
+    ...(isolation !== undefined
+      ? {
+        isolation: {
+          executor: isolation.executor,
+          image: isolation.image,
+        },
+      }
+      : {}),
   };
   const plan = deepFreeze({
     ...planUnsigned,
@@ -855,6 +881,7 @@ export function createBrowserExecutionController(options = {}) {
     networkObserver,
     resourceObserver,
     teardownInspector,
+    browserVersionProbe,
     secretResolver = () => null,
     lifecycleAdapter = null,
   } = options;
@@ -868,6 +895,7 @@ export function createBrowserExecutionController(options = {}) {
       typeof networkObserver !== 'function' ||
       typeof resourceObserver !== 'function' ||
       typeof teardownInspector !== 'function' ||
+      typeof browserVersionProbe !== 'function' ||
       typeof secretResolver !== 'function' ||
       (lifecycleAdapter !== null &&
         (typeof lifecycleAdapter !== 'object' ||
@@ -1010,6 +1038,36 @@ export function createBrowserExecutionController(options = {}) {
         );
       }
       secretEnv[envName] = value;
+    }
+    // Node 3.3：在创建 output root、启动 lifecycle/runner 等任何副作用之前，
+    // 机械复验冻结计划中的 engine/channel/version 与真实浏览器一致；
+    // 探测失败或版本不匹配立即 BLOCKED，永不自动下载。
+    let browserObservation;
+    try {
+      browserObservation = browserVersionProbe(plan.browser, { cwd: root });
+    } catch (error) {
+      record.status = 'issued';
+      return failure(
+        EXECUTION_FAILURE_CODES.M5_BROWSER_UNAVAILABLE,
+        [`browser 版本探测失败:${error?.message || error}`],
+      );
+    }
+    if (!browserObservation ||
+        typeof browserObservation.version !== 'string' ||
+        !/^\d+\.\d+\.\d+\.\d+$/.test(browserObservation.version)) {
+      record.status = 'issued';
+      return failure(
+        EXECUTION_FAILURE_CODES.M5_BROWSER_UNAVAILABLE,
+        ['browser 版本探测未返回可解析版本'],
+      );
+    }
+    if (browserObservation.version !== plan.browser.version) {
+      record.status = 'issued';
+      return failure(
+        EXECUTION_FAILURE_CODES.M5_BROWSER_VERSION_MISMATCH,
+        [`browser 版本不匹配:expected=${plan.browser.version},` +
+          `actual=${browserObservation.version}`],
+      );
     }
     const runId = handle.run;
     const output = safeOutputRoot(root, runId);
@@ -1174,6 +1232,8 @@ export function createBrowserExecutionController(options = {}) {
         artifactRoot: runtime.artifactPath,
         runtimeConfig: runtime.configPath,
         runId,
+        resourceBudget: plan.resources,
+        timeouts: plan.timeouts,
       });
     } catch (error) {
       run = {
@@ -1188,9 +1248,14 @@ export function createBrowserExecutionController(options = {}) {
     }
     const parsed = parseReport(root, refs);
     let observations;
+    // 保留原始 observer 异常：M5_NETWORK_OBSERVER_FAILED 的 violations
+    // 须携带结构化摘要（name/message/code），使 trace 缺失、归档异常、
+    // 零 resource entry 可区分（Attempt 012）
+    let networkObserverError = null;
     try {
       observations = networkObserver({ plan, runId, run, outputRoot: output.path });
-    } catch {
+    } catch (error) {
+      networkObserverError = error;
       observations = null;
     }
     let resourceObservation;
@@ -1225,13 +1290,19 @@ export function createBrowserExecutionController(options = {}) {
       teardownObserved = null;
     }
     const teardown = makeTeardown(plan, teardownObserved);
+    // docker 宿主发布阶段的机器可读回滚状态沿全部失败分支透传
+    // （Attempt 009 复合失败闭合；errorCode 优先级与语义不变）
+    const runRollback = run?.rollback && typeof run.rollback === 'object'
+      ? { rollback: run.rollback }
+      : {};
     if (!teardown) {
       return failure(
         EXECUTION_FAILURE_CODES.M5_TEARDOWN_INSPECTOR_FAILED,
         ['teardown inspector 未返回有效的进程/端口观测'],
+        runRollback,
       );
     }
-    const failureEvidence = { teardown, outputRoot: output.ref };
+    const failureEvidence = { teardown, outputRoot: output.ref, ...runRollback };
     if (lifecycleStopFailed) {
       return failure(
         EXECUTION_FAILURE_CODES.M5_LIFECYCLE_ADAPTER_FAILED,
@@ -1259,7 +1330,19 @@ export function createBrowserExecutionController(options = {}) {
           (item.hop !== undefined && !Number.isInteger(item.hop)))) {
       return failure(
         EXECUTION_FAILURE_CODES.M5_NETWORK_OBSERVER_FAILED,
-        ['network observer 未返回原始 URL 观测'],
+        [
+          'network observer 未返回原始 URL 观测',
+          ...(networkObserverError
+            ? [
+              'observer 异常: ' +
+                `${networkObserverError?.name || 'Error'}: ` +
+                `${networkObserverError?.message || String(networkObserverError)}` +
+                (networkObserverError?.code
+                  ? ` (code=${networkObserverError.code})`
+                  : ''),
+            ]
+            : []),
+        ],
         failureEvidence,
       );
     }

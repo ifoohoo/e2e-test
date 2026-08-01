@@ -62,7 +62,14 @@ try {
 }
 
 function runQualification() {
-  execFileSync(process.execPath, [join(pluginRoot, 'scripts', 'build-adapters.mjs'), '--check'], {
+  // 刷新事务中 adapter conformance 已先合法更新，而本轮 behavior
+  // qualification 尚待 finalize；这里只核对生成内容，避免以旧资格证明
+  // 阻断产生新资格证明。对外 build:check 不带此开关，仍严格检查三根证明。
+  execFileSync(process.execPath, [
+    join(pluginRoot, 'scripts', 'build-adapters.mjs'),
+    '--check',
+    '--skip-proof-check',
+  ], {
     cwd: pluginRoot, encoding: 'utf8', timeout: 30000, stdio: ['ignore', 'pipe', 'pipe'],
   });
 

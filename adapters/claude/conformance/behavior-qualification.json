@@ -16,7 +16,7 @@
       "inputsUnmodified": true,
       "unauthorizedWriteDetected": false,
       "absolutePathDetected": false,
-      "scenarioDigest": "sha256:21491da3840c561650962196062b4efe6274757b49790ed6eb368ed5c6a23bf9",
+      "scenarioDigest": "sha256:09a452779dde125a9e8c9ea195ad97e7333b6a189f3238ded42aa5b715f950c7",
       "toolEventsDigest": "sha256:13766e254d7073143f0380bb97ade00dcb55d8e9959da14f370f04e6b3dcc5f6"
     },
     "claude": {
@@ -32,7 +32,7 @@
       "inputsUnmodified": true,
       "unauthorizedWriteDetected": false,
       "absolutePathDetected": false,
-      "scenarioDigest": "sha256:58c92f532261dd76b2559a79721985792ce4f49e56eb3b4db4043f8e5a80d038",
+      "scenarioDigest": "sha256:4a6389d9436e078793f883acf1bbaf669de9e0013c03d64388336a9f08685c34",
       "toolEventsDigest": "sha256:9faa1a1fe23f5b50e981d13f6afdca317dfff2c85f9715df3b3dfb30856a2d34"
     }
   },
@@ -472,53 +472,53 @@
     "packages": [
       {
         "name": "agent-method-registry",
-        "version": "0.2.1",
-        "tarballDigest": "sha256:71900bcc1cb309a2da1198a37dde0aec41ff8e5c8d4043a43849f13842dec90a"
+        "version": "0.2.2",
+        "tarballDigest": "sha256:76ce9a7f685068c0f91700c2db3bb94b13f82db357287ef28276dc76602b3244"
       },
       {
         "name": "artifact-graph",
-        "version": "0.8.2",
-        "tarballDigest": "sha256:ebd46c66b0c726eabe657df4fc11a159f0c3cbabbea3dd1dace66e27fa853ec4"
+        "version": "0.8.3",
+        "tarballDigest": "sha256:2abcfd75f6f199ec89ec7d4624c924cb7133585bf2463d8c29512c7e8c688504"
       },
       {
         "name": "artifact-chain-assistant",
-        "version": "0.8.2",
-        "tarballDigest": "sha256:c7034d38ce6572d4acf3c62736b04b859e61e8c9d60ff6ce3188ef270d92469f"
+        "version": "0.8.3",
+        "tarballDigest": "sha256:5933b8a09c2ead78800861133ccea9a1ce20807dbf9ad49df4733234a9f17dc6"
       },
       {
         "name": "e2e-test",
-        "version": "0.2.0-alpha.3",
-        "tarballDigest": "sha256:62eee986cfe9ecf1b40c116cbd2dc3dc764133d24ace9c30b6af14ebd95c331f"
+        "version": "0.2.0-alpha.4",
+        "tarballDigest": "sha256:9740b3f22a84fee5e511e4c277fb773abc0203ac8b8542cea9fe42ba9056ea5a"
       }
     ],
     "qualificationSubjects": {
       "root": {
         "algorithm": "e2e-test-qualification-subject-v1",
-        "digest": "sha256:25b73b4192ef119c7e40e5677f932ab45d5f48ff1337d2795d80604925bb124a"
+        "digest": "sha256:469f7bbf6999e09de79973a5c672d587ef35d5b6585f3ffce1f05f16ce5a6c8a"
       },
       "codex": {
         "algorithm": "e2e-test-qualification-subject-v1",
-        "digest": "sha256:39e9de4b169cd60ef8b30b923e97ea35a23a93db105ea1319216595fe4db82df"
+        "digest": "sha256:f81ccb758a8c45a9fb09ffafb0eabe7514ad9156ee2baf0652608c478f00acf7"
       },
       "claude": {
         "algorithm": "e2e-test-qualification-subject-v1",
-        "digest": "sha256:f902396e7b515c394154c0ff89a1946caf83f9553cf821a77f227180181f136b"
+        "digest": "sha256:29a5962e016ac9bfbc9f1604769ada841adc2b9f8f794db1d64f68113eaabf19"
       }
     },
     "familyApiRevision": "sha256:66cdd1098a93eb8d128c57010a9405dd1de55bee1e702ced44a93c202cc4b463",
     "contractRevision": "sha256:374b99424519e42b40b621774fb602d62dfa23f48f792095f717bbabbe9e3f2a",
-    "bundleDigest": "sha256:f16d4a1027dedc5efb3adde2b39ac0585e239575f3b3b6ab515defa6fa030f12",
-    "deterministicAttestation": "sha256:769d6003d4b55ae8ac95d4202eef1040cbab716c54a11517f849e20f69705811",
+    "bundleDigest": "sha256:693a3217428c43b5a90f884df60cc6d9546c3c5761feb93d6466f47d90cd3857",
+    "deterministicAttestation": "sha256:d61a4d53b81f11d8ad1819538ccd9cfda2c29a3e36b1e5e6bf00ae6bbb1a6775",
     "scenarioIdentities": {
       "codex": {
         "familyApiRevision": "sha256:66cdd1098a93eb8d128c57010a9405dd1de55bee1e702ced44a93c202cc4b463",
         "contractRevision": "sha256:374b99424519e42b40b621774fb602d62dfa23f48f792095f717bbabbe9e3f2a",
         "implementationId": "io.github.mzdbxqh.e2e-test",
-        "implementationVersion": "0.2.0-alpha.3",
-        "qualificationInputTarballDigest": "sha256:62eee986cfe9ecf1b40c116cbd2dc3dc764133d24ace9c30b6af14ebd95c331f",
-        "qualificationSubjectDigest": "sha256:39e9de4b169cd60ef8b30b923e97ea35a23a93db105ea1319216595fe4db82df",
-        "bundleDigest": "sha256:4873b83dce6555b9bfff7ece0ea2cc7e6de45ae967d0ef16ede83b550d2d9a2f",
-        "deterministicAttestation": "sha256:a017134e1fd39aa58af2b9fb480035a20b1179991696ce64ccf8cd598c89a8cc",
+        "implementationVersion": "0.2.0-alpha.4",
+        "qualificationInputTarballDigest": "sha256:9740b3f22a84fee5e511e4c277fb773abc0203ac8b8542cea9fe42ba9056ea5a",
+        "qualificationSubjectDigest": "sha256:f81ccb758a8c45a9fb09ffafb0eabe7514ad9156ee2baf0652608c478f00acf7",
+        "bundleDigest": "sha256:7bd4cde65370919f2aced512d7786eac5a068eb1c2063ddf413f12ca2659c647",
+        "deterministicAttestation": "sha256:0f9536d12f1ead4a8a17524eb6821b43cfe06b8102bde5aba8ba0e45a7b5f265",
         "fixtureDigests": [
           {
             "name": "artifact.json",
@@ -542,11 +542,11 @@
         "familyApiRevision": "sha256:66cdd1098a93eb8d128c57010a9405dd1de55bee1e702ced44a93c202cc4b463",
         "contractRevision": "sha256:374b99424519e42b40b621774fb602d62dfa23f48f792095f717bbabbe9e3f2a",
         "implementationId": "io.github.mzdbxqh.e2e-test",
-        "implementationVersion": "0.2.0-alpha.3",
-        "qualificationInputTarballDigest": "sha256:62eee986cfe9ecf1b40c116cbd2dc3dc764133d24ace9c30b6af14ebd95c331f",
-        "qualificationSubjectDigest": "sha256:f902396e7b515c394154c0ff89a1946caf83f9553cf821a77f227180181f136b",
-        "bundleDigest": "sha256:4873b83dce6555b9bfff7ece0ea2cc7e6de45ae967d0ef16ede83b550d2d9a2f",
-        "deterministicAttestation": "sha256:809b46ec7406b7218a1f2007594bb673f43f4779ca5de3bfed32823a518cf88e",
+        "implementationVersion": "0.2.0-alpha.4",
+        "qualificationInputTarballDigest": "sha256:9740b3f22a84fee5e511e4c277fb773abc0203ac8b8542cea9fe42ba9056ea5a",
+        "qualificationSubjectDigest": "sha256:29a5962e016ac9bfbc9f1604769ada841adc2b9f8f794db1d64f68113eaabf19",
+        "bundleDigest": "sha256:7bd4cde65370919f2aced512d7786eac5a068eb1c2063ddf413f12ca2659c647",
+        "deterministicAttestation": "sha256:9b3cf4e50338258f1b60f8d418c6c85e65dbcff06957420cd827fad5bae4154b",
         "fixtureDigests": [
           {
             "name": "artifact.json",
@@ -568,5 +568,5 @@
       }
     }
   },
-  "digest": "sha256:642b6ff3e8aa9c36ca5b01e30f83d16c2c30f428ea1df2773a4d92f89397411d"
+  "digest": "sha256:e1d69329168d8093f379f8261e50a23f314c73e8d6401ec75e1e0a0b53b4433a"
 }

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "status": "PASS",
-  "bundleDigest": "sha256:f16d4a1027dedc5efb3adde2b39ac0585e239575f3b3b6ab515defa6fa030f12",
+  "bundleDigest": "sha256:693a3217428c43b5a90f884df60cc6d9546c3c5761feb93d6466f47d90cd3857",
   "attestation": {
-    "digest": "sha256:769d6003d4b55ae8ac95d4202eef1040cbab716c54a11517f849e20f69705811",
+    "digest": "sha256:d61a4d53b81f11d8ad1819538ccd9cfda2c29a3e36b1e5e6bf00ae6bbb1a6775",
     "checkCount": 92
   }
 }

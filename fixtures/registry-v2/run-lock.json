@@ -8,7 +8,7 @@
   "apiRevisionDigest": "sha256:66cdd1098a93eb8d128c57010a9405dd1de55bee1e702ced44a93c202cc4b463",
   "familyImplementationId": "io.github.mzdbxqh.e2e-test",
   "serviceImplementationId": "io.github.mzdbxqh.e2e-test.author",
-  "implementationVersion": "0.2.0-alpha.3",
+  "implementationVersion": "0.2.0-alpha.4",
   "provider": {
     "scope": "plugin",
     "pluginId": "e2e-test",

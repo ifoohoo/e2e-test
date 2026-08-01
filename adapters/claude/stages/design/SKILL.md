@@ -5,17 +5,17 @@ description: 仅供 E2E author 内部编排把候选设计成 E2E 八维测试�
 
 # Design 内部工序
 
-为每个候选独立设计 Actor/Goal、价值风险、来源范围、路径与边界、Oracle、数据身份、环境依赖、清理补偿、自动化证据八个维度。完整字段模型见 `references/matrix-model.md`。
+为每个候选独立设计 Actor/Goal、价值风险、来源范围、路径与边界、Oracle、数据身份、环境依赖、清理补偿、自动化证据八个维度。完整字段模型见 `../../references/matrix-model.md`。
 
 Oracle 必须是用户或业务可观察结果，包含判据和时延；数据必须说明并行隔离与重跑；清理必须覆盖正常、失败中断和补偿；自动化必须说明 runner、证据、成本与抖动控制。
 
-机器门禁提示（与 `schemas/matrix.json` 一致）：三类清理数组（正常 cleanup_steps、失败 failure_cleanup、补偿 compensation）均须非空，不得用空数组或空字符串逃逸；`oracle.timeout_ms` 必填且 ≥1；`automation.implementation_binding` 为 validate 硬门禁：validate 要求每个 active case 有实现绑定且 runner 逐字命中 project-facts inventory，否则 E2E-F-008 high。
+机器门禁提示（与 `../../schemas/matrix.json` 一致）：三类清理数组（正常 cleanup_steps、失败 failure_cleanup、补偿 compensation）均须非空，不得用空数组或空字符串逃逸；`oracle.timeout_ms` 必填且 ≥1；`automation.implementation_binding` 为 validate 硬门禁：validate 要求每个 active case 有实现绑定且 runner 逐字命中 project-facts inventory，否则 E2E-F-008 high。
 
 `automation.runner` 必须优先逐字复制项目 runner inventory 的规范标识，不要把标识改写成展示名称。运行时只对大小写折叠后唯一命中的标识提供互操作保护；歧义或任意别名必须失败关闭。
 
 实现绑定诚实性（WP1E）：`automation.implementation_binding` 应指向受 active runner inventory 管辖的**具体实现文件**（来自 `project-facts.runnerInventory[].files`），不要把 inventory 的发现范围 glob 当成具体文件。若只声明 glob，运行时会用 inventory 具体文件事实解析；inventory 无对应具体文件时只能诚实降级为非 implementation-bound（`glob_only`），具体文件越界 inventory 时同样降级（`out_of_scope`）。glob 冒充具体文件会被失败关闭（E2E-F-008）。
 
-至少包含关键 happy path，以及 error/recovery/security 路径；缺失时只能提供结构化 waiver 或返回业务决策输入。输出符合 `schemas/matrix.json`，交付给 `workers/design-worker.mjs`。
+至少包含关键 happy path，以及 error/recovery/security 路径；缺失时只能提供结构化 waiver 或返回业务决策输入。输出符合 `../../schemas/matrix.json`，交付给 `../../workers/design-worker.mjs`。
 
 ## 逐 case 终检清单（WP1D）
 

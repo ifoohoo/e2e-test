@@ -21,7 +21,7 @@ import { readFileSync, writeFileSync, readdirSync, statSync, accessSync, constan
 import { dirname, join, relative, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
-import { execFileSync } from 'node:child_process';
+import { execFile, execFileSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { createHash } from 'node:crypto';
 import {
@@ -40,6 +40,50 @@ const finalizeAttestation = process.argv.includes('--finalize-attestation');
 let bundleDigest = 'unknown';
 
 // ─── Result Envelope ───
+
+// ─── 外部 CLI 预取池（方案 C：同参去重 + I/O 并发，输出语义不变） ───
+// 冻结方向：独立外部 CLI 调用在消费前并发启动（I/O 型检查的异步并发），
+// 相同参数（命令+参数+stdin）在单进程生命周期内去重一次调用、复用结果；
+// 缓存不落盘、不跨进程、不跨运行（不产生陈旧真值）。每个消费点仍按
+// 原有串行顺序取结果并走原有失败处理，输出检查清单逐项不变。
+const cliPool = new Map();
+const cliPoolTmpdirs = [];
+
+function prefetchCli(args, options = {}) {
+  const key = JSON.stringify([args, options.input ?? null]);
+  if (!cliPool.has(key)) {
+    cliPool.set(key, new Promise((resolve) => {
+      execFile(args[0], args.slice(1), {
+        encoding: 'utf8',
+        timeout: options.timeout ?? 30000,
+        ...(options.input !== undefined ? { input: options.input } : {}),
+      }, (error, stdout, stderr) => {
+        resolve({ error: error || null, stdout, stderr });
+      });
+    }));
+  }
+  return cliPool.get(key);
+}
+
+// 以 execFileSync 同形语义取预取结果：非零退出/超时/派生失败一律抛错
+async function takeCli(args, options = {}) {
+  const { error, stdout, stderr } = await prefetchCli(args, options);
+  if (error) {
+    const syncError = new Error(error.message || `Command failed: ${args.join(' ')}`);
+    syncError.stdout = error.stdout ?? stdout;
+    syncError.stderr = error.stderr ?? stderr;
+    throw syncError;
+  }
+  return stdout;
+}
+
+// 预取阶段创建的独立临时目录统一在进程退出时清理（早退路径不泄漏）
+process.on('exit', () => {
+  for (const dir of cliPoolTmpdirs.splice(0)) {
+    try { rmSync(dir, { recursive: true, force: true }); } catch {}
+  }
+});
+
 const results = {
   timestamp: new Date().toISOString(),
   status: 'PASS',
@@ -134,16 +178,31 @@ for (const entry of preconditions.roots) {
 
 if (results.status === 'BLOCKED') { emit(); process.exit(1); }
 
+// ─── 独立外部 CLI 并发预取（I/O 型；消费点仍按原串行顺序取结果） ───
+// 预取输入与既有各调用点逐字节一致（同 CLI、同参数、同 stdin、同 timeout）。
+const POSITIVE_ARTIFACT_DATA = JSON.parse(readFileSync(join(pluginRoot, 'fixtures', 'positive', 'artifact.json'), 'utf8'));
+const SCHEMA_NEG_ARTIFACT_DATA = JSON.parse(readFileSync(join(pluginRoot, 'fixtures', 'schema-negative', 'artifact-no-relations.json'), 'utf8'));
+const LEGACY_NEG_ARTIFACT_DATA = JSON.parse(readFileSync(join(pluginRoot, 'fixtures', 'negative', 'artifact-no-relations.json'), 'utf8'));
+
+prefetchCli(['node', authorityPaths['artifact-graph'].cli, 'contract', 'explain', '--contract', 'artifact.e2e-test@1', '--format', 'json'], { timeout: 30000 });
+prefetchCli(['node', authorityPaths['artifact-graph'].cli, 'contract', 'validate', '--contract', 'artifact.e2e-test@1', '--data', JSON.stringify(POSITIVE_ARTIFACT_DATA), '--format', 'json'], { timeout: 30000 });
+prefetchCli(['node', authorityPaths['artifact-graph'].cli, 'contract', 'validate', '--contract', 'artifact.e2e-test@1', '--data', JSON.stringify(SCHEMA_NEG_ARTIFACT_DATA), '--format', 'json'], { timeout: 30000 });
+prefetchCli(['node', authorityPaths['artifact-graph'].cli, 'contract', 'validate', '--contract', 'artifact.e2e-test@1', '--data', JSON.stringify(LEGACY_NEG_ARTIFACT_DATA), '--format', 'json'], { timeout: 30000 });
+prefetchCli(['node', join(pluginRoot, 'scripts', 'bundle-digest.mjs'), '--json'], { timeout: 30000 });
+prefetchCli(['node', authorityPaths['artifact-chain-assistant'].cli,
+  `--api=${join(authorityPaths['artifact-chain-assistant'].root, 'family-apis', 'e2e-test', 'api.json')}`,
+  `--implementation=${join(pluginRoot, 'family', 'implementation.yaml')}`,
+  `--registry-command=${authorityPaths['agent-method-registry'].cli}`,
+], { timeout: 60000 });
+
+
 // ─── 2. Authority Revision Digest Verification（从 api.json 读取，非硬编码）───
 const authorityApiSnapshot = JSON.parse(readFileSync(join(pluginRoot, 'authority-api', 'api.json'), 'utf8'));
 let CONTRACT_DIGEST = null;
 const API_DIGEST = authorityApiSnapshot.api.revisionDigest;
 
 try {
-  const explainOut = execFileSync('node', [
-    authorityPaths['artifact-graph'].cli,
-    'contract', 'explain', '--contract', 'artifact.e2e-test@1', '--format', 'json',
-  ], { encoding: 'utf8', timeout: 30000 });
+  const explainOut = await takeCli(['node', authorityPaths['artifact-graph'].cli, 'contract', 'explain', '--contract', 'artifact.e2e-test@1', '--format', 'json'], { timeout: 30000 });
   const explain = JSON.parse(explainOut);
   const resolvedDigest = explain.data?.identity?.revisionDigest;
   if (explain.ok && explain.data?.identity?.major === 'artifact.e2e-test@1' && /^sha256:[a-f0-9]{64}$/.test(resolvedDigest || '')) {
@@ -155,6 +214,24 @@ try {
 } catch (err) {
   fail('contract.revision-digest', err.message);
 }
+
+// facts 依赖 contract digest：§2 完成后写入并并发预取 method-query，
+// 与 §3-§6e 的本地检查重叠；消费点仍在 §6g-pre 按原序取结果。
+const factsTmpDir = mkdtempSync(join(tmpdir(), 'e2e-conformance-facts-'));
+cliPoolTmpdirs.push(factsTmpDir);
+const factsFile = join(factsTmpDir, 'raw-facts.json');
+writeFileSync(factsFile, JSON.stringify({
+  projectRoot: pluginRoot,
+  configDigest: computeContentHash({ project: 'e2e-test', version: JSON.parse(readFileSync(join(pluginRoot, 'package.json'), 'utf8')).version, root: pluginRoot }),
+  artifactGraphSummary: { artifactCount: 0, edgeCount: 0, contextTargets: [] },
+  targetArtifact: { type: 'feature', id: 'F-001' },
+  contractRevisionDigest: CONTRACT_DIGEST,
+  proofStatus: 'present',
+  versionLockStatus: 'fresh',
+  sourcesFreshness: 'fresh',
+  bindingFreshness: 'fresh',
+}, null, 2), 'utf8');
+prefetchCli(['node', join(authorityPaths['artifact-chain-assistant'].root, 'scripts', 'method-query.mjs'), 'build-envelope', factsFile], { timeout: 30000 });
 
 // ─── 3. AJV Schema Validation ───
 let Ajv;
@@ -219,9 +296,7 @@ for (const pf of positiveFixtures) {
     }
     if (pf.contract) {
       try {
-        const out = execFileSync('node', [
-          authorityPaths['artifact-graph'].cli, 'contract', 'validate', '--contract', pf.contract, '--data', JSON.stringify(data), '--format', 'json',
-        ], { encoding: 'utf8', timeout: 30000 });
+        const out = await takeCli(['node', authorityPaths['artifact-graph'].cli, 'contract', 'validate', '--contract', pf.contract, '--data', JSON.stringify(data), '--format', 'json'], { timeout: 30000 });
         const res = JSON.parse(out);
         (res.ok && res.data?.valid) ? pass(`positive.${pf.file}.contract-valid`, { fixtureDigest }) : fail(`positive.${pf.file}.contract-valid`, JSON.stringify(res.errors));
       } catch (err) { fail(`positive.${pf.file}.contract-valid`, err.message); }
@@ -249,9 +324,7 @@ for (const nf of schemaNegFixtures) {
     }
     if (nf.contract) {
       try {
-        const out = execFileSync('node', [
-          authorityPaths['artifact-graph'].cli, 'contract', 'validate', '--contract', nf.contract, '--data', JSON.stringify(data), '--format', 'json',
-        ], { encoding: 'utf8', timeout: 30000 });
+        const out = await takeCli(['node', authorityPaths['artifact-graph'].cli, 'contract', 'validate', '--contract', nf.contract, '--data', JSON.stringify(data), '--format', 'json'], { timeout: 30000 });
         const res = JSON.parse(out);
         (!res.ok || !res.data?.valid) ? pass(`schema-negative.${nf.file}.contract-rejected`, { fixtureDigest }) : fail(`schema-negative.${nf.file}.contract-rejected`, 'passed unexpectedly');
       } catch { pass(`schema-negative.${nf.file}.contract-rejected`); }
@@ -277,9 +350,7 @@ for (const nf of legacyNegFixtures) {
     }
     if (nf.contract) {
       try {
-        const out = execFileSync('node', [
-          authorityPaths['artifact-graph'].cli, 'contract', 'validate', '--contract', nf.contract, '--data', JSON.stringify(data), '--format', 'json',
-        ], { encoding: 'utf8', timeout: 30000 });
+        const out = await takeCli(['node', authorityPaths['artifact-graph'].cli, 'contract', 'validate', '--contract', nf.contract, '--data', JSON.stringify(data), '--format', 'json'], { timeout: 30000 });
         const res = JSON.parse(out);
         (!res.ok || !res.data?.valid) ? pass(`legacy-negative.${nf.file}.contract-rejected`, { fixtureDigest }) : fail(`legacy-negative.${nf.file}.contract-rejected`, 'passed unexpectedly');
       } catch { pass(`legacy-negative.${nf.file}.contract-rejected`); }
@@ -330,7 +401,7 @@ if (!declaredTreeDigest) {
   bundleDigest = declaredTreeDigest;
   // Verify algorithm alignment: bundle-digest.mjs output must match declared value
   try {
-    const bundleOut = execFileSync('node', [join(pluginRoot, 'scripts', 'bundle-digest.mjs'), '--json'], { encoding: 'utf8', timeout: 30000 });
+    const bundleOut = await takeCli(['node', join(pluginRoot, 'scripts', 'bundle-digest.mjs'), '--json'], { timeout: 30000 });
     const computed = JSON.parse(bundleOut).digest;
     if (computed === declaredTreeDigest) {
       pass('registry-v2.bundle-digest.aligned', { digest: bundleDigest });
@@ -371,9 +442,7 @@ const inventoryDoc = {
   entries: inventoryEntries,
 };
 try {
-  const out = execFileSync('node', [
-    authorityPaths['agent-method-registry'].cli, 'validate', '--catalog', '-',
-  ], { encoding: 'utf8', timeout: 30000, input: JSON.stringify(inventoryDoc) });
+  const out = await takeCli(['node', authorityPaths['agent-method-registry'].cli, 'validate', '--catalog', '-'], { timeout: 30000, input: JSON.stringify(inventoryDoc) });
   const res = JSON.parse(out);
   res.ok ? pass('registry-v2.spi.inventory-valid') : fail('registry-v2.spi.inventory-valid', res.diagnostics?.map(d => d.message).join('; '));
 } catch (err) {
@@ -416,31 +485,12 @@ try {
 
 // 6g-pre. Generate Project Facts Evidence via assistant producer ───
 // Must use assistant's build-envelope to produce valid evidence; do NOT copy digest algorithm.
-const projectFactsEvidence = (() => {
-  // 每次 run 独立临时目录（并行 conformance run 互不可见、互不覆盖），结束即清理自身目录。
-  let tmpDir = null;
+const projectFactsEvidence = await (async () => {
+  // facts 文件与 method-query 调用已并发预取（§2 后启动，tmpdir 由
+  // cliPoolTmpdirs 统一在进程退出时清理，早退路径不泄漏）；此处按原
+  // 串行顺序取结果并走原有失败处理。
   try {
-    tmpDir = mkdtempSync(join(tmpdir(), 'e2e-conformance-facts-'));
-    const factsFile = join(tmpDir, 'raw-facts.json');
-    const facts = {
-      projectRoot: pluginRoot,
-      configDigest: computeContentHash({ project: 'e2e-test', version: packageJson.version, root: pluginRoot }),
-      artifactGraphSummary: { artifactCount: 0, edgeCount: 0, contextTargets: [] },
-      targetArtifact: { type: 'feature', id: 'F-001' },
-      contractRevisionDigest: CONTRACT_DIGEST,
-      proofStatus: 'present',
-      versionLockStatus: 'fresh',
-      sourcesFreshness: 'fresh',
-      bindingFreshness: 'fresh',
-    };
-    writeFileSync(factsFile, JSON.stringify(facts, null, 2), 'utf8');
-
-    // Call assistant producer (method-query.mjs, not family-compile.mjs)
-    const methodQueryCli = join(authorityPaths['artifact-chain-assistant'].root, 'scripts/method-query.mjs');
-    const out = execFileSync('node', [
-      methodQueryCli,
-      'build-envelope', factsFile,
-    ], { encoding: 'utf8', timeout: 30000 });
+    const out = await takeCli(['node', join(authorityPaths['artifact-chain-assistant'].root, 'scripts', 'method-query.mjs'), 'build-envelope', factsFile], { timeout: 30000 });
 
     const result = JSON.parse(out);
     if (result.ok && result.status === 'READY' && result.envelope) {
@@ -453,9 +503,6 @@ const projectFactsEvidence = (() => {
   } catch (err) {
     fail('project-facts-evidence.produced', err.message);
     return null;
-  } finally {
-    // Cleanup own temp directory only (bound absolute path from mkdtemp)
-    if (tmpDir) { try { rmSync(tmpDir, { recursive: true, force: true }); } catch {} }
   }
 })();
 
@@ -758,12 +805,11 @@ try {
 // ─── 7. Family API Compile (full facade) ───
 const apiPath = join(authorityPaths['artifact-chain-assistant'].root, 'family-apis/e2e-test/api.json');
 try {
-  const out = execFileSync('node', [
-    authorityPaths['artifact-chain-assistant'].cli,
+  const out = await takeCli(['node', authorityPaths['artifact-chain-assistant'].cli,
     `--api=${apiPath}`,
     `--implementation=${implPath}`,
     `--registry-command=${authorityPaths['agent-method-registry'].cli}`,
-  ], { encoding: 'utf8', timeout: 60000 });
+  ], { timeout: 60000 });
   const res = JSON.parse(out);
   res.ok ? pass('family-compile.full', { familyConformance: res.familyConformance?.status }) : fail('family-compile.full', JSON.stringify(res));
 } catch (err) {

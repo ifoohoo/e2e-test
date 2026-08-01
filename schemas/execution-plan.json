@@ -233,7 +233,8 @@
       "type": "object",
       "required": [
         "engine",
-        "channel"
+        "channel",
+        "version"
       ],
       "properties": {
         "engine": {
@@ -244,6 +245,27 @@
             "playwright",
             "chrome"
           ]
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+\\.\\d+$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "isolation": {
+      "type": "object",
+      "required": [
+        "executor",
+        "image"
+      ],
+      "properties": {
+        "executor": {
+          "const": "docker"
+        },
+        "image": {
+          "type": "string",
+          "minLength": 1
         }
       },
       "additionalProperties": false

@@ -405,8 +405,10 @@ function validateExactBinding(binding, input) {
     throw new ServiceError('PARTIAL_BINDING_REJECTED', [DIAGNOSTICS.PARTIAL_BINDING_REJECTED]);
   }
   const selected = binding.bindings[0];
+  // R4: Read expected version from descriptor (not hardcoded)
+  const descriptorImpl = parseImplementation(descriptorText);
   const expected = {
-    familyId: 'e2e-test', implementationId: 'io.github.mzdbxqh.e2e-test', version: '0.2.0-alpha.3', pluginId: 'e2e-test',
+    familyId: 'e2e-test', implementationId: 'io.github.mzdbxqh.e2e-test', version: descriptorImpl.version, pluginId: 'e2e-test',
   };
   // R4: Use snapshot-read API identity for validation (not hardcoded constants)
   if (selected.familyId !== expected.familyId || selected.apiIdentity?.apiId !== SNAPSHOT_API_ID || selected.apiIdentity?.apiMajor !== SNAPSHOT_API_MAJOR ||
