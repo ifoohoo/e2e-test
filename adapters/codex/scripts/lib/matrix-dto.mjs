@@ -34,6 +34,22 @@ function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
+const TRUST_BOUNDARY_CONSTRAINT = /(?:敏感|隐私|个人信息|商业信息|保密|机密|凭据|密钥|令牌|授权|越权|权限|信任边界|sensitive|privacy|personal\s+data|\bpii\b|secret|credential|\btoken\b|authorization|permission|trust\s+boundary)/i;
+
+export function deriveTrustBoundaries(inspection) {
+  return unique((inspection?.business_context?.constraints || [])
+    .filter(item => typeof item === 'string' && TRUST_BOUNDARY_CONSTRAINT.test(item)));
+}
+
+export function projectOracle(matrixOracle) {
+  const negative = typeof matrixOracle?.negative_check === 'string' ? matrixOracle.negative_check.trim() : '';
+  return {
+    observable: matrixOracle.observable,
+    criterion: negative ? `${matrixOracle.criterion}；负向不变量：${negative}` : matrixOracle.criterion,
+    ...(matrixOracle.timeout_ms === undefined ? {} : { timeout_ms: matrixOracle.timeout_ms }),
+  };
+}
+
 export function serializeMatrix(matrix) {
   return JSON.stringify(canonicalize(matrix));
 }
@@ -64,11 +80,7 @@ export function projectCaseToArtifact(matrix, matrixCase) {
       ? clone(matrixCase.environment.setup)
       : ['无额外前置条件'],
     actions: matrixCase.path.steps.map((action, index) => ({ step: index + 1, action })),
-    oracles: [{
-      observable: matrixCase.oracle.observable,
-      criterion: matrixCase.oracle.criterion,
-      ...(matrixCase.oracle.timeout_ms === undefined ? {} : { timeout_ms: matrixCase.oracle.timeout_ms }),
-    }],
+    oracles: [projectOracle(matrixCase.oracle)],
     cleanup,
     priority: matrixCase.value_risk.risk_level,
     trace_targets: traceTargets,
@@ -136,7 +148,7 @@ export function composeArtifact(matrix, assessment, ctx = {}) {
     system_boundary: {
       components: components.length ? components : ['未声明系统边界'],
       external_dependencies: unique(matrix.cases.flatMap(item => item.environment.external_deps || [])),
-      trust_boundaries: [],
+      trust_boundaries: deriveTrustBoundaries(ctx.inspection),
     },
     coverage: {
       ac_coverage: Object.fromEntries(unique(matrix.cases.flatMap(item => item.source_scope.acceptance_criteria)).map(ac => [

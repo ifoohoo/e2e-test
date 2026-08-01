@@ -164,7 +164,7 @@
       "oracles": [
         {
           "observable": "订单确认页面显示订单号和支付成功状态",
-          "criterion": "订单状态为 paid 且包含正确金额",
+          "criterion": "订单状态为 paid 且包含正确金额；负向不变量：订单状态不为 pending 或 failed",
           "timeout_ms": 10000
         }
       ],
@@ -218,7 +218,7 @@
       "oracles": [
         {
           "observable": "用户收到支付失败通知，订单状态为 cancelled",
-          "criterion": "订单状态为 cancelled 且库存已恢复",
+          "criterion": "订单状态为 cancelled 且库存已恢复；负向不变量：订单状态不为 paid",
           "timeout_ms": 15000
         }
       ],

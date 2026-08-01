@@ -11,15 +11,18 @@
  *   FAIL_CLOSED、回滚写入本身失败、非结构化异常）都尽力写标记；
  *   仅完整成功（全部步骤 + 复算一致）才清除标记。标记写不了时
  *   仍 fail-closed 非零退出并尽力输出明细（该边界无更强手段）。
- * - SKIP（加深判定 + R32 三根闭包）：第一条件 = 标记存在则永不 SKIP，
- *   并在入口输出如实携带前次失败明细；此外要求 root bundle-digest
- *   观察值 === descriptor bundle.treeDigest，且 root、Codex adapter、
- *   Claude adapter 三个 canonical root 各自的
+ * - SKIP（加深判定 + R32 三根闭包 + 资格主体闭包）：第一条件 = 标记
+ *   存在则永不 SKIP，并在入口输出如实携带前次失败明细；此外要求 root
+ *   bundle-digest 观察值 === descriptor bundle.treeDigest，且 root、
+ *   Codex adapter、Claude adapter 三个 canonical root 各自的
  *   conformance/last-run.json 三重一致（bundleDigest === treeDigest、
- *   attestation.digest === deterministicAttestation、status === PASS）
- *   以及 behavior-qualification.json 一致（存在可解析、QUALIFIED、
+ *   attestation.digest === deterministicAttestation、status === PASS）、
+ *   behavior-qualification.json 一致（存在可解析、QUALIFIED、
  *   evidence.bundleDigest === treeDigest、evidence.deterministicAttestation
- *   === deterministicAttestation）；任一不满足 → 进入刷新路径。
+ *   === deterministicAttestation），以及资格主体一致（每个 canonical
+ *   root 的 buildQualificationSubject(rootDir) 的 algorithm+digest 与
+ *   bq.evidence.qualificationSubjects[rootLabel] 精确匹配）；任一不满足
+ *   → 进入刷新路径。
  * - 刷新路径（实际执行顺序，鸡生蛋原因见步骤 1）：
  *   1. 对齐 treeDigest 到 Registry 观察值——conformance 的全部 SPI
  *      检查以 descriptor treeDigest 为信任基线，陈旧时级联 REJECTED，
@@ -68,6 +71,7 @@ const markerPath = join(pluginRoot, '.evidence-refresh-failed');
 // 赋值前任何调用路径都不会触达（evidenceConsistency 在 observe/
 // declared 之后才执行）
 let resolveConformanceDir = null;
+let buildQualificationSubject = null;
 const REQUIRED_ENV = [
   'E2E_TEST_REGISTRY_ROOT',
   'E2E_TEST_ARTIFACT_GRAPH_ROOT',
@@ -207,10 +211,18 @@ function runStep(name, command, args, env = process.env) {
  * attestation.digest === deterministicAttestation、status === PASS），
  * 以及 behavior-qualification.json 四项（存在可解析、QUALIFIED、
  * root 使用 evidence.bundleDigest / deterministicAttestation；adapter
- * 使用 evidence.scenarioIdentities.<host> 的本地 bundle / attestation）；
- * 任一不满足返回原因。
+ * 使用 evidence.scenarioIdentities.<host> 的本地 bundle / attestation），
+ * 以及资格主体一致（buildQualificationSubject(rootDir) 的
+ * algorithm+digest 与 bq.evidence.qualificationSubjects[rootLabel]
+ * 精确匹配）；任一不满足返回原因。
  */
-function checkSingleRoot(rootDir, rootLabel, observedDigest, conformanceDirOverride = null) {
+function checkSingleRoot(
+  rootDir,
+  rootLabel,
+  observedDigest,
+  conformanceDirOverride = null,
+  checkQualificationSubject = true,
+) {
   const descPath = join(rootDir, 'family', 'implementation.yaml');
   let descriptorText;
   try {
@@ -266,14 +278,35 @@ function checkSingleRoot(rootDir, rootLabel, observedDigest, conformanceDirOverr
   if (!declaredAttestation || localIdentity?.deterministicAttestation !== declaredAttestation) {
     return { ok: false, reason: `${rootLabel} behavior-qualification.json 本地 deterministicAttestation 不一致: ${localIdentity?.deterministicAttestation} !== ${declaredAttestation}` };
   }
+  // 资格主体闭包：复算 buildQualificationSubject(rootDir) 与
+  // bq.evidence.qualificationSubjects[rootLabel] 精确匹配；README 等
+  // 非 bundle 文件变化会改变资格主体但不改变 bundle digest，必须在此
+  // 阻止错误 SKIP
+  if (!checkQualificationSubject) return { ok: true, treeDigest };
+  try {
+    const observed = buildQualificationSubject(rootDir);
+    const expected = bq.evidence?.qualificationSubjects?.[rootLabel];
+    if (!expected) {
+      return { ok: false, reason: `${rootLabel} behavior-qualification.json 缺少 qualificationSubjects.${rootLabel}` };
+    }
+    if (observed.algorithm !== expected.algorithm || observed.digest !== expected.digest) {
+      return {
+        ok: false,
+        reason: `${rootLabel} 资格主体陈旧: qualificationSubjects.${rootLabel} digest ${expected.digest} !== 复算值 ${observed.digest}`,
+      };
+    }
+  } catch (error) {
+    return { ok: false, reason: `${rootLabel} 资格主体复算失败: ${error.message}` };
+  }
   return { ok: true, treeDigest };
 }
 
 /**
- * SKIP 加深判定（R25 F-01 + R26 F-02 + R32 三根闭包）：除 root
- * bundle digest 匹配外，还要求 root、Codex adapter、Claude adapter
- * 三个 canonical root 各自的 descriptor / last-run.json /
- * behavior-qualification.json 本地身份一致；任一不满足返回原因。
+ * SKIP 加深判定（R25 F-01 + R26 F-02 + R32 三根闭包 + 资格主体闭包）：
+ * 除 root bundle digest 匹配外，还要求 root、Codex adapter、Claude
+ * adapter 三个 canonical root 各自的 descriptor / last-run.json /
+ * behavior-qualification.json 本地身份一致，以及资格主体
+ * （buildQualificationSubject）一致；任一不满足返回原因。
  */
 function evidenceConsistency(rootTreeDigest) {
   let rootConformanceDir;
@@ -282,14 +315,17 @@ function evidenceConsistency(rootTreeDigest) {
   } catch (error) {
     return { ok: false, reason: `CONFORMANCE_DIR_INVALID: ${error.message}` };
   }
-  // 1. root canonical root
-  const rootResult = checkSingleRoot(
+  // 1. 先核查 root 自身的 descriptor / last-run / behavior identity，
+  // 暂缓资格主体。root 的发布主体包含两个 adapter；若 adapter 证据被
+  // 篡改，先报 adapter 的直接原因，避免被 root 的派生主体漂移遮蔽。
+  const rootIdentityResult = checkSingleRoot(
     pluginRoot,
     'root',
     rootTreeDigest,
     rootConformanceDir,
+    false,
   );
-  if (!rootResult.ok) return rootResult;
+  if (!rootIdentityResult.ok) return rootIdentityResult;
   // 2. Codex adapter canonical root
   const codexRoot = join(pluginRoot, 'adapters', 'codex');
   const codexResult = checkSingleRoot(
@@ -306,6 +342,15 @@ function evidenceConsistency(rootTreeDigest) {
     observeDigest(claudeRoot),
   );
   if (!claudeResult.ok) return claudeResult;
+  // 4. adapter 直接身份均一致后，再核查覆盖整个发布包的 root 资格主体。
+  // README 等不改变 bundle digest 的文件漂移会在这里被阻断。
+  const rootSubjectResult = checkSingleRoot(
+    pluginRoot,
+    'root',
+    rootTreeDigest,
+    rootConformanceDir,
+  );
+  if (!rootSubjectResult.ok) return rootSubjectResult;
   return { ok: true };
 }
 
@@ -319,6 +364,7 @@ async function main() {
   // import 阶段（R28 F-01）：内部相对模块在受保护入口内动态加载；
   // 加载失败 → unstructured-import + 尽力写标记
   ({ resolveConformanceDir } = await import('./lib/precondition-diagnostics.mjs'));
+  ({ buildQualificationSubject } = await import('./lib/behavior-qualification.mjs'));
 
   entryPhase = 'observe';
   const observed = observeDigest();

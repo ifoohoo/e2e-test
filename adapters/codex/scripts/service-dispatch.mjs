@@ -27,7 +27,7 @@ import { validateArtifactContract as validateContract } from './lib/artifact-con
 import { commitPreview, createPreview, createRun, loadRun, updateRun } from './lib/run-root.mjs';
 import { runReview } from './lib/review-kernel.mjs';
 import { applyRepairs } from './lib/repair-kernel.mjs';
-import { bindArtifactToMatrix, validateArtifactPackageManifest, validateMatrixRoundTrip } from './lib/matrix-dto.mjs';
+import { bindArtifactToMatrix, deriveTrustBoundaries, projectOracle, validateArtifactPackageManifest, validateMatrixRoundTrip } from './lib/matrix-dto.mjs';
 
 const pluginRoot = resolve(import.meta.dirname, '..');
 const require = createRequire(join(pluginRoot, 'package.json'));
@@ -479,7 +479,7 @@ function dispatchAuthor(req, projectRoot, outputAbs) {
     system_boundary: {
       components: inspection.candidate_paths?.flatMap(p => p.boundaries || []) || [],
       external_dependencies: [],
-      trust_boundaries: [],
+      trust_boundaries: deriveTrustBoundaries(inspection),
     },
     coverage: {
       ac_coverage: Object.fromEntries((assessment.candidates || []).map(c => [
@@ -505,8 +505,7 @@ function dispatchAuthor(req, projectRoot, outputAbs) {
       goal: mc.source_scope?.acceptance_criteria?.join(', ') || '',
       preconditions: mc.environment?.setup || [],
       actions: (mc.path?.steps || []).map((step, i) => ({ step: i + 1, action: step, expected_result: '' })),
-      oracles: mc.oracle ? [{ observable: mc.oracle.observable, criterion: mc.oracle.criterion,
-        timeout_ms: mc.oracle.timeout_ms }] : [],
+      oracles: mc.oracle ? [projectOracle(mc.oracle)] : [],
       cleanup: mc.cleanup?.cleanup_steps || [],
       priority: mc.value_risk?.risk_level || 'medium',
       trace_targets: [mc.candidate_ref],

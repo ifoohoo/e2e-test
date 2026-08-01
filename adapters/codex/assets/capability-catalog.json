@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "catalogId": "capability-catalog@1",
   "generatedAt": "__DETERMINISTIC__",
-  "packageVersion": "0.2.0-alpha.4",
+  "packageVersion": "0.2.0",
   "capabilities": [
     {
       "id": "artifact.e2e-test.help",

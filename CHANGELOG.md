@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.2.0 (2026-08-02) — stable
+
+### 正式版：核心 stable、R39 产品修复、浏览器扩展 experimental
+
+- **核心生命周期升级**：help/default/author/review/repair 五个服务从 experimental 升级为 stable，具备 CANDIDATE_QUALIFIED 资格。
+- **版本归一化**：从 `0.2.0-alpha.4` prerelease 归一化为 `0.2.0` 正式版。
+- **R39 敏感边界修复**：`deriveTrustBoundaries` 从 inspection 约束中识别敏感/隐私/凭据/信任边界关键词，写入标准制品 `trust_boundaries`；普通时延和异步约束不会误入。
+- **R39 负向不变量修复**：`projectOracle` 将矩阵 `negative_check` 合并到 oracle criterion，确保负向不变量进入对应验收标准。
+- **浏览器扩展保持 experimental**：`artifact.e2e-test.browser.implement` 和 `artifact.e2e-test.browser.execute` 仍为实验性，需要显式 ExtensionBinding，默认 NOT_ENABLED。
+- **Registry 前置**：`agent-method-registry@0.2.2` 已正式发布并验证。
+- **统一 marketplace**：Claude Code 与 Codex 统一 marketplace 已在 alpha.4 验证可用。
+
+### 已知限制
+
+- implement/execute 为 experimental，默认 NOT_ENABLED，需要显式 ExtensionBinding。
+- 方法前向资格仍为 FORWARD_TRIALS_PENDING_CODEX（真实双宿主试验尚未完成）。
+- 发布制品认证（releaseArtifactCertification）为 null。
+
 ## 0.2.0-alpha.4 (2026-08-01) — GitHub prerelease
 
 ### 浏览器公开 implement→execute、真实 Chromium、三根证明闭包

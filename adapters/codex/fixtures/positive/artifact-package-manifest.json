@@ -12,7 +12,7 @@
     "contract": "artifact.e2e-test@1",
     "contractRevisionDigest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
     "mediaType": "application/json",
-    "contentDigest": "sha256:7180ae34985b141c28b264bdb55588b32162cc85def45cf7fd015ccb3d26a4b0"
+    "contentDigest": "sha256:ed4adf0279ce94155727756217a6e5fcaa55e0957342f092d7bbc351111cac8d"
   },
   "members": [
     {
@@ -26,5 +26,5 @@
     }
   ],
   "stageChainDigest": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
-  "packageDigest": "sha256:11870b68b02fb3915d80c9ea654e2bef8222f214b81959151453b112777c6a4a"
+  "packageDigest": "sha256:f7b4d45111d21578cfecdce1587487f81d0d7ea8d300f427207d38a57a7e7ec2"
 }

@@ -1,7 +1,7 @@
 {
   "name": "e2e-test",
-  "version": "0.2.0-alpha.4",
-  "description": "E2E 测试专业技能族 — 框架中立、experimental 的 E2E 规格编制、审阅、修复和证明调和。Gate B: 五项服务已实现，provider 默认 NOT_ENABLED。",
+  "version": "0.2.0",
+  "description": "E2E 测试专业技能族 — 框架中立的 E2E 规格编制、审阅、修复和证明调和。核心 stable，浏览器扩展 experimental；provider 默认 NOT_ENABLED。",
   "author": {
     "name": "ifoohoo",
     "url": "https://github.com/ifoohoo"
@@ -11,11 +11,11 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "E2E Test Skill Family",
-    "shortDescription": "Framework-neutral E2E specification skill family (Gate B: experimental)",
+    "shortDescription": "Framework-neutral E2E specification skill family (stable core, experimental browser extension)",
     "developerName": "ifoohoo",
     "category": "testing",
     "defaultPrompt": "Run e2e-test-help to see current Gate B status and capabilities",
     "capabilities": ["e2e-specification", "test-authoring", "test-review", "test-repair", "diagnostic"],
-    "longDescription": "This skill family targets E2E specification authoring, review, repair and proof reconciliation. Gate B status: five services implemented (default/help/author/review/repair), v2 implementation descriptor, Artifact Contract and Family API registered. Provider defaults to NOT_ENABLED; requires explicit project binding. Deterministic conformance available; behavior qualification requires target host environment."
+    "longDescription": "This skill family targets E2E specification authoring, review, repair and proof reconciliation. Core specification kernel (default/help/author/review/repair) is stable with CANDIDATE_QUALIFIED qualification; browser extension (implement/execute) is experimental. Provider defaults to NOT_ENABLED; requires explicit project binding."
   }
 }

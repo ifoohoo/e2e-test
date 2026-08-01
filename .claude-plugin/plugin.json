@@ -1,7 +1,7 @@
 {
   "name": "e2e-test",
-  "version": "0.2.0-alpha.4",
-  "description": "E2E 测试专业技能族 — 框架中立、experimental 的 E2E 规格技能族",
+  "version": "0.2.0",
+  "description": "E2E 测试专业技能族 — 框架中立的 E2E 规格技能族",
   "author": {
     "name": "ifoohoo",
     "url": "https://github.com/ifoohoo"
