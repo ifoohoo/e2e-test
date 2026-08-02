@@ -13,12 +13,11 @@
  */
 
 import { existsSync, readFileSync, statSync } from 'node:fs';
-import { createRequire } from 'node:module';
 import { isAbsolute, join, resolve } from 'node:path';
+import { default as Ajv } from '../runtime-deps/ajv-bundle.mjs';
 import { stableDigest } from './digest.mjs';
 
 const pluginRoot = resolve(import.meta.dirname, '..', '..');
-const require = createRequire(join(pluginRoot, 'package.json'));
 
 // ─── 浏览器服务冻结入口映射 ───
 const BROWSER_ENTRYPOINT_MAP = Object.freeze({
@@ -33,8 +32,7 @@ const _validators = new Map();
 function getAjv() {
   if (!_ajvInstance) {
     try {
-      const AjvModule = require('ajv');
-      _ajvInstance = new AjvModule.default({ allErrors: true, strict: false });
+      _ajvInstance = new Ajv({ allErrors: true, strict: false });
     } catch {
       return null;
     }

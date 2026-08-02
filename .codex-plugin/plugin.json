@@ -1,6 +1,6 @@
 {
   "name": "e2e-test",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "E2E 测试专业技能族 — 框架中立的 E2E 规格编制、审阅、修复和证明调和。核心 stable，浏览器扩展 experimental；provider 默认 NOT_ENABLED。",
   "author": {
     "name": "ifoohoo",

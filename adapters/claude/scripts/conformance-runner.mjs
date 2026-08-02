@@ -24,6 +24,7 @@ import { fileURLToPath } from 'node:url';
 import { execFile, execFileSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { createHash } from 'node:crypto';
+import { default as Ajv } from './runtime-deps/ajv-bundle.mjs';
 import {
   assertCatalogConsistency,
   assertManifestHandlerConsistency,
@@ -234,8 +235,6 @@ writeFileSync(factsFile, JSON.stringify({
 prefetchCli(['node', join(authorityPaths['artifact-chain-assistant'].root, 'scripts', 'method-query.mjs'), 'build-envelope', factsFile], { timeout: 30000 });
 
 // ─── 3. AJV Schema Validation ───
-let Ajv;
-try { Ajv = (await import('ajv')).default; } catch { Ajv = require('ajv'); }
 const ajv = new Ajv({ allErrors: true, strict: false, logger: false });
 
 const SCHEMA_DIR = join(pluginRoot, 'schemas');

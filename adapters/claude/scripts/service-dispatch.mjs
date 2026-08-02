@@ -21,7 +21,7 @@
 import { existsSync, mkdirSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
-import { createRequire } from 'node:module';
+import { default as Ajv, addFormats } from './runtime-deps/ajv-bundle.mjs';
 import { dispatchAuthorWorkflow, handlesAuthorWorkflow } from './lib/author-workflow.mjs';
 import { validateArtifactContract as validateContract } from './lib/artifact-contract-validation.mjs';
 import { commitPreview, createPreview, createRun, loadRun, updateRun } from './lib/run-root.mjs';
@@ -30,7 +30,6 @@ import { applyRepairs } from './lib/repair-kernel.mjs';
 import { bindArtifactToMatrix, deriveTrustBoundaries, projectOracle, validateArtifactPackageManifest, validateMatrixRoundTrip } from './lib/matrix-dto.mjs';
 
 const pluginRoot = resolve(import.meta.dirname, '..');
-const require = createRequire(join(pluginRoot, 'package.json'));
 
 // ─── AJV schema validation ───
 let _ajvInstance = null;
@@ -39,10 +38,8 @@ const _validators = new Map();
 function getAjv() {
   if (!_ajvInstance) {
     try {
-      const AjvModule = require('ajv');
-      _ajvInstance = new AjvModule.default({ allErrors: true, strict: false });
-      const addFormatsModule = require('ajv-formats');
-      addFormatsModule.default(_ajvInstance);
+      _ajvInstance = new Ajv({ allErrors: true, strict: false });
+      addFormats(_ajvInstance);
     } catch {
       return null;
     }

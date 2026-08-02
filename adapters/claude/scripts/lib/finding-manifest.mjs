@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import Ajv from 'ajv';
+import { default as Ajv } from '../runtime-deps/ajv-bundle.mjs';
 
 function canonicalize(value) {
   if (value === null || typeof value !== 'object') return value;

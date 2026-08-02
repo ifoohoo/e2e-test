@@ -4,8 +4,7 @@ import {
   renameSync, rmSync, statSync, writeFileSync,
 } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
-import Ajv from 'ajv';
-import addFormats from 'ajv-formats';
+import { default as Ajv, addFormats } from '../runtime-deps/ajv-bundle.mjs';
 
 export const CHECK_IDS = [
   'help',

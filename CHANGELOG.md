@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.2.1 (2026-08-02) — stable
+
+### Git marketplace 运行时依赖闭包
+
+- **自包含运行时 bundle**：公开根、Claude adapter 与 Codex adapter 均携带 Ajv、ajv-formats 和 TypeScript 所需的确定性 bundle，不再依赖安装目录外的 `node_modules`。
+- **真实安装回归**：新增 Git marketplace 闭包测试，在无依赖目录的公开快照中执行 help 与服务入口，防止再次出现 `ERR_MODULE_NOT_FOUND`。
+- **生成与许可证闭包**：加入可复现的 runtime bundle 生成器、第三方许可证清单和发布面文件约束；生成结果不受本地绝对路径影响。
+- **诚实失败语义**：仅在自包含 runtime bundle 不可用时返回结构化失败，不把缺失依赖误报为业务成功。
+
+### 已知限制
+
+- implement/execute 为 experimental，默认 NOT_ENABLED，需要显式 ExtensionBinding。
+- 方法前向资格仍为 FORWARD_TRIALS_PENDING_CODEX（真实双宿主试验尚未完成）。
+- 发布制品认证（releaseArtifactCertification）为 null。
+
 ## 0.2.0 (2026-08-02) — stable
 
 ### 正式版：核心 stable、R39 产品修复、浏览器扩展 experimental

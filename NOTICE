@@ -18,6 +18,25 @@ or transfer.
 This project is built on Node.js and the npm ecosystem. See `package.json`
 for the full list of dependencies.
 
+### Bundled Runtime Dependencies
+
+The following packages are bundled into self-contained ESM files under
+`scripts/runtime-deps/` by the build script `scripts/build-runtime-deps.mjs`.
+These bundles allow the public Git marketplace snapshot to run without
+`node_modules`. The bundled code retains its original license.
+
+- **Ajv** (ajv) — MIT License. Copyright (c) 2015-2024 Evgeny Poberezkin.
+  https://github.com/ajv-validator/ajv
+- **ajv-formats** — MIT License. Copyright (c) 2020 Evgeny Poberezkin.
+  https://github.com/ajv-validator/ajv-formats
+- **TypeScript** (typescript) — Apache License 2.0. Copyright (c) Microsoft
+  Corporation. https://github.com/microsoft/TypeScript
+
+### Build-Time Dependencies
+
+- **esbuild** — MIT License. Copyright (c) 2020 Evan Wallace.
+  https://github.com/evanw/esbuild
+
 ## Acknowledgments
 
 The E2E specification skill family aligns with the E2E Test Skill Family API

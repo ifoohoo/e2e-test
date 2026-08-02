@@ -16,7 +16,7 @@
       "inputsUnmodified": true,
       "unauthorizedWriteDetected": false,
       "absolutePathDetected": false,
-      "scenarioDigest": "sha256:7bc45296dfaa5a4dc69ee4d7afbd23459e72413e59bd0deb02064c48b9abebbd",
+      "scenarioDigest": "sha256:ad1b8290574a65a7756d7e617515d75c4460e30cdfed6de838a4b6af6cbd6920",
       "toolEventsDigest": "sha256:13766e254d7073143f0380bb97ade00dcb55d8e9959da14f370f04e6b3dcc5f6"
     },
     "claude": {
@@ -32,7 +32,7 @@
       "inputsUnmodified": true,
       "unauthorizedWriteDetected": false,
       "absolutePathDetected": false,
-      "scenarioDigest": "sha256:7ec7f2980995f37882474ff4b5907b11bc03e88d2a15231880d2cd9e7dd128a0",
+      "scenarioDigest": "sha256:2304162e96872effb5701737828a9a472e617185d03a623f6c5f662c5e86814f",
       "toolEventsDigest": "sha256:9faa1a1fe23f5b50e981d13f6afdca317dfff2c85f9715df3b3dfb30856a2d34"
     }
   },
@@ -487,38 +487,38 @@
       },
       {
         "name": "e2e-test",
-        "version": "0.2.0",
-        "tarballDigest": "sha256:c57d6a33d4df64f01deac9094bb8455ef755269f06bc86ffa7a2d2ff5b9ffc86"
+        "version": "0.2.1",
+        "tarballDigest": "sha256:c8d141d8359d2f358084b95f8c706be9cb28e5030f39f012c1c61084ab794c0b"
       }
     ],
     "qualificationSubjects": {
       "root": {
         "algorithm": "e2e-test-qualification-subject-v1",
-        "digest": "sha256:321aa1f338212464f1f1c20a649f44d8c794382e924bfd3d4efa66a95dd5c657"
+        "digest": "sha256:3ecdb1cfcfa1d6482d55caa5f6489950fcb2ccf71c77d331a85790184fa57b68"
       },
       "codex": {
         "algorithm": "e2e-test-qualification-subject-v1",
-        "digest": "sha256:daba1bdd20a7241a482de5dc03ae0742718238e29a9e663a4e7a8e4a6db78481"
+        "digest": "sha256:7272e3dbe71ab05ae9ca6a46d5640a33baf409ae13e804028ff3fb470ca933fd"
       },
       "claude": {
         "algorithm": "e2e-test-qualification-subject-v1",
-        "digest": "sha256:a6226c34ae3e29fe4cd8c9c8a44f7cbaa78dadb6a69f09ae2e7d730b3a7d32cc"
+        "digest": "sha256:0cd54014dab369e083bafead3b43e395964602d944fcbadc236fc77ce2f95fcd"
       }
     },
     "familyApiRevision": "sha256:66cdd1098a93eb8d128c57010a9405dd1de55bee1e702ced44a93c202cc4b463",
     "contractRevision": "sha256:374b99424519e42b40b621774fb602d62dfa23f48f792095f717bbabbe9e3f2a",
-    "bundleDigest": "sha256:73b65c0d66ad3928d36d75c16234a7d5cdc10e3e0853f26e0a264e2359a501dd",
-    "deterministicAttestation": "sha256:5e34cd6d3ebf809d97b14e78c6dd78dae50536f02dc316a78ed4c80d5a334193",
+    "bundleDigest": "sha256:57f01142c0050be22efaa5ed46e7f13ab18d4a9bd8a594ce43bec8f2b1d7496f",
+    "deterministicAttestation": "sha256:4a78420b39e209d900051432ace3c6170005d2ac4756a5c4edb08217757d1b13",
     "scenarioIdentities": {
       "codex": {
         "familyApiRevision": "sha256:66cdd1098a93eb8d128c57010a9405dd1de55bee1e702ced44a93c202cc4b463",
         "contractRevision": "sha256:374b99424519e42b40b621774fb602d62dfa23f48f792095f717bbabbe9e3f2a",
         "implementationId": "io.github.mzdbxqh.e2e-test",
-        "implementationVersion": "0.2.0",
-        "qualificationInputTarballDigest": "sha256:c57d6a33d4df64f01deac9094bb8455ef755269f06bc86ffa7a2d2ff5b9ffc86",
-        "qualificationSubjectDigest": "sha256:daba1bdd20a7241a482de5dc03ae0742718238e29a9e663a4e7a8e4a6db78481",
-        "bundleDigest": "sha256:d43956d9ca5473bd57d549f82324a09d7161659378ab76a8ffcec08f198a182d",
-        "deterministicAttestation": "sha256:4da476586cda6d47a27b5fcfb743fa06856a9ace9b3fe3952fb5ca85885720d3",
+        "implementationVersion": "0.2.1",
+        "qualificationInputTarballDigest": "sha256:c8d141d8359d2f358084b95f8c706be9cb28e5030f39f012c1c61084ab794c0b",
+        "qualificationSubjectDigest": "sha256:7272e3dbe71ab05ae9ca6a46d5640a33baf409ae13e804028ff3fb470ca933fd",
+        "bundleDigest": "sha256:fb4f75fb0bced95ccb75fa11e394a211f0f689dff58e33467371ddac4f3ba9e8",
+        "deterministicAttestation": "sha256:0c1c3029d5ab2e7fd90d6c592420125c273848968ef46ea538c415c343daf6b4",
         "fixtureDigests": [
           {
             "name": "artifact.json",
@@ -542,11 +542,11 @@
         "familyApiRevision": "sha256:66cdd1098a93eb8d128c57010a9405dd1de55bee1e702ced44a93c202cc4b463",
         "contractRevision": "sha256:374b99424519e42b40b621774fb602d62dfa23f48f792095f717bbabbe9e3f2a",
         "implementationId": "io.github.mzdbxqh.e2e-test",
-        "implementationVersion": "0.2.0",
-        "qualificationInputTarballDigest": "sha256:c57d6a33d4df64f01deac9094bb8455ef755269f06bc86ffa7a2d2ff5b9ffc86",
-        "qualificationSubjectDigest": "sha256:a6226c34ae3e29fe4cd8c9c8a44f7cbaa78dadb6a69f09ae2e7d730b3a7d32cc",
-        "bundleDigest": "sha256:d43956d9ca5473bd57d549f82324a09d7161659378ab76a8ffcec08f198a182d",
-        "deterministicAttestation": "sha256:3436c0015f4931e5a6d47078a7acd86f51af916431b38cddfc7b85918c653622",
+        "implementationVersion": "0.2.1",
+        "qualificationInputTarballDigest": "sha256:c8d141d8359d2f358084b95f8c706be9cb28e5030f39f012c1c61084ab794c0b",
+        "qualificationSubjectDigest": "sha256:0cd54014dab369e083bafead3b43e395964602d944fcbadc236fc77ce2f95fcd",
+        "bundleDigest": "sha256:fb4f75fb0bced95ccb75fa11e394a211f0f689dff58e33467371ddac4f3ba9e8",
+        "deterministicAttestation": "sha256:d2d39d8c814003e167676f41220986c60f2111459adf83c4f3ed9ce182ce4c74",
         "fixtureDigests": [
           {
             "name": "artifact.json",
@@ -568,5 +568,5 @@
       }
     }
   },
-  "digest": "sha256:fd90239168cdf26ba9d32861d395f8fc34936a58a58eab17173a5e50889c6eaa"
+  "digest": "sha256:8ee30e82bd9c8ff5345bcc327cbccde7525270bf4368937dcccdd4eb1a1149fb"
 }

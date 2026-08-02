@@ -19,7 +19,7 @@ import {
   sep,
 } from 'node:path';
 
-import * as ts from 'typescript';
+import ts from '../runtime-deps/typescript-bundle.mjs';
 
 import { validateArtifactContract } from './artifact-contract-validation.mjs';
 import { prepareImplementationPlan } from './browser-implementation-planner.mjs';

@@ -12,12 +12,12 @@ Experimental E2E test skill family — framework-neutral E2E specification autho
 - Method-forward qualification remains `FORWARD_TRIALS_PENDING_CODEX` until genuine trials on both hosts complete; release-artifact certification is `null`.
 - Finding capability is authoritative only in `assets/finding-capability-manifest.json`; E2E-F-002, E2E-F-006, and E2E-F-010 are `implemented` (generic semantic detector + structured reviewer packet, not fixture-name hardcoded).
 - Default **NOT_ENABLED**: requires explicit project binding to activate.
-- v0.2.0 is the current stable release. The Gate B Registry prerequisite is frozen to `agent-method-registry@0.2.2` (GitHub tag `agent-method-registry-v0.2.2`, commit `2d15ae574e122c5dfabf245680b5a8de628d27e4`, npm integrity `sha512-uQbsnVLBkm2yeEIHdtHu8NUjgDgheYvNF8wZfvHpCSk7pnmGWW93P31fPmer9IowWmh2f55I5FguxX4czbxrvg==`). Claude/Codex unified marketplace has been verified. E2E Test Gate B formal public release (RELEASE_ATTESTED) remains a separate subsequent milestone.
+- v0.2.1 is the current stable release. It closes Git marketplace runtime dependencies with self-contained Ajv and TypeScript bundles, so fresh Claude/Codex installs do not require a repository-local `node_modules`. The Claude/Codex unified marketplace distribution path was previously verified; v0.2.1 post-release installation verification is part of this release transaction. The Gate B Registry prerequisite is frozen to `agent-method-registry@0.2.2` (GitHub tag `agent-method-registry-v0.2.2`, commit `2d15ae574e122c5dfabf245680b5a8de628d27e4`, npm integrity `sha512-uQbsnVLBkm2yeEIHdtHu8NUjgDgheYvNF8wZfvHpCSk7pnmGWW93P31fPmer9IowWmh2f55I5FguxX4czbxrvg==`). E2E Test Gate B formal public release (RELEASE_ATTESTED) remains a separate subsequent milestone.
 - `artifact.e2e-test.browser.implement` and `artifact.e2e-test.browser.execute` are experimentally callable under explicit ExtensionBinding; default NOT_ENABLED.
 - Does not replace `artifact-chain-assistant` generic `e2e`.
 
 <!-- release-skill:capability:external-write-boundary -->
-> **Current boundary:** v0.2.0 is the current stable release. The specification
+> **Current boundary:** v0.2.1 is the current stable release. The specification
 > kernel (help/default/author/review/repair) is stable with CANDIDATE_QUALIFIED
 > qualification; Gate B RELEASE_ATTESTED remains a separate subsequent milestone.
 > The browser extension (implement/execute) is experimental and defaults to

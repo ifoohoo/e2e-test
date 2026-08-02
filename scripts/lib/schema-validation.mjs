@@ -1,7 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import Ajv from 'ajv';
-import addFormats from 'ajv-formats';
+import { default as Ajv, addFormats } from '../runtime-deps/ajv-bundle.mjs';
 
 const cache = new Map();
 

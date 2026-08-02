@@ -22,6 +22,32 @@ const adaptersDir = join(pluginRoot, 'adapters');
 const isCheck = process.argv.includes('--check');
 const skipProofCheck = process.argv.includes('--skip-proof-check');
 
+// ─── Step 0: Ensure root runtime-deps are generated and up-to-date ───
+// Runtime-deps bundles (ajv, typescript) must exist before adapter sync,
+// because adapters copy from the root's scripts/runtime-deps/.
+{
+  const buildRuntimeDepsScript = join(scriptsDir, 'build-runtime-deps.mjs');
+  try {
+    const args = isCheck ? [buildRuntimeDepsScript, '--check'] : [buildRuntimeDepsScript];
+    execFileSync(process.execPath, args, {
+      cwd: pluginRoot,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'pipe'],
+      timeout: 120000,
+    });
+  } catch (err) {
+    const stderr = err.stderr || '';
+    const stdout = err.stdout || '';
+    if (isCheck) {
+      console.error(`Runtime deps check failed:\n${stderr || stdout}`);
+      process.exit(1);
+    } else {
+      console.error(`Runtime deps generation failed:\n${stderr || stdout}`);
+      process.exit(1);
+    }
+  }
+}
+
 // 读取 package.json 获取版本等信息
 const pkg = JSON.parse(readFileSync(join(pluginRoot, 'package.json'), 'utf8'));
 
@@ -267,6 +293,7 @@ for (const adapterType of adapterTypes) {
 const dirsToSync = [
   'authority-api', 'assets', 'schemas', 'references', 'fixtures', 'conformance',
   'family', 'stages', 'workers', 'scripts/lib', 'scripts/stage-validators',
+  'scripts/runtime-deps',
 ];
 
 for (const adapterType of adapterTypes) {

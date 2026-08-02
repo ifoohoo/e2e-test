@@ -2,7 +2,7 @@
 
 ## 项目状态
 
-e2e-test 是 experimental（实验性）的 E2E 规格技能族，当前处于 Gate B 候选阶段。五个服务（default、help、author、review、repair）已完成操作行为资格认证，但在未显式 binding（绑定）的项目中默认 NOT_ENABLED（不启用）。预发布版本（0.2.0-alpha.x）可能存在行为变化，不建议用于生产关键路径。
+e2e-test 的规格内核（default、help、author、review、repair）为 stable（稳定），浏览器扩展（implement、execute）为 experimental（实验性）。五个核心服务已完成操作行为资格认证，但在未显式 binding（绑定）的项目中默认 NOT_ENABLED（不启用）；浏览器扩展还需要显式 ExtensionBinding。
 
 ## 运行边界
 
@@ -14,7 +14,8 @@ e2e-test 是 experimental（实验性）的 E2E 规格技能族，当前处于 G
 
 | 版本系列 | 状态 | 安全支持 |
 | --- | --- | --- |
-| 0.2.0-alpha.x | 预发布 | 接收安全报告，尽力修复 |
+| 0.2.x | 正式版 | 接收安全报告并提供修复版本 |
+| 0.2.0-alpha.x | 历史预发布 | 仅建议升级到最新 0.2.x |
 | 更早版本 | 不维护 | 无 |
 
 ## 漏洞报告

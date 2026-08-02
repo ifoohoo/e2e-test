@@ -17,7 +17,6 @@ import {
   createValidators,
   verifyEmbeddedDigest,
 } from './behavior-qualification.mjs';
-import { validateMethodForwardQualification } from './method-forward-qualification.mjs';
 
 const ZERO_DIGEST = `sha256:${'0'.repeat(64)}`;
 const ROOT_KEYS = ['root', 'codex', 'claude'];
@@ -90,7 +89,7 @@ export function createTruthKernel(pluginRoot, options = {}) {
       conformance,
       diagnostics,
     });
-    const methodForwardQualification = verifyMethodForwardQualification({
+    const methodForwardQualification = await verifyMethodForwardQualification({
       root, descriptor, apiSnapshot, bundle, diagnostics,
     });
 
@@ -148,13 +147,28 @@ export function createTruthKernel(pluginRoot, options = {}) {
   return { verify };
 }
 
-function verifyMethodForwardQualification({ root, descriptor, apiSnapshot, bundle, diagnostics }) {
+async function verifyMethodForwardQualification({ root, descriptor, apiSnapshot, bundle, diagnostics }) {
   const path = join(root, 'conformance', 'method-forward-qualification.json');
   if (!existsSync(path)) {
     return { status: 'NOT_STARTED', evidenceValid: false, pendingMarkers: [] };
   }
   const evidence = readJson(path, diagnostics, 'METHOD_FORWARD_EVIDENCE_UNAVAILABLE');
   if (!evidence) return { status: 'BLOCKED', evidenceValid: false, pendingMarkers: [] };
+  let validateMethodForwardQualification;
+  try {
+    ({ validateMethodForwardQualification } = await import('./method-forward-qualification.mjs'));
+  } catch {
+    diagnostics.add('METHOD_FORWARD_VALIDATOR_UNAVAILABLE');
+    return {
+      status: 'BLOCKED',
+      evidenceValid: false,
+      pendingMarkers: evidence.pendingMarkers || [],
+      hosts: Object.fromEntries(
+        Object.entries(evidence.hosts || {}).map(([key, value]) => [key, value.status]),
+      ),
+      digest: null,
+    };
+  }
   const validation = validateMethodForwardQualification(root, evidence);
   const identityValid = Boolean(
     descriptor && apiSnapshot?.api && bundle.match &&

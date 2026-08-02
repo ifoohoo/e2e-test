@@ -16,12 +16,12 @@
 - `releaseArtifactCertification`（发布制品认证）：尚未实施，显示为 `null`。
 - finding 能力以 `assets/finding-capability-manifest.json` 为准；E2E-F-002、E2E-F-006 和 E2E-F-010 为 implemented（通用语义 detector + 结构化 reviewer packet，不按 fixture 名称硬编码）。
 - 默认 **NOT_ENABLED**（未启用）：需要项目显式 binding 才能启用。
-- v0.2.0 是当前正式版。Gate B 的 Registry 前置已冻结为 `agent-method-registry@0.2.2`（GitHub tag `agent-method-registry-v0.2.2`，commit `2d15ae574e122c5dfabf245680b5a8de628d27e4`，npm integrity `sha512-uQbsnVLBkm2yeEIHdtHu8NUjgDgheYvNF8wZfvHpCSk7pnmGWW93P31fPmer9IowWmh2f55I5FguxX4czbxrvg==`）。Claude/Codex 统一 marketplace 已验证可用。E2E Test Gate B 正式公共发布（RELEASE_ATTESTED）仍是后续独立事务。
+- v0.2.1 是当前正式版。该版本以自包含 Ajv/TypeScript 运行时 bundle 补齐 Git marketplace 安装闭包，全新 Claude/Codex 安装不再依赖仓库本地 `node_modules`。Claude/Codex 统一 marketplace 已在前一正式版完成验证；v0.2.1 的发布后安装复验属于本次发布事务。Gate B 的 Registry 前置已冻结为 `agent-method-registry@0.2.2`（GitHub tag `agent-method-registry-v0.2.2`，commit `2d15ae574e122c5dfabf245680b5a8de628d27e4`，npm integrity `sha512-uQbsnVLBkm2yeEIHdtHu8NUjgDgheYvNF8wZfvHpCSk7pnmGWW93P31fPmer9IowWmh2f55I5FguxX4czbxrvg==`）。E2E Test Gate B 正式公共发布（RELEASE_ATTESTED）仍是后续独立事务。
 - `artifact.e2e-test.browser.implement` 和 `artifact.e2e-test.browser.execute` 在显式 ExtensionBinding 下实验性可调用；默认 NOT_ENABLED。
 - 不替代 `artifact-chain-assistant` 的通用 `e2e`。
 
 <!-- release-skill:capability:external-write-boundary -->
-> **当前发布边界：** v0.2.0 是当前正式版。规格内核
+> **当前发布边界：** v0.2.1 是当前正式版。规格内核
 >（help/default/author/review/repair）为 stable，具备 CANDIDATE_QUALIFIED
 > 资格；Gate B RELEASE_ATTESTED 仍是后续独立事务。浏览器扩展
 >（implement/execute）为 experimental，默认 NOT_ENABLED。方法前向资格仍为
